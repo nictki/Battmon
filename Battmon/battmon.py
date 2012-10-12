@@ -311,7 +311,7 @@ class Notifier:
                 self.n.show()
             
         else:
-            os.popen('notify-send -i %s %s' % (message, summary))
+            os.popen('notify-send %s %s' % (message, summary))
             
         loop.run()
         #gtk.main()
@@ -336,16 +336,15 @@ class Application:
         self.lockCommand = None
         self.soundPlayer = None
         
-        # check for external programs and files       
-        self.checkVlock()
-        self.checkPlay()
-        self.checkSoundsFiles()
-        
         # instances
         self.batteryValues = BatteryValues()
         self.notifyActions = NotifyActions(self.debug, self.test, self.lockCommand)
         self.notifier = Notifier(self.debug, self.timeout)
         
+        # check for external programs and files       
+        self.checkVlock()
+        self.checkPlay()
+        self.checkSoundsFiles()
         
         # check if program already running and set name
         if not self.more_then_one:
@@ -414,11 +413,11 @@ class Application:
         if not vlockFound:
             pynotify.init("No vlock")
             self.notifier.sendNofiication('Is vlock intalled ?' , 
-                                          '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
-                                          'cancel, Ok ', self.notifyActions.cancelAction,
-                                          None, None,
-                                          None, None,
-                                          self.notifyActions.defaultClose)
+                                     '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
+                                     'cancel, Ok ', self.notifyActions.cancelAction,
+                                     None, None,
+                                     None, None,
+                                     self.notifyActions.defaultClose)
         else:
             pass
                          
