@@ -1,0 +1,38 @@
+Descripion:
+Simple battery monitoring program written in python especially for tiling window managers like awesome, dwm, xmonad...
+(Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0)
+
+Features:
+ - pop-up and sound notification
+ - works in background
+ - no tray icon
+ - clickable pop-up's buttons (suspend, hibernate, shutdown...)
+ - options can be given on the command line (see battmon --help for details)
+
+Prerequisites:
+ - python-notify, python-gtk2, notification-daemon
+ - optional vlock (program to lock one or more sessions on the Linux console).
+
+News:
+ - 12.10.2012
+  new stable released
+  added possibility to fork program in background
+  added possibility to run only one copy of program
+  major fixes
+
+ - 11.10.2012
+  first beta released
+
+ - 27.07.2011
+  first alpha released
+
+
+Notes:
+Be sure that your ck-list-sessions output gives something like this:
+ #:> ck-list-sessions
+ ...
+ active = TRUE
+ ...
+ is-local = TRUE
+ ...
+Otherwise some of programm functionality (like shutown, suspend...) may not work.
