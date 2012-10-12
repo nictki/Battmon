@@ -30,6 +30,7 @@ try:
     import pynotify
     pynotify_module = True
 except ImportError:
+    os.popen('''notify-send "You heve to install pynotify"''')
     print("Unable to import pynotify module, use notify-send instead, so no popup's update.")
     pynotify_module = False
 
@@ -230,13 +231,13 @@ class Notifier:
                         action3string, action3,
                         defaultCloseCommand):
         
+        #
+        global loop
+        loop = gobject.MainLoop()
         # initialize pynotify 
         if pynotify_module:
             pynotify.init("icon-summary-body")
             self.n = pynotify.Notification("Battmon")
-            #
-            global loop
-            loop = gobject.MainLoop()
             # check if we should update notifications
             if self.updateNotify:
                 if self.debug:
@@ -271,6 +272,7 @@ class Notifier:
                     self.n.set_timeout(pynotify.EXPIRES_NEVER)
                 else:
                     self.n.set_timeout(1000 * self.timeout)
+                self.n.show()
                  
             else:
                 if self.debug:
@@ -306,12 +308,11 @@ class Notifier:
                     self.n.set_timeout(pynotify.EXPIRES_NEVER)
                 else:
                     self.n.set_timeout(1000 * self.timeout)
-                 
+                self.n.show()
             
         else:
-            os.popen('''notify-send -i "{0}" "{1}"''' % (message, summary))
+            os.popen('notify-send -i %s %s' % (message, summary))
             
-        self.n.show()
         loop.run()
         #gtk.main()
         
