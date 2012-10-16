@@ -171,25 +171,6 @@ class BatteryValues:
         else:
             return 'Acpi not found !!!'
             
-    # get current battery capacity
-    def battCurrentCapacity(self):
-        if self.acpiFound:
-            try:
-                get_acpi_values = os.popen("acpi").readlines()[0]
-                batt_vals = get_acpi_values.find("%")
-                BATTERY_CURRENT_VALUE = str(get_acpi_values[(batt_vals - 3):(batt_vals)].strip())
-                if BATTERY_CURRENT_VALUE.startswith(","):
-                    BATTERY_CURRENT_VALUE = int(BATTERY_CURRENT_VALUE[2:])
-                    return BATTERY_CURRENT_VALUE
-                else:
-                    BATTERY_CURRENT_VALUE = int(BATTERY_CURRENT_VALUE)
-                    return BATTERY_CURRENT_VALUE
-            except OSError as ose:
-                print("Error: " + str(ose))
-                sys.exit()
-        else:
-            return 'Acpi not found !!!'
-            
     # how much time left until battery will be empty 
     def battRemaingTime(self):
         if self.acpiFound:
@@ -206,18 +187,28 @@ class BatteryValues:
     
     # check if battery is fully charged
     def isBatteryFullyCharged(self):
-        if self.acpiFound:
+        if self.BAT != None:
             try:
-                fully_charged = os.popen("acpi").readlines()[0]
-                if fully_charged.find("100%") != -1:
+                bat = open(self.BAT + 'capacity').readlines()[0]
+                v = str(bat).split()[0]
+                if v == 100:
                     return True
                 else:
                     return False
             except OSError as ose:
                 print("Error: " + str(ose))
                 sys.exit()
-        else:
-            return 'Acpi not found !!!'
+   
+    # get current battery capacity
+    def battCurrentCapacity(self):
+        if self.BAT != None:
+            try:
+                bat = open(self.BAT + 'capacity').readlines()[0]
+                v = str(bat).split()[0]
+                return v
+            except IOError as ioe:
+                print("Error: " + str(ioe))
+                sys.exit()
    
     # check if battery discharging right now
     def isBatteryDischarging(self):
@@ -532,7 +523,7 @@ class Application:
                         # send notification
                         if self.notify and self.critical:
                             self.notifier.sendNofiication('Discharging', 
-                                                          'Current Capacity: %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), "%", self.batteryValues.battRemaingTime()), 
+                                                          'Current capacity: %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()), 
                                                           'cancel, Ok ', self.notifyActions.cancelAction, 
                                                           None, None,
                                                           None, None,
@@ -550,7 +541,7 @@ class Application:
                         #send notification
                         if self.notify and self.critical:
                             self.notifier.sendNofiication('Battery low level' ,
-                                                          'Current Capacity (%s%s)\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), "%", self.batteryValues.battRemaingTime()),
+                                                          'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel,  Cancel ', self.notifyActions.cancelAction,
@@ -568,7 +559,7 @@ class Application:
                         #send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('Battery critical level !!!',
-                                                          'Current Capacity (%d%s)\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), "%", self.batteryValues.battRemaingTime()),
+                                                          'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel, Cancel ', self.notifyActions.cancelAction,
@@ -586,7 +577,7 @@ class Application:
                         # send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
-                                                          '<b>Battery critical level (%d%s)\nTime left: %s</b>' % (self.batteryValues.battCurrentCapacity(), "%", self.batteryValues.battRemaingTime()),
+                                                          '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           None, None,
