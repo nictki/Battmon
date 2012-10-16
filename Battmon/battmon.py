@@ -221,39 +221,42 @@ class BatteryValues:
    
     # check if battery discharging right now
     def isBatteryDischarging(self):
-        try:
-            bat = open(self.BAT + 'status').readlines()[0]
-            if bat.find("Discharging") != -1:
-                return True
-            else:
-                return False
-        except IOError as ioe:
-            print("Error: " + str(ioe))
-            sys.exit()
+        if self.BAT != None:
+            try:
+                bat = open(self.BAT + 'status').readlines()[0]
+                if bat.find("Discharging") != -1:
+                    return True
+                else:
+                    return False
+            except IOError as ioe:
+                print("Error: " + str(ioe))
+                sys.exit()
                        
     # check if battery is present
     def isBatteryPresent(self):
-        try:
-            get_batt = open(self.BAT + 'present').readlines()[0]
-            if get_batt.find("1") != -1:
-                return True
-            else:
-                return False
-        except IOError as ioe:
-            print("Error: " + str(ioe))
-            sys.exit()
+        if self.BAT != None:
+            try:
+                get_batt = open(self.BAT + 'present').readlines()[0]
+                if get_batt.find("1") != -1:
+                    return True
+                else:
+                    return False
+            except IOError as ioe:
+                print("Error: " + str(ioe))
+                sys.exit()
             
     # check if ac is present
     def isAcAdapterPresent(self):
-        try:
-            get_ac_adapter = open(self.AC + 'online').readlines()[0]
-            if get_ac_adapter.find("1") != -1:
-                return True
-            else:
-                return False    
-        except IOError as ioe:
-            print("Error: " + str(ioe))
-            sys.exit()
+        if self.BAT != None:
+            try:
+                get_ac_adapter = open(self.AC + 'online').readlines()[0]
+                if get_ac_adapter.find("1") != -1:
+                    return True
+                else:
+                    return False    
+            except IOError as ioe:
+                print("Error: " + str(ioe))
+                sys.exit()
             
 class Notifier:
     def __init__(self, debug=False, timeout=None):
