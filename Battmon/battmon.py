@@ -36,7 +36,7 @@ except ImportError:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn12102012'
+VERSION = '1.2~svn16102012'
 DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
@@ -601,7 +601,7 @@ class Application:
                     # battery is fully charged
                     if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == True and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
-                            print("debug mode: full battery check (%s() in Application class)") % (self.runMainLoop.__name__)
+                            print("debug mode: is full battery check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:    
                             os.popen(self.soundCommandLow)
                         # send notification
@@ -619,7 +619,7 @@ class Application:
                     # ac plugged, battery is charging
                     elif self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
-                            print("debug mode: charging check (%s() in Application class)") % (self.runMainLoop.__name__)
+                            print("debug mode: is battery charging check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:
                             os.popen(self.soundCommandLow)
                         # send notification
@@ -639,7 +639,7 @@ class Application:
             # loop to deal with situation when we don't have any battery
             while self.batteryValues.isBatteryPresent() == False:
                 if self.debug:
-                    print("debug mode: no battery check")
+                    print("debug mode: no battery present check")
                 time.sleep(600)
                 pass
 
@@ -675,7 +675,7 @@ if __name__ == '__main__':
     
     # allows to run only one instance of this program
     op.add_option("-m", "--run-more-copies", action="store_true", dest="more_then_one",
-                  default=defaultOptions['more_then_one'], help="allows to run more then one copy of this program " 
+                  default=defaultOptions['more_then_one'], help="allows to run more then one battmon copy " 
                   "[default: false]")
     
     # show notifications
