@@ -138,7 +138,7 @@ class BatteryValues:
     acpiFound = False
 
     # find battery and ac-adapter
-    def findBatteryAndOrAC(self):
+    def findBatteryAndAC(self):
         try:
             devices = (glob.glob(self.PATH))
         except IOError as ioe:
@@ -387,7 +387,7 @@ class Application:
         self.checkPlay()
         self.checkSoundsFiles()
         
-        self.batteryValues.findBatteryAndOrAC()
+        self.batteryValues.findBatteryAndAC()
         
         # check if program already running and set name
         if not self.more_then_one:
