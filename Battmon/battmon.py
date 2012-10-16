@@ -132,15 +132,15 @@ class NotifyActions:
         
 # battery values class
 class BatteryValues:
-    PATH = "/sys/class/power_supply/*/"
-    BAT = None
-    AC = None
+    __PATH = "/sys/class/power_supply/*/"
+    __BAT = None
+    __AC = None
     acpiFound = False
 
     # find battery and ac-adapter
     def findBatteryAndAC(self):
         try:
-            devices = (glob.glob(self.PATH))
+            devices = (glob.glob(self.__PATH))
         except IOError as ioe:
             print('Error: ' + str(ioe))
             sys.exit()
@@ -150,13 +150,13 @@ class BatteryValues:
                 d = open(i + '/type').read().split('\n')[0]
                 
                 if d == 'Battery':
-                    self.BAT = i
+                    self.__BAT = i
                 if d == 'Mains':
-                    self.AC = i
+                    self.__AC = i
             except IOError as ioe:
                 print('Error: ' + str(ioe))
                 sys.exit()
-          
+
     # how much time will take to get battery fully charged
     def batteryChargeTime(self):
         if self.acpiFound:
@@ -187,11 +187,11 @@ class BatteryValues:
     
     # check if battery is fully charged
     def isBatteryFullyCharged(self):
-        if self.BAT != None:
+        if self.__BAT != None:
             try:
-                bat = open(self.BAT + 'capacity').readlines()[0]
+                bat = open(self.__BAT + 'capacity').readlines()[0]
                 v = str(bat).split()[0]
-                if v == 100:
+                if int(v) == 100:
                     return True
                 else:
                     return False
@@ -201,20 +201,20 @@ class BatteryValues:
    
     # get current battery capacity
     def battCurrentCapacity(self):
-        if self.BAT != None:
+        if self.__BAT != None:
             try:
-                bat = open(self.BAT + 'capacity').readlines()[0]
+                bat = open(self.__BAT + 'capacity').readlines()[0]
                 v = str(bat).split()[0]
-                return v
+                return int(v)
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
    
     # check if battery discharging right now
     def isBatteryDischarging(self):
-        if self.BAT != None:
+        if self.__BAT != None:
             try:
-                bat = open(self.BAT + 'status').readlines()[0]
+                bat = open(self.__BAT + 'status').readlines()[0]
                 if bat.find("Discharging") != -1:
                     return True
                 else:
@@ -225,9 +225,9 @@ class BatteryValues:
                        
     # check if battery is present
     def isBatteryPresent(self):
-        if self.BAT != None:
+        if self.__BAT != None:
             try:
-                get_batt = open(self.BAT + 'present').readlines()[0]
+                get_batt = open(self.__BAT + 'present').readlines()[0]
                 if get_batt.find("1") != -1:
                     return True
                 else:
@@ -238,9 +238,9 @@ class BatteryValues:
             
     # check if ac is present
     def isAcAdapterPresent(self):
-        if self.BAT != None:
+        if self.__BAT != None:
             try:
-                get_ac_adapter = open(self.AC + 'online').readlines()[0]
+                get_ac_adapter = open(self.__AC + 'online').readlines()[0]
                 if get_ac_adapter.find("1") != -1:
                     return True
                 else:
@@ -533,13 +533,13 @@ class Application:
                             time.sleep(1)
                 
                     # low capacity level
-                    elif self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:
+                    if self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                         if self.debug:
                             print("debug mode: low capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:
                             os.popen(self.soundCommandLow)
                         #send notification
-                        if self.notify and self.critical:
+                        if self.notify or not self.critical:
                             self.notifier.sendNofiication('Battery low level' ,
                                                           'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
@@ -596,7 +596,7 @@ class Application:
                             else:
                                 pass
             
-                # check if we have AC
+                # check if we have __AC
                 elif self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryDischarging() == False:
                     # battery is fully charged
                     if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == True and self.batteryValues.isBatteryDischarging() == False:
