@@ -533,7 +533,7 @@ class Application:
                             time.sleep(1)
                 
                     # low capacity level
-                    if self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:
+                    elif self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                         if self.debug:
                             print("debug mode: low capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:
