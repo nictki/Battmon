@@ -198,6 +198,8 @@ class BatteryValues:
             except OSError as ose:
                 print("Error: " + str(ose))
                 sys.exit()
+        else:
+            return False
    
     # get current battery capacity
     def battCurrentCapacity(self):
@@ -222,6 +224,8 @@ class BatteryValues:
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
+        else:
+            return False
                        
     # check if battery is present
     def isBatteryPresent(self):
@@ -235,7 +239,9 @@ class BatteryValues:
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
-            
+        else:
+            return False
+        
     # check if ac is present
     def isAcAdapterPresent(self):
         if self.__BAT != None:
@@ -248,6 +254,8 @@ class BatteryValues:
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
+        else:
+            return False
             
 class Notifier:
     def __init__(self, debug=False, timeout=None):
@@ -635,13 +643,22 @@ class Application:
                             time.sleep(1)
                     else:
                         pass
-        
-            # loop to deal with situation when we don't have any battery
-            while self.batteryValues.isBatteryPresent() == False:
+            if self.batteryValues.isBatteryPresent() == False:
                 if self.debug:
                     print("debug mode: no battery present check")
-                time.sleep(600)
-                pass
+                if self.sound:
+                    os.popen(self.soundCommandLow)
+                # send notification
+                if self.notify or not self.critical:
+                    self.notifier.sendNofiication('Battery not present...', '<b>Be careful with your AC cabel !!!</b>',
+                                                  'cancel, Ok ', self.notifyActions.cancelAction,
+                                                  None, None,
+                                                  None, None,
+                                                  self.notifyActions.defaultClose)                       
+                # loop to deal with situation when we don't have any battery
+                while self.batteryValues.isBatteryPresent() == False:
+                    time.sleep(1)
+                    pass
 
 if __name__ == '__main__':
     # default options
