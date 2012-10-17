@@ -657,7 +657,8 @@ class Application:
                                                   self.notifyActions.defaultClose)                       
                 # loop to deal with situation when we don't have any battery
                 while self.batteryValues.isBatteryPresent() == False:
-                    time.sleep(1)
+                    #live us more time (1m), we don't have battery, don't we
+                    time.sleep(60)
                     pass
 
 if __name__ == '__main__':
