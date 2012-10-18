@@ -36,7 +36,7 @@ except ImportError:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn16102012'
+VERSION = '1.2~svn17102012'
 DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
@@ -378,13 +378,16 @@ class Application:
         self.sound = sound
         self.timeout = timeout
         
+        # sound files
         self.soundCommandLow = None
         self.soundCommandMedium = None
         self.soundCommandHigh = None
+        
+        # external programs
         self.lockCommand = None
         self.soundPlayer = None
         
-        # instances
+        # classes instances
         self.batteryValues = BatteryValues()
         self.notifyActions = NotifyActions(self.debug, self.test, self.lockCommand)
         self.notifier = Notifier(self.debug, self.timeout)
@@ -394,7 +397,6 @@ class Application:
         self.checkVlock()
         self.checkPlay()
         self.checkSoundsFiles()
-        
         self.batteryValues.findBatteryAndAC()
         
         # check if program already running and set name
@@ -418,6 +420,7 @@ class Application:
                     self.batteryValues.acpiFound = False
             except OSError as ose:
                 print("Error: " + str(ose))
+                
         # if not found acpi in path, send popup notification about it 
         if not self.batteryValues.acpiFound:
             pynotify.init("No acpi")
@@ -445,6 +448,7 @@ class Application:
                     self.sound = False
             except OSError as ose:
                 print("Error: " + str(ose))
+                
         # if not found sox in path, send popup notification about it 
         if not playFound:
             pynotify.init("No play")
@@ -484,6 +488,7 @@ class Application:
                     vlockFound = False
             except OSError as ose:
                 print("Error: " + str(ose))
+                
         # if not found vlock in path, send popup notification about it 
         if not vlockFound:
             pynotify.init("No vlock")
@@ -643,6 +648,8 @@ class Application:
                             time.sleep(1)
                     else:
                         pass
+            
+            # check for no battery
             if self.batteryValues.isBatteryPresent() == False:
                 if self.debug:
                     print("debug mode: no battery present check")
@@ -657,7 +664,7 @@ class Application:
                                                   self.notifyActions.defaultClose)                       
                 # loop to deal with situation when we don't have any battery
                 while self.batteryValues.isBatteryPresent() == False:
-                    #live us more time (1m), we don't have battery, don't we
+                    # live us more time (60sek), there is no battery, so... we have time...
                     time.sleep(60)
                     pass
 

@@ -14,6 +14,9 @@ Prerequisites:
  - optional sox (playing sounds), vlock (program to lock one or more sessions on the Linux console).
 
 Changes:
+ - 17.10.2012
+  fixed 'no battery present' loop
+ 
  - 16.10.2012
   fixed battery and adapter detections
   added pop'ups prerequisites checking for vlock, sox, pynotify, acpi and sound files
