@@ -1,5 +1,5 @@
 Descripion:
- Simple battery monitoring program written in python especially for tiling window managers like awesome, dwm, xmonad...
+ Simple battery monitoring program written in python especially for tiling window managers
  (Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0)
 
 Features:
@@ -11,7 +11,7 @@ Features:
 
 Prerequisites:
  - acpi, python-notify, python-gtk2, notification-daemon
- - optional sox (playing sounds), vlock (program to lock one or more sessions on the Linux console).
+ - optional sox (playing sounds), vlock (program to lock one or more sessions on the Linux console)
 
 Changes:
  - 17.10.2012

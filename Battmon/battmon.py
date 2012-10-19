@@ -36,7 +36,7 @@ except ImportError:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn17102012'
+VERSION = '1.2~svn19102012'
 DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
@@ -664,7 +664,7 @@ class Application:
                                                   self.notifyActions.defaultClose)                       
                 # loop to deal with situation when we don't have any battery
                 while self.batteryValues.isBatteryPresent() == False:
-                    # live us more time (60sek), there is no battery, so... we have time...
+                    # there is no battery, wait 60sek
                     time.sleep(60)
                     pass
 
