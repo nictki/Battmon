@@ -14,6 +14,10 @@ Prerequisites:
  - optional sox (playing sounds), vlock (program to lock one or more sessions on the Linux console)
 
 Changes:
+ - 19.10.2012
+  new stable
+  small fixes
+  
  - 17.10.2012
   fixed 'no battery present' loop
  
