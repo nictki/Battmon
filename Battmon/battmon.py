@@ -36,7 +36,7 @@ except ImportError:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn19102012'
+VERSION = '1.2~svn23102012'
 DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
@@ -409,18 +409,21 @@ class Application:
             if os.fork() != 0:
                 sys.exit()
     
-    # check if we have acpi installed            
-    def checkAcpi(self):        
+    # check if in path
+    def checkPath(self, programName):
         for p in EXTRA_PROGRAMS_PATH:
             try:
-                if os.path.isfile(p + 'acpi'):
-                    self.batteryValues.acpiFound = True
-                    break
+                if os.path.isfile(p + programName):
+                    return(True)
                 else:
-                    self.batteryValues.acpiFound = False
+                    return(False)
             except OSError as ose:
                 print("Error: " + str(ose))
-                
+    
+    # check if we have acpi installed            
+    def checkAcpi(self):        
+        if self.checkPath('acpi'):
+            self.batteryValues.acpiFound = True
         # if not found acpi in path, send popup notification about it 
         if not self.batteryValues.acpiFound:
             pynotify.init("No acpi")
@@ -437,18 +440,12 @@ class Application:
     # check if we have sox            
     def checkPlay(self):
         playFound=False        
-        for p in EXTRA_PROGRAMS_PATH:
-            try:
-                if os.path.isfile(p + 'sox'):
-                    playFound = True
-                    self.soundPlayer = 'play'
-                    break
-                else:
-                    playFound = False
-                    self.sound = False
-            except OSError as ose:
-                print("Error: " + str(ose))
-                
+        if self.checkPath('sox'):
+            playFound = True
+            self.soundPlayer = 'play'
+        else:
+            playFound = False
+            self.sound = False               
         # if not found sox in path, send popup notification about it 
         if not playFound:
             pynotify.init("No play")
@@ -460,7 +457,27 @@ class Application:
                                           self.notifyActions.defaultClose)
         else:
             pass
-        
+    
+    # check if we have vlock            
+    def checkVlock(self):
+        vlockFound=False        
+        if self.checkPath('vlock'):
+            self.lockCommand = 'vlock -n'
+            vlockFound = True
+        else:
+            vlockFound = False    
+        # if not found vlock in path, send popup notification about it 
+        if not vlockFound:
+            pynotify.init("No vlock")
+            self.notifier.sendNofiication('Is vlock intalled ?' , 
+                                     '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
+                                     'cancel, Ok ', self.notifyActions.cancelAction,
+                                     None, None,
+                                     None, None,
+                                     self.notifyActions.defaultClose)
+        else:
+            pass
+    
     # check if sound files exist
     def checkSoundsFiles(self):
         try:
@@ -474,32 +491,6 @@ class Application:
                 self.soundCommandHigh = ''
         except OSError as ose:
             print("Error: " + str(ose)) 
-                   
-    # check if we have vlock            
-    def checkVlock(self):
-        vlockFound=False        
-        for p in EXTRA_PROGRAMS_PATH:
-            try:
-                if os.path.isfile(p + 'vlock'):
-                    self.lockCommand = 'vlock -n'
-                    vlockFound = True
-                    break
-                else:
-                    vlockFound = False
-            except OSError as ose:
-                print("Error: " + str(ose))
-                
-        # if not found vlock in path, send popup notification about it 
-        if not vlockFound:
-            pynotify.init("No vlock")
-            self.notifier.sendNofiication('Is vlock intalled ?' , 
-                                     '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
-                                     'cancel, Ok ', self.notifyActions.cancelAction,
-                                     None, None,
-                                     None, None,
-                                     self.notifyActions.defaultClose)
-        else:
-            pass
                          
     # set name for this program, thus works 'killall Battmon'
     def setProcName(self, name):
