@@ -41,7 +41,7 @@ DESCRIPTION = ('Simple battery monitoring programm written in python especially 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
-URL = 'https://code.google.com/p/battmon/'
+URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 #ICON_BATTERY = "/usr/share/icons/gnome/48x48/devices/battery.png"
