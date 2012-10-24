@@ -22,6 +22,7 @@ import glob
 import time
 from ctypes import cdll
 import commands
+from threading import Thread
 
 import gobject
 import gtk
@@ -36,7 +37,7 @@ except ImportError:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn23102012'
+VERSION = '1.2~svn24102012'
 DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
@@ -48,9 +49,9 @@ LICENSE = "GNU GPLv2+"
 #ICON_AC = "/usr/share/icons/gnome/48x48/devices/ac-adapter.png"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 17
-BATTERY_CRITICAL_VALUE = 7
-BATTERY_HIBERNATE_LEVEL = 3
+BATTERY_LOW_VALUE = 16
+BATTERY_CRITICAL_VALUE = 14
+BATTERY_HIBERNATE_LEVEL = 12
 
 # command actions
 SOUND_FILES_PATH = '/usr/share/sounds/warning.wav'
@@ -74,13 +75,12 @@ class NotifyActions:
         if self.debug:
             print("debug mode: hibernate action")
         if self.tets:
-            print("test mode: hibernating command")
+            print("test mode: hibernating command executed")
         else:
             os.system(HIBERNATE_COMMAND_ACTION)
             os.system(self.lockCommand)
         n.close()
         loop.quit()
-        #gtk.main_quit()
     
     # suspend to ram
     def suspendAction(self, n, action):
@@ -88,13 +88,12 @@ class NotifyActions:
         if self.debug:
             print("debug mode: suspend action")      
         if self.tets:
-            print("test mode: suspend command")
+            print("test mode: suspend command executed")
         else:
             os.system(SUSPEND_COMMAND_ACTION)
             os.system(self.lockCommand)
         n.close()
         loop.quit()
-        #gtk.main_quit()
     
     # shutdown
     def poweroffAction(self, n, action):
@@ -102,12 +101,11 @@ class NotifyActions:
         if self.debug:
             print("in debug mode: poweroff action")
         if self.tets:
-            print("in test mode: poweroff command")
+            print("in test mode: poweroff command executed")
         else:
             os.system(POWEROFF_COMMAND_ACTION)
         n.close()
         loop.quit()
-        #gtk.main_quit()
     
     # cancel action
     def cancelAction(self, n, action):
@@ -118,7 +116,6 @@ class NotifyActions:
             print("test mode: cancel notify")
         n.close()
         loop.quit()
-        #gtk.main_quit()
 
     # default close command
     def defaultClose(self, n):
@@ -128,13 +125,14 @@ class NotifyActions:
             print("test mode: close notify")
         n.close()
         loop.quit()
-        #gtk.main_quit()
         
 # battery values class
 class BatteryValues:
     __PATH = "/sys/class/power_supply/*/"
-    __BAT = None
-    __AC = None
+    __BAT_PATH = None
+    __AC_PATH = None
+    isBatFound = False
+    isAcFound = False
     acpiFound = False
 
     # find battery and ac-adapter
@@ -147,12 +145,15 @@ class BatteryValues:
             
         for i in devices:
             try:
-                d = open(i + '/type').read().split('\n')[0]
-                
-                if d == 'Battery':
-                    self.__BAT = i
-                if d == 'Mains':
-                    self.__AC = i
+                with open(i + '/type') as d:
+                    d= d.read().split('\n')[0]
+                    # set battery and ac path
+                    if d == 'Battery':
+                        self.__BAT_PATH = i
+                        self.isBatFound = True
+                    if d == 'Mains':
+                        self.__AC_PATH = i
+                        self.isAcFound = True
             except IOError as ioe:
                 print('Error: ' + str(ioe))
                 sys.exit()
@@ -164,12 +165,12 @@ class BatteryValues:
                 get_acpi_time = os.popen("acpi").readlines()[0]
                 batt_time = get_acpi_time.find("until charged")
                 BATTERY_CHARGE_TIME = str(get_acpi_time[(batt_time - 9):(batt_time)].strip())
-                return BATTERY_CHARGE_TIME
+                return(BATTERY_CHARGE_TIME)
             except OSError as ose:
                 print("Error: " + str(ose))
                 sys.exit()
         else:
-            return 'Acpi not found !!!'
+            return(' <b>Acpi not found !!!</b>')
             
     # how much time left until battery will be empty 
     def battRemaingTime(self):
@@ -178,84 +179,89 @@ class BatteryValues:
                 get_acpi_time = os.popen("acpi").readlines()[0]
                 batt_time = get_acpi_time.find("remaining")
                 BATTERY_REMAING_TIME = str(get_acpi_time[(batt_time - 9):(batt_time)].strip())
-                return BATTERY_REMAING_TIME
+                return(BATTERY_REMAING_TIME)
             except OSError as ose:
                 print("Error: " + str(ose))
                 sys.exit()
         else:
-            return 'Acpi not found !!!'
+            return(' <b>Acpi not found !!!</b>')
     
     # check if battery is fully charged
     def isBatteryFullyCharged(self):
-        if self.__BAT != None:
+        if self.isBatFound:
             try:
-                bat = open(self.__BAT + 'capacity').readlines()[0]
-                v = str(bat).split()[0]
-                if int(v) == 100:
-                    return True
-                else:
-                    return False
+                with open(self.__BAT_PATH + 'capacity') as bat:
+                    bat = bat.readlines()[0]
+                    v = str(bat).split()[0]
+                    if int(v) == 100:
+                        return(True)
+                    else:
+                        return(False)
             except OSError as ose:
                 print("Error: " + str(ose))
                 sys.exit()
         else:
-            return False
-   
+            return(False)
+                
     # get current battery capacity
     def battCurrentCapacity(self):
-        if self.__BAT != None:
+        if self.isBatFound:
             try:
-                bat = open(self.__BAT + 'capacity').readlines()[0]
-                v = str(bat).split()[0]
-                return int(v)
+                with open(self.__BAT_PATH + 'capacity') as bat:
+                    bat = bat.readlines()[0]
+                    v = str(bat).split()[0]
+                    return(int(v))
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
    
     # check if battery discharging right now
     def isBatteryDischarging(self):
-        if self.__BAT != None:
+        if self.isBatFound:
             try:
-                bat = open(self.__BAT + 'status').readlines()[0]
-                if bat.find("Discharging") != -1:
-                    return True
-                else:
-                    return False
+                with open(self.__BAT_PATH + 'status') as bat:
+                    bat = bat.readlines()[0]
+                    if bat.find("Discharging") != -1:
+                        return(True)
+                    else:
+                        return(False)
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
         else:
-            return False
+            return(False)
                        
     # check if battery is present
     def isBatteryPresent(self):
-        if self.__BAT != None:
+        if self.isBatFound:
             try:
-                get_batt = open(self.__BAT + 'present').readlines()[0]
-                if get_batt.find("1") != -1:
-                    return True
-                else:
-                    return False
+                with open(self.__BAT_PATH + 'present') as get_batt:
+                    get_batt = get_batt.readlines()[0]
+                    if get_batt.find("1") != -1:
+                        return(True)
+                    else:
+                        return(False)
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
         else:
-            return False
+            return(False)
         
     # check if ac is present
     def isAcAdapterPresent(self):
-        if self.__BAT != None:
+        if self.isAcFound:
             try:
-                get_ac_adapter = open(self.__AC + 'online').readlines()[0]
-                if get_ac_adapter.find("1") != -1:
-                    return True
-                else:
-                    return False    
+                with open(self.__AC_PATH + 'online') as get_ac_adapter:
+                    get_ac_adapter = get_ac_adapter.readlines()[0]
+                    if get_ac_adapter.find("1") != -1:
+                        return(True)
+                    else:
+                        return(False)
             except IOError as ioe:
                 print("Error: " + str(ioe))
                 sys.exit()
         else:
-            return False
+            return(False)
             
 class Notifier:
     def __init__(self, debug=False, timeout=None):
@@ -264,7 +270,7 @@ class Notifier:
         self.timeout = timeout
         self.arg1 = None
         self.arg2 = None
-        self.updateNotify = None   
+        self.updateNotify = False  
    
     # sanitize add_action() first two parameters
     def sanitizeAction(self, action):
@@ -279,90 +285,88 @@ class Notifier:
                         action3string, action3,
                         defaultCloseCommand):
         
-        #
         global loop
         loop = gobject.MainLoop()
         # initialize pynotify 
         if pynotify_module:
-            pynotify.init("icon-summary-body")
-            self.n = pynotify.Notification("Battmon")
+            global n
+            pynotify.init("Battmon")
             # check if we should update notifications
             if self.updateNotify:
                 if self.debug:
                     print("debug mode: updating notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
                 # clear all actions first
-                self.n.clear_actions()               
+                n.clear_actions()
                 # add actions
                 if (action1string != None and action1 != None):
                     if self.debug:
                         print("debug mode: first button: ", self.arg1, self.arg2, action1)                  
                     self.sanitizeAction(action1string)
-                    self.n.add_action(self.arg1, self.arg2, action1)
+                    n.add_action(self.arg1, self.arg2, action1)
                                  
                 if (action2string != None and action2 != None):
                     if self.debug:
                         print("debug mode: second button: ", self.arg1, self.arg2, action2)          
                     self.sanitizeAction(action2string)
-                    self.n.add_action(self.arg1, self.arg2, action2)
+                    n.add_action(self.arg1, self.arg2, action2)
                     
                 if (action3string != None and action3 != None):
                     if self.debug:
                         print("debug mode: third button: ", self.arg1, self.arg2, action3)                 
                     self.sanitizeAction(action3string)
-                    self.n.add_action(self.arg1, self.arg2, action3)
+                    n.add_action(self.arg1, self.arg2, action3)
                    
                 # default close
-                self.n.connect("closed", defaultCloseCommand)
-                self.n.update(summary = summary, message = message)   
-                
+                n.connect("closed", defaultCloseCommand)           
                 # set timeout
                 if self.timeout == 0:
-                    self.n.set_timeout(pynotify.EXPIRES_NEVER)
+                    n.set_timeout(pynotify.EXPIRES_NEVER)
                 else:
-                    self.n.set_timeout(1000 * self.timeout)
-                self.n.show()
+                    n.set_timeout(1000 * self.timeout)
+                
+                n.update(summary=summary, message=message)
                  
             else:
                 if self.debug:
                     print("debug mode: in new notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
                 # initialize new notification
-                self.n = pynotify.Notification(summary = summary, 
-                                               message = message)
+                n = pynotify.Notification(summary=summary, message=message)
                 # add actions
                 if (action1string != None and action1 != None):
                     if self.debug:
                         print("debug mode: first button: ", self.arg1, self.arg2, action1)                 
                     self.sanitizeAction(action1string)
-                    self.n.add_action(self.arg1, self.arg2, action1)
+                    n.add_action(self.arg1, self.arg2, action1)
             
                 if (action2string != None and action2 != None):
                     if self.debug:
                         print("debug mode: second button: ", self.arg1, self.arg2, action2)                  
                     self.sanitizeAction(action2string)
-                    self.n.add_action(self.arg1, self.arg2, action2)
+                    n.add_action(self.arg1, self.arg2, action2)
                                
                 if (action3string != None and action3 != None):
                     if self.debug:
                         print("debug mode: third button: ", self.arg1, self.arg2, action3)                    
                     self.sanitizeAction(action3string)
-                    self.n.add_action(self.arg1, self.arg2, action3)
+                    n.add_action(self.arg1, self.arg2, action3)
                 
                 # default close
-                self.n.connect("closed", defaultCloseCommand)              
-                self.updateNotify = True
-                
+                n.connect("closed", defaultCloseCommand)                           
                 # set timeout
                 if self.timeout == 0:
-                    self.n.set_timeout(pynotify.EXPIRES_NEVER)
+                    n.set_timeout(pynotify.EXPIRES_NEVER)
                 else:
-                    self.n.set_timeout(1000 * self.timeout)
-                self.n.show()
+                    n.set_timeout(1000 * self.timeout)
+                self.updateNotify = True
             
+            # show notification
+            n.show()
+        
+        # send 'regular' notifcation        
         else:
             os.popen('notify-send %s %s' % (message, summary))
             
         loop.run()
-        #gtk.main()
         
 class Application:
     def __init__(self, debug, test, daemon, more_then_one,
@@ -377,6 +381,7 @@ class Application:
         self.critical = critical
         self.sound = sound
         self.timeout = timeout
+        self.thread = None
         
         # sound files
         self.soundCommandLow = None
@@ -408,9 +413,9 @@ class Application:
         if self.daemon and not self.debug:
             if os.fork() != 0:
                 sys.exit()
-    
+        
     # check if in path
-    def checkPath(self, programName):
+    def checkInPath(self, programName):
         for p in EXTRA_PROGRAMS_PATH:
             try:
                 if os.path.isfile(p + programName):
@@ -422,10 +427,10 @@ class Application:
     
     # check if we have acpi installed            
     def checkAcpi(self):        
-        if self.checkPath('acpi'):
+        if self.checkInPath('acpi'):
             self.batteryValues.acpiFound = True
         # if not found acpi in path, send popup notification about it 
-        if not self.batteryValues.acpiFound:
+        else:
             pynotify.init("No acpi")
             self.n = pynotify.Notification("Acpi")
             self.notifier.sendNofiication('Is acpi intalled ?' , 
@@ -434,20 +439,14 @@ class Application:
                                           None, None,
                                           None, None,
                                           self.notifyActions.defaultClose)
-        else:
-            pass
        
     # check if we have sox            
-    def checkPlay(self):
-        playFound=False        
-        if self.checkPath('sox'):
-            playFound = True
-            self.soundPlayer = 'play'
-        else:
-            playFound = False
-            self.sound = False               
+    def checkPlay(self):       
+        if self.checkInPath('sox'):
+            self.soundPlayer = 'play'              
         # if not found sox in path, send popup notification about it 
-        if not playFound:
+        else:
+            self.sound = False 
             pynotify.init("No play")
             self.notifier.sendNofiication('Is sox intalled ?' , 
                                           '''<b>Please check if you have installed sox</b>\n\nWithout sox, no sound will be played''',
@@ -455,19 +454,13 @@ class Application:
                                           None, None,
                                           None, None,
                                           self.notifyActions.defaultClose)
-        else:
-            pass
     
     # check if we have vlock            
-    def checkVlock(self):
-        vlockFound=False        
-        if self.checkPath('vlock'):
-            self.lockCommand = 'vlock -n'
-            vlockFound = True
-        else:
-            vlockFound = False    
+    def checkVlock(self):     
+        if self.checkInPath('vlock'):
+            self.lockCommand = 'vlock -n'        
         # if not found vlock in path, send popup notification about it 
-        if not vlockFound:
+        else: 
             pynotify.init("No vlock")
             self.notifier.sendNofiication('Is vlock intalled ?' , 
                                      '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
@@ -475,8 +468,6 @@ class Application:
                                      None, None,
                                      None, None,
                                      self.notifyActions.defaultClose)
-        else:
-            pass
     
     # check if sound files exist
     def checkSoundsFiles(self):
@@ -531,7 +522,7 @@ class Application:
                                                           'cancel, Ok ', self.notifyActions.cancelAction, 
                                                           None, None,
                                                           None, None,
-                                                          self.notifyActions.defaultClose)                                         
+                                                          self.notifyActions.defaultClose)                                      
                         # have enough power and if we should stay in save battery level loop
                         while self.batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                             time.sleep(1)
@@ -600,8 +591,8 @@ class Application:
                             else:
                                 pass
             
-                # check if we have __AC
-                elif self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryDischarging() == False:
+                # check if we have ac connected
+                if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryDischarging() == False:
                     # battery is fully charged
                     if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == True and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
@@ -621,19 +612,19 @@ class Application:
                             time.sleep(1)
                 
                     # ac plugged, battery is charging
-                    elif self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:
+                    if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
                             print("debug mode: is battery charging check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:
                             os.popen(self.soundCommandLow)
                         # send notification
                         if self.notify and self.critical:
-                            self.notifier.sendNofiication('Charging',
+                            self.thread = self.notifier.sendNofiication('Charging',
                                                           'Time left to fully charge: %s\n' % self.batteryValues.batteryChargeTime(),
                                                           'cancel, Ok ', self.notifyActions.cancelAction,
                                                           None, None,
                                                           None, None,
-                                                          self.notifyActions.defaultClose)                       
+                                                          self.notifyActions.defaultClose)
                         # online loop
                         while self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:    
                             time.sleep(1)
@@ -657,6 +648,8 @@ class Application:
                 while self.batteryValues.isBatteryPresent() == False:
                     # there is no battery, wait 60sek
                     time.sleep(60)
+                    # check if battery was plugged
+                    self.batteryValues.findBatteryAndAC()
                     pass
 
 if __name__ == '__main__':
@@ -726,4 +719,4 @@ if __name__ == '__main__':
     ml = Application(debug=options.debug, test=options.test, daemon=options.daemon, more_then_one=options.more_then_one, 
                      notify=options.notify, critical=options.critical, sound=options.sound, timeout=options.timeout)
     ml.runMainLoop()
-    gtk.main()
+    #gtk.main()
