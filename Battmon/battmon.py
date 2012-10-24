@@ -22,10 +22,9 @@ import glob
 import time
 from ctypes import cdll
 import commands
-from threading import Thread
 
 import gobject
-import gtk
+#import gtk
 import optparse
 
 try:
@@ -49,9 +48,9 @@ LICENSE = "GNU GPLv2+"
 #ICON_AC = "/usr/share/icons/gnome/48x48/devices/ac-adapter.png"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 16
-BATTERY_CRITICAL_VALUE = 14
-BATTERY_HIBERNATE_LEVEL = 12
+BATTERY_LOW_VALUE = 17
+BATTERY_CRITICAL_VALUE = 7
+BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
 SOUND_FILES_PATH = '/usr/share/sounds/warning.wav'
@@ -381,7 +380,6 @@ class Application:
         self.critical = critical
         self.sound = sound
         self.timeout = timeout
-        self.thread = None
         
         # sound files
         self.soundCommandLow = None
@@ -492,6 +490,7 @@ class Application:
     def checkIfRunning(self, name):
         output = commands.getoutput('ps -A')
         if name in output:
+            os.popen(self.soundCommandLow)
             self.notifier.sendNofiication('Battmon is already running',
                                           'To run more then one copy of Battmon,\nrun Battmon with -m option',
                                           'cancel, Ok ', self.notifyActions.cancelAction,
@@ -550,7 +549,7 @@ class Application:
                         if self.debug:
                             print("debug mode: critical capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:
-                            os.popen(self.soundCommandMedium)
+                            os.popen(self.soundCommandLow)
                         #send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('Battery critical level !!!',
@@ -568,7 +567,7 @@ class Application:
                         if self.debug:
                             print("debug mode: shutdown check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.sound:
-                            os.popen(self.soundCommandHigh)
+                            os.popen(self.soundCommandMedium)
                         # send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
@@ -581,12 +580,12 @@ class Application:
                         while self.batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.batteryValues.isAcAdapterPresent() == False:
                             for i in range(0, 5, +1):
                                 if self.sound:
-                                    os.popen(self.soundCommandMedium)
+                                    os.popen(self.soundCommandLow)
                                 time.sleep(i)                       
                             # check once more if system should go down
                             if self.batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.batteryValues.isAcAdapterPresent() == False:
                                 time.sleep(2)
-                                os.popen(self.soundCommandHigh)
+                                os.popen(self.soundCommandMedium)
                                 os.popen(HIBERNATE_COMMAND_ACTION)              
                             else:
                                 pass
@@ -611,7 +610,7 @@ class Application:
                         while self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == True and self.batteryValues.isBatteryDischarging() == False:                   
                             time.sleep(1)
                 
-                    # ac plugged, battery is charging
+                    # ac plugged and battery is charging
                     if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
                             print("debug mode: is battery charging check (%s() in Application class)") % (self.runMainLoop.__name__)
@@ -619,7 +618,7 @@ class Application:
                             os.popen(self.soundCommandLow)
                         # send notification
                         if self.notify and self.critical:
-                            self.thread = self.notifier.sendNofiication('Charging',
+                            self.notifier.sendNofiication('Charging',
                                                           'Time left to fully charge: %s\n' % self.batteryValues.batteryChargeTime(),
                                                           'cancel, Ok ', self.notifyActions.cancelAction,
                                                           None, None,
