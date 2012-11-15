@@ -15,8 +15,8 @@ Prerequisites:
 
 Changes:
  - 15.11.2012
-  no acpi needed anymore, battery percentage and remaining time computing, now based on sysfs
-  some improvements
+  no more acpi needed, battery percentage and remaining time based now on sysfs
+  some improvements, fixed logic
    
  - 19.10.2012
   new stable
