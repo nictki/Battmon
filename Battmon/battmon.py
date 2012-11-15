@@ -31,14 +31,14 @@ try:
     import pynotify
     pynotify_module = True
 except ImportError:
-    os.popen('''__notify-send "You heve to install pynotify"''')
-    print("Unable to import pynotify module, use __notify-send instead, so no popup's update.")
+    os.popen('''notify-send "You heve to install pynotify"''')
+    print("Unable to import pynotify module, use notify-send instead, so no popup's update.")
     pynotify_module = False
 
 NAME = "Battmon"
 VERSION = '1.2~svn15112012'
-DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
-                'Tested with python-__notify-0.1.1, pygtk-2.24.0 and notification-__daemon-0.5.0')
+DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
+                'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
 URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
@@ -273,7 +273,7 @@ class Notifier:
             global n
             pynotify.init("Battmon")
             if self.__debug:
-                print("debug mode: updating __notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
+                print("debug mode: updating notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
                 # initialize pynotify variable 
                 n = pynotify.Notification(summary=summary, message=message)
                 # clear all actions first
@@ -310,7 +310,7 @@ class Notifier:
                 
         # send 'regular' notification        
         else:
-            os.popen('__notify-send %s %s' % (message, summary))
+            os.popen('notify-send %s %s' % (message, summary))
             
         loop.run()
         
@@ -378,11 +378,11 @@ class Application:
             self.__sound = False 
             pynotify.init("No play")
             self.__notifier.sendNofiication('Is sox intalled ?' , 
-                                          '''<b>Please check if you have installed sox</b>\n\nWithout sox, no __sound will be played''',
-                                          'cancel, Ok ', self.__notifyActions.cancelAction,
-                                          None, None,
-                                          None, None,
-                                          self.__notifyActions.defaultClose)
+                                            '''<b>Please check if you have installed sox</b>\n\nWithout sox, no __sound will be played''',
+                                            'cancel, Ok ', self.__notifyActions.cancelAction,
+                                            None, None,
+                                            None, None,
+                                            self.__notifyActions.defaultClose)
     
     # check if we have vlock            
     def __checkVlock(self):     
@@ -392,11 +392,11 @@ class Application:
         else: 
             pynotify.init("No vlock")
             self.__notifier.sendNofiication('Is vlock intalled ?' , 
-                                     '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
-                                     'cancel, Ok ', self.__notifyActions.cancelAction,
-                                     None, None,
-                                     None, None,
-                                     self.__notifyActions.defaultClose)
+                                            '''<b>Please check if you have installed vlock</b>\n\nWithout vlock, no session will be lock on the Linux console.\n\nYou can get vlock from: <a href="http://freecode.com/projects/vlock">vlock</a>''',
+                                            'cancel, Ok ', self.__notifyActions.cancelAction,
+                                            None, None,
+                                            None, None,
+                                            self.__notifyActions.defaultClose)
     
     # check if __sound files exist
     def __checkSoundsFiles(self):
@@ -452,11 +452,11 @@ class Application:
                             if self.__sound:
                                 os.popen(self.__soundCommandLow)
                             self.__notifier.sendNofiication('Discharging', 
-                                                          'Current capacity: %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()), 
-                                                          'cancel, Ok ', self.__notifyActions.cancelAction, 
-                                                          None, None,
-                                                          None, None,
-                                                          self.__notifyActions.defaultClose)                           
+                                                            'Current capacity: %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()), 
+                                                            'cancel, Ok ', self.__notifyActions.cancelAction, 
+                                                            None, None,
+                                                            None, None,
+                                                            self.__notifyActions.defaultClose)                           
                         # have enough power and if we should stay in save battery level loop
                         while self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.__batteryValues.isAcAdapterPresent() == False:
                             time.sleep(1)
@@ -474,11 +474,11 @@ class Application:
                             if self.__sound:
                                 os.popen(self.__soundCommandLow)
                             self.__notifier.sendNofiication('Battery low level' ,
-                                                          'Current capacity %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
-                                                          'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
-                                                          'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
-                                                          'cancel,  Cancel ', self.__notifyActions.cancelAction,
-                                                          self.__notifyActions.defaultClose)                
+                                                            'Current capacity %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
+                                                            'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
+                                                            'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
+                                                            'cancel,  Cancel ', self.__notifyActions.cancelAction,
+                                                            self.__notifyActions.defaultClose)                
                         # battery have enough power and check if we should stay in low battery level loop
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.__batteryValues.isAcAdapterPresent() == False:                    
                             time.sleep(1)
@@ -486,7 +486,7 @@ class Application:
                     # __critical capacity level
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
-                            print("debug mode: __critical capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
+                            print("debug mode: critical capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
                         if self.__sound and not (self.__notify and self.__critical):
                             os.popen(self.__soundCommandLow)
                         #send notification
@@ -495,12 +495,12 @@ class Application:
                             time.sleep(4)
                             if self.__sound:
                                 os.popen(self.__soundCommandLow)
-                            self.__notifier.sendNofiication('Battery __critical level !!!',
-                                                          'Current capacity %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
-                                                          'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
-                                                          'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
-                                                          'cancel, Cancel ', self.__notifyActions.cancelAction,
-                                                          self.__notifyActions.defaultClose)     
+                            self.__notifier.sendNofiication('Battery critical level !!!',
+                                                            'Current capacity %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
+                                                            'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
+                                                            'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
+                                                            'cancel, Cancel ', self.__notifyActions.cancelAction,
+                                                            self.__notifyActions.defaultClose)     
                         # battery have enough power and check if we should stay in __critical battery level loop
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:                       
                             time.sleep(1)
@@ -518,11 +518,11 @@ class Application:
                             if self.__sound:
                                 os.popen(self.__soundCommandLow)
                             self.__notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
-                                                          '<b>Battery __critical level %s%s\nTime left: %s</b>' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
-                                                          'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
-                                                          'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
-                                                          None, None,
-                                                          self.__notifyActions.defaultClose)                    
+                                                            '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
+                                                            'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
+                                                            'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
+                                                            None, None,
+                                                            self.__notifyActions.defaultClose)                    
                         # make some warnings before shutting down
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                             for i in range(0, 5, +1):
@@ -550,11 +550,11 @@ class Application:
                         # send notification
                         if self.__notify and self.__critical:  
                             self.__notifier.sendNofiication('Battery is fully charged', 
-                                                          '',
-                                                          'cancel, Ok ', self.__notifyActions.cancelAction,
-                                                          None, None,
-                                                          None, None,
-                                                          self.__notifyActions.defaultClose)          
+                                                            '',
+                                                            'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                            None, None,
+                                                            None, None,
+                                                            self.__notifyActions.defaultClose)          
                         # full charged loop
                         while self.__batteryValues.isAcAdapterPresent() == True and self.__batteryValues.isBatteryFullyCharged() == True and self.__batteryValues.isBatteryDischarging() == False:                   
                             time.sleep(1)
@@ -572,11 +572,11 @@ class Application:
                             if self.__sound:
                                 os.popen(self.__soundCommandLow)
                             self.__notifier.sendNofiication('Charging',
-                                                          'Time left to fully charge: %s\n' % self.__batteryValues.batteryTime(),
-                                                          'cancel, Ok ', self.__notifyActions.cancelAction,
-                                                          None, None,
-                                                          None, None,
-                                                          self.__notifyActions.defaultClose)
+                                                            'Time left to fully charge: %s\n' % self.__batteryValues.batteryTime(),
+                                                            'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                            None, None,
+                                                            None, None,
+                                                            self.__notifyActions.defaultClose)
                         # online loop
                         while self.__batteryValues.isAcAdapterPresent() == True and self.__batteryValues.isBatteryFullyCharged() == False and self.__batteryValues.isBatteryDischarging() == False:    
                             time.sleep(1)
@@ -592,10 +592,10 @@ class Application:
                 # send notification
                 if self.__notify or not self.__critical:
                     self.__notifier.sendNofiication('Battery not present...', '<b>Be careful with your AC cabel !!!</b>',
-                                                  'cancel, Ok ', self.__notifyActions.cancelAction,
-                                                  None, None,
-                                                  None, None,
-                                                  self.__notifyActions.defaultClose)                       
+                                                    'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                    None, None,
+                                                    None, None,
+                                                    self.__notifyActions.defaultClose)                       
                 # loop to deal with situation when we don't have any battery
                 while self.__batteryValues.isBatteryPresent() == False:
                     # there is no battery, wait 60sek
@@ -606,69 +606,69 @@ class Application:
 
 if __name__ == '__main__':
     # default options
-    defaultOptions = {"__debug": False,
-                     "__test": False,
-                     "__daemon": False,
-                     "__more_then_one": False,
-                     "__notify": True,
-                     "__critical": True,
-                     "__sound": True,
-                     "__timeout": 7}
+    defaultOptions = {"debug": False,
+                     "test": False,
+                     "daemon": False,
+                     "more_then_one": False,
+                     "notify": True,
+                     "critical": True,
+                     "sound": True,
+                     "timeout": 7}
     
     # arguments parser
     op = optparse.OptionParser(version="%prog " + VERSION,
                                description=DESCRIPTION)
     
     # __debug options
-    op.add_option("-D", "--__debug", action="store_true", dest="__debug",
-                  default=defaultOptions['__debug'], help="give some informations useful to debugging "
+    op.add_option("-D", "--debug", action="store_true", dest="debug",
+                  default=defaultOptions['debug'], help="give some informations useful to debugging "
                   "[default: false]")
     
     # dry run (__test commands)
-    op.add_option("-T", "--__test", action="store_true", dest="__test",
-                  default=defaultOptions['__test'], help="dry run, shows witch commands will be executed in normal mode (useful with --__debug option) "
+    op.add_option("-T", "--test", action="store_true", dest="test",
+                  default=defaultOptions['test'], help="dry run, shows witch commands will be executed in normal mode (useful with --debug option) "
                   "[default: false]")
     
     # __daemon
-    op.add_option("-d", "--__daemon", action="store_true", dest="__daemon",
-                  default=defaultOptions['__daemon'], help=" fork into the background "
+    op.add_option("-d", "--daemon", action="store_true", dest="daemon",
+                  default=defaultOptions['daemon'], help=" fork into the background "
                   "[default: false]")
     
     # allows to run only one instance of this program
-    op.add_option("-m", "--run-more-copies", action="store_true", dest="__more_then_one",
-                  default=defaultOptions['__more_then_one'], help="allows to run more then one battmon copy " 
+    op.add_option("-m", "--run-more-copies", action="store_true", dest="more_then_one",
+                  default=defaultOptions['more_then_one'], help="allows to run more then one battmon copy " 
                   "[default: false]")
     
     # show notifications
-    op.add_option("-N", "--no-notifications", action="store_false", dest="__notify",
-                  default=defaultOptions['__notify'], help="don't show desktop notifications "
+    op.add_option("-N", "--no-notifications", action="store_false", dest="notify",
+                  default=defaultOptions['notify'], help="don't show desktop notifications "
                   "[default: false]")
     
     # show only __critical notifications
-    op.add_option("-C", "--__critical-notifications", action="store_false", dest="__critical",
-                  default=defaultOptions['__critical'], help="shows only __critical battery notifications "
+    op.add_option("-C", "--critical-notifications", action="store_false", dest="critical",
+                  default=defaultOptions['critical'], help="shows only critical battery notifications "
                   "[default: false]")
     
     # don't play __sound
-    op.add_option("-S", "--no-__sound", dest="__sound", action="store_false", 
-                  default=defaultOptions['__sound'], help="don't play sounds "
+    op.add_option("-S", "--no-sound", dest="sound", action="store_false", 
+                  default=defaultOptions['sound'], help="don't play sounds "
                   "[default: false]")
     
     # check if __notify __timeout is correct >= 0
     def checkTimeout(option, opt_str, t, parser):
         t = int(t)
         if t < 0:
-            raise optparse.OptionValueError("notification __timeout should be 0 or a positive number")
+            raise optparse.OptionValueError("notification timeout should be 0 or a positive number")
         op.values.__timeout = t
     
     # __timeout
-    op.add_option("-t", "--__timeout", type="int", dest="__timeout", metavar="SECS", action="callback", callback=checkTimeout,
-                  default=defaultOptions['__timeout'], help="notification __timeout in secs (use 0 to disable) "
+    op.add_option("-t", "--timeout", type="int", dest="timeout", metavar="SECS", action="callback", callback=checkTimeout,
+                  default=defaultOptions['timeout'], help="notification timeout in secs (use 0 to disable) "
                   "[default: 7]")
     
     (options, _) = op.parse_args()
     
-    ml = Application(debug=options.__debug, test=options.__test, daemon=options.__daemon, more_then_one=options.__more_then_one, 
-                     notify=options.__notify, critical=options.__critical, sound=options.__sound, timeout=options.__timeout)
+    ml = Application(debug=options.debug, test=options.test, daemon=options.daemon, more_then_one=options.more_then_one, 
+                     notify=options.notify, critical=options.critical, sound=options.sound, timeout=options.timeout)
     ml.runMainLoop()
     gtk.main()
