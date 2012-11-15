@@ -473,7 +473,8 @@ class Application:
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel,  Cancel ', self.notifyActions.cancelAction,
                                                           self.notifyActions.defaultClose)
-                            time.sleep(5)                  
+                            # wait 4sek till battery values update
+                            time.sleep(4)                  
                         # battery have enough power and check if we should stay in low battery level loop
                         while self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:                    
                             time.sleep(1)
@@ -511,9 +512,7 @@ class Application:
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           None, None,
-                                                          self.notifyActions.defaultClose)
-                            #time.sleep(2)
-                            #self.batteryValues.batteryTime()                      
+                                                          self.notifyActions.defaultClose)                    
                         # make some warnings before shutting down
                         while self.batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.batteryValues.isAcAdapterPresent() == False:
                             for i in range(0, 5, +1):
