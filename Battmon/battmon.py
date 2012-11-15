@@ -36,7 +36,7 @@ except ImportError:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn24102012'
+VERSION = '1.2~svn15112012'
 DESCRIPTION = ('Simple battery monitoring programm written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
                 'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
@@ -66,7 +66,7 @@ class NotifyActions:
         self.tets = test
         self.lockCommand = lockCommand
      
-    global loop
+    #global loop
     
     # suspend to disk
     def hibernateAction(self, n, action):
@@ -132,7 +132,6 @@ class BatteryValues:
     __AC_PATH = None
     isBatFound = False
     isAcFound = False
-    acpiFound = False
 
     # find battery and ac-adapter
     def findBatteryAndAC(self):
@@ -156,111 +155,102 @@ class BatteryValues:
             except IOError as ioe:
                 print('Error: ' + str(ioe))
                 sys.exit()
-
-    # how much time will take to get battery fully charged
-    def batteryChargeTime(self):
-        if self.acpiFound:
-            try:
-                get_acpi_time = os.popen("acpi").readlines()[0]
-                batt_time = get_acpi_time.find("until charged")
-                BATTERY_CHARGE_TIME = str(get_acpi_time[(batt_time - 9):(batt_time)].strip())
-                return(BATTERY_CHARGE_TIME)
-            except OSError as ose:
-                print("Error: " + str(ose))
-                sys.exit()
-        else:
-            return(' <b>Acpi not found !!!</b>')
-            
-    # how much time left until battery will be empty 
-    def battRemaingTime(self):
-        if self.acpiFound:
-            try:
-                get_acpi_time = os.popen("acpi").readlines()[0]
-                batt_time = get_acpi_time.find("remaining")
-                BATTERY_REMAING_TIME = str(get_acpi_time[(batt_time - 9):(batt_time)].strip())
-                return(BATTERY_REMAING_TIME)
-            except OSError as ose:
-                print("Error: " + str(ose))
-                sys.exit()
-        else:
-            return(' <b>Acpi not found !!!</b>')
     
+    # get battery, ac values status 
+    def getValue(self, v):
+        try:
+            with open(v) as value:
+                return value.read().strip()
+        except IOError as ioerr:
+            print('Error: ' + str(ioerr))
+            return('')
+    
+    # convert from string to integer
+    def convertValues(self, v):
+        if self.isBatFound:
+            try:
+                return(int(v))
+            except ValueError:
+                return(0)
+    
+    # get battery time in seconds
+    def getBatteryTimes(self):
+        
+        bat_energy_now = self.convertValues(self.getValue(self.__BAT_PATH + 'energy_now'))
+        bat_energy_full = self.convertValues(self.getValue(self.__BAT_PATH + 'energy_full'))
+        bat_power_now = self.convertValues(self.getValue(self.__BAT_PATH + 'power_now'))
+        
+        remaining_time = -1
+        
+        if bat_power_now > 0:
+            if self.isBatteryDischarging():
+                remaining_time = (bat_energy_now * 60 * 60) // bat_power_now
+                return(remaining_time)
+            elif not self.isBatteryDischarging():
+                print("charging")
+                remaining_time = ((bat_energy_full - bat_energy_now) * 60 * 60) // bat_power_now
+                return(remaining_time) 
+    
+    # convert remaining time
+    def convertTime(self, bat_time):
+        if (bat_time <= 0):
+            return('Unknown')
+        
+        mins = bat_time // 60
+        hours = mins // 60
+        
+        mins = mins % 60
+        
+        if (hours == 0 and mins == 0):
+            return('Less then minute')
+        elif (hours == 0 and mins > 1):
+            return('%smin', str(mins))
+        elif (hours > 1 and mins == 0):
+            return('%sh', str(hours))
+        elif (hours > 1 and mins > 1):
+            return('%sh %smin' % (hours, mins))
+        
+    # how much time will take to get battery fully charged
+    def batteryTime(self):
+        return(self.convertTime(self.getBatteryTimes()))
+            
     # check if battery is fully charged
     def isBatteryFullyCharged(self):
-        if self.isBatFound:
-            try:
-                with open(self.__BAT_PATH + 'capacity') as bat:
-                    bat = bat.readlines()[0]
-                    v = str(bat).split()[0]
-                    if int(v) == 100:
-                        return(True)
-                    else:
-                        return(False)
-            except OSError as ose:
-                print("Error: " + str(ose))
-                sys.exit()
+        v = self.getValue(self.__BAT_PATH + 'capacity')
+        if v == 100:
+            return(True)
         else:
             return(False)
-                
+    
     # get current battery capacity
     def battCurrentCapacity(self):
-        if self.isBatFound:
-            try:
-                with open(self.__BAT_PATH + 'capacity') as bat:
-                    bat = bat.readlines()[0]
-                    v = str(bat).split()[0]
-                    return(int(v))
-            except IOError as ioe:
-                print("Error: " + str(ioe))
-                sys.exit()
+        v = self.getValue(self.__BAT_PATH + 'capacity')
+        return(int(v))
    
     # check if battery discharging right now
     def isBatteryDischarging(self):
-        if self.isBatFound:
-            try:
-                with open(self.__BAT_PATH + 'status') as bat:
-                    bat = bat.readlines()[0]
-                    if bat.find("Discharging") != -1:
-                        return(True)
-                    else:
-                        return(False)
-            except IOError as ioe:
-                print("Error: " + str(ioe))
-                sys.exit()
+        status = self.getValue(self.__BAT_PATH + 'status') 
+        if status.find("Discharging") != -1:
+            return(True)
         else:
             return(False)
                        
     # check if battery is present
     def isBatteryPresent(self):
-        if self.isBatFound:
-            try:
-                with open(self.__BAT_PATH + 'present') as get_batt:
-                    get_batt = get_batt.readlines()[0]
-                    if get_batt.find("1") != -1:
-                        return(True)
-                    else:
-                        return(False)
-            except IOError as ioe:
-                print("Error: " + str(ioe))
-                sys.exit()
+        status = self.getValue(self.__BAT_PATH + 'present')
+        if status.find("1") != -1:
+            return(True)
         else:
             return(False)
         
     # check if ac is present
     def isAcAdapterPresent(self):
         if self.isAcFound:
-            try:
-                with open(self.__AC_PATH + 'online') as get_ac_adapter:
-                    get_ac_adapter = get_ac_adapter.readlines()[0]
-                    if get_ac_adapter.find("1") != -1:
-                        return(True)
-                    else:
-                        return(False)
-            except IOError as ioe:
-                print("Error: " + str(ioe))
-                sys.exit()
-        else:
-            return(False)
+            status = self.getValue(self.__AC_PATH + 'online')
+            if status.find("1") != -1:
+                return(True)
+            else:
+                return(False)
             
 class Notifier:
     def __init__(self, debug=False, timeout=None):
@@ -395,8 +385,7 @@ class Application:
         self.notifyActions = NotifyActions(self.debug, self.test, self.lockCommand)
         self.notifier = Notifier(self.debug, self.timeout)
         
-        # check for external programs and files
-        self.checkAcpi()       
+        # check for external programs and files      
         self.checkVlock()
         self.checkPlay()
         self.checkSoundsFiles()
@@ -422,21 +411,6 @@ class Application:
                     return(False)
             except OSError as ose:
                 print("Error: " + str(ose))
-    
-    # check if we have acpi installed            
-    def checkAcpi(self):        
-        if self.checkInPath('acpi'):
-            self.batteryValues.acpiFound = True
-        # if not found acpi in path, send popup notification about it 
-        else:
-            pynotify.init("No acpi")
-            self.n = pynotify.Notification("Acpi")
-            self.notifier.sendNofiication('Is acpi intalled ?' , 
-                                          '''<b>Please check if you have installed acpi</b> ''',
-                                          'cancel, Ok ', self.notifyActions.cancelAction,
-                                          None, None,
-                                          None, None,
-                                          self.notifyActions.defaultClose)
        
     # check if we have sox            
     def checkPlay(self):       
@@ -517,11 +491,11 @@ class Application:
                         # send notification
                         if self.notify and self.critical:
                             self.notifier.sendNofiication('Discharging', 
-                                                          'Current capacity: %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()), 
+                                                          'Current capacity: %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()), 
                                                           'cancel, Ok ', self.notifyActions.cancelAction, 
                                                           None, None,
                                                           None, None,
-                                                          self.notifyActions.defaultClose)                                      
+                                                          self.notifyActions.defaultClose)                               
                         # have enough power and if we should stay in save battery level loop
                         while self.batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                             time.sleep(1)
@@ -535,7 +509,7 @@ class Application:
                         #send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('Battery low level' ,
-                                                          'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
+                                                          'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel,  Cancel ', self.notifyActions.cancelAction,
@@ -553,7 +527,7 @@ class Application:
                         #send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('Battery critical level !!!',
-                                                          'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
+                                                          'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel, Cancel ', self.notifyActions.cancelAction,
@@ -571,7 +545,7 @@ class Application:
                         # send notification
                         if self.notify or not self.critical:
                             self.notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
-                                                          '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.battRemaingTime()),
+                                                          '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           None, None,
@@ -619,7 +593,7 @@ class Application:
                         # send notification
                         if self.notify and self.critical:
                             self.notifier.sendNofiication('Charging',
-                                                          'Time left to fully charge: %s\n' % self.batteryValues.batteryChargeTime(),
+                                                          'Time left to fully charge: %s\n' % self.batteryValues.batteryTime(),
                                                           'cancel, Ok ', self.notifyActions.cancelAction,
                                                           None, None,
                                                           None, None,
