@@ -443,18 +443,20 @@ class Application:
                     if self.batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                         if self.debug:
                             print("debug mode: discharging check (%s() in Application class)") % (self.runMainLoop.__name__)
-                        if self.sound:
+                        if self.sound and not (self.notify and self.critical):
                             os.popen(self.soundCommandLow)
                         # send notification
                         if self.notify and self.critical:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            if self.sound:
+                                os.popen(self.soundCommandLow)
                             self.notifier.sendNofiication('Discharging', 
                                                           'Current capacity: %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()), 
                                                           'cancel, Ok ', self.notifyActions.cancelAction, 
                                                           None, None,
                                                           None, None,
-                                                          self.notifyActions.defaultClose)
-                            # wait 4sek till battery values update
-                            time.sleep(4)                             
+                                                          self.notifyActions.defaultClose)                           
                         # have enough power and if we should stay in save battery level loop
                         while self.batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                             time.sleep(1)
@@ -463,18 +465,20 @@ class Application:
                     elif self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:
                         if self.debug:
                             print("debug mode: low capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
-                        if self.sound:
+                        if self.sound and not (self.notify and self.critical):
                             os.popen(self.soundCommandLow)
                         #send notification
                         if self.notify or not self.critical:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            if self.sound:
+                                os.popen(self.soundCommandLow)
                             self.notifier.sendNofiication('Battery low level' ,
                                                           'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel,  Cancel ', self.notifyActions.cancelAction,
-                                                          self.notifyActions.defaultClose)
-                            # wait 4sek till battery values update
-                            time.sleep(4)                  
+                                                          self.notifyActions.defaultClose)                
                         # battery have enough power and check if we should stay in low battery level loop
                         while self.batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.batteryValues.isAcAdapterPresent() == False:                    
                             time.sleep(1)
@@ -483,18 +487,20 @@ class Application:
                     elif self.batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.batteryValues.isAcAdapterPresent() == False:
                         if self.debug:
                             print("debug mode: critical capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
-                        if self.sound:
+                        if self.sound and not (self.notify and self.critical):
                             os.popen(self.soundCommandLow)
                         #send notification
                         if self.notify or not self.critical:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            if self.sound:
+                                os.popen(self.soundCommandLow)
                             self.notifier.sendNofiication('Battery critical level !!!',
                                                           'Current capacity %s%s\nTime left: %s' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
                                                           'hibernate, Hibernate ', self.notifyActions.hibernateAction,
                                                           'cancel, Cancel ', self.notifyActions.cancelAction,
-                                                          self.notifyActions.defaultClose)
-                            # wait 4sek till battery values update
-                            time.sleep(4)       
+                                                          self.notifyActions.defaultClose)     
                         # battery have enough power and check if we should stay in critical battery level loop
                         while self.batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.batteryValues.isAcAdapterPresent() == False:                       
                             time.sleep(1)
@@ -503,10 +509,14 @@ class Application:
                     elif self.batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.batteryValues.isAcAdapterPresent() == False:
                         if self.debug:
                             print("debug mode: shutdown check (%s() in Application class)") % (self.runMainLoop.__name__)
-                        if self.sound:
+                        if self.sound and not (self.notify and self.critical):
                             os.popen(self.soundCommandMedium)
                         # send notification
                         if self.notify or not self.critical:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            if self.sound:
+                                os.popen(self.soundCommandLow)
                             self.notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
                                                           '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.batteryValues.battCurrentCapacity(), '%', self.batteryValues.batteryTime()),
                                                           'poweroff, Shutdown ', self.notifyActions.poweroffAction,
@@ -535,18 +545,16 @@ class Application:
                     if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == True and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
                             print("debug mode: is full battery check (%s() in Application class)") % (self.runMainLoop.__name__)
-                        if self.sound:    
+                        if self.sound and not (self.notify and self.critical):    
                             os.popen(self.soundCommandLow)
                         # send notification
-                        if self.notify and self.critical:
+                        if self.notify and self.critical:  
                             self.notifier.sendNofiication('Battery is fully charged', 
                                                           '',
                                                           'cancel, Ok ', self.notifyActions.cancelAction,
                                                           None, None,
                                                           None, None,
-                                                          self.notifyActions.defaultClose)
-                            # wait 4sek till battery values update
-                            time.sleep(4)            
+                                                          self.notifyActions.defaultClose)          
                         # full charged loop
                         while self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == True and self.batteryValues.isBatteryDischarging() == False:                   
                             time.sleep(1)
@@ -555,18 +563,20 @@ class Application:
                     if self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:
                         if self.debug:
                             print("debug mode: is battery charging check (%s() in Application class)") % (self.runMainLoop.__name__)
-                        if self.sound:
+                        if self.sound and not (self.notify and self.critical):
                             os.popen(self.soundCommandLow)
                         # send notification
                         if self.notify and self.critical:
+                            # wait 4sek till battery values update
+                            time.sleep(5)
+                            if self.sound:
+                                os.popen(self.soundCommandLow)
                             self.notifier.sendNofiication('Charging',
                                                           'Time left to fully charge: %s\n' % self.batteryValues.batteryTime(),
                                                           'cancel, Ok ', self.notifyActions.cancelAction,
                                                           None, None,
                                                           None, None,
                                                           self.notifyActions.defaultClose)
-                            # wait 4sek till battery values update
-                            time.sleep(4)
                         # online loop
                         while self.batteryValues.isAcAdapterPresent() == True and self.batteryValues.isBatteryFullyCharged() == False and self.batteryValues.isBatteryDischarging() == False:    
                             time.sleep(1)
