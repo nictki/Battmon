@@ -14,7 +14,8 @@ Prerequisites:
  - optional sox (playing sounds), vlock (program to lock one or more sessions on the Linux console)
 
 Changes:
- - 15.11.2012
+ - 16.11.2012
+  new stable
   no more acpi needed, battery percentage and remaining time based now on sysfs
   some improvements, fixed logic
    
@@ -34,12 +35,6 @@ Changes:
   added possibility to fork program in background
   added possibility to run only one copy of program
   major fixes
-
- - 11.10.2012
-  first beta released
-
- - 27.07.2011
-  first alpha released
 
 Notes:
  Be sure that your ck-list-sessions output gives something like this:

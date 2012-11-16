@@ -139,7 +139,7 @@ class BatteryValues:
         for i in devices:
             try:
                 with open(i + '/type') as d:
-                    d= d.read().split('\n')[0]
+                    d = d.read().split('\n')[0]
                     # set battery and ac path
                     if d == 'Battery':
                         self.__BAT_PATH = i
@@ -174,9 +174,7 @@ class BatteryValues:
         bat_energy_now = self.__convertValues(self.__getValue(self.__BAT_PATH + 'energy_now'))
         bat_energy_full = self.__convertValues(self.__getValue(self.__BAT_PATH + 'energy_full'))
         bat_power_now = self.__convertValues(self.__getValue(self.__BAT_PATH + 'power_now'))
-        
-        remaining_time = -1
-        
+
         if bat_power_now > 0:
             if self.isBatteryDischarging():
                 remaining_time = (bat_energy_now * 60 * 60) // bat_power_now
@@ -619,17 +617,17 @@ if __name__ == '__main__':
     op = optparse.OptionParser(version="%prog " + VERSION,
                                description=DESCRIPTION)
     
-    # __debug options
+    # debug options
     op.add_option("-D", "--debug", action="store_true", dest="debug",
                   default=defaultOptions['debug'], help="give some informations useful to debugging "
                   "[default: false]")
     
-    # dry run (__test commands)
+    # dry run (test commands)
     op.add_option("-T", "--test", action="store_true", dest="test",
                   default=defaultOptions['test'], help="dry run, shows witch commands will be executed in normal mode (useful with --debug option) "
                   "[default: false]")
     
-    # __daemon
+    # daemon
     op.add_option("-d", "--daemon", action="store_true", dest="daemon",
                   default=defaultOptions['daemon'], help=" fork into the background "
                   "[default: false]")
@@ -644,24 +642,24 @@ if __name__ == '__main__':
                   default=defaultOptions['notify'], help="don't show desktop notifications "
                   "[default: false]")
     
-    # show only __critical notifications
+    # show only critical notifications
     op.add_option("-C", "--critical-notifications", action="store_false", dest="critical",
                   default=defaultOptions['critical'], help="shows only critical battery notifications "
                   "[default: false]")
     
-    # don't play __sound
+    # don't play sound
     op.add_option("-S", "--no-sound", dest="sound", action="store_false", 
                   default=defaultOptions['sound'], help="don't play sounds "
                   "[default: false]")
     
-    # check if __notify __timeout is correct >= 0
+    # check if notify timeout is correct >= 0
     def checkTimeout(option, opt_str, t, parser):
         t = int(t)
         if t < 0:
             raise optparse.OptionValueError("notification timeout should be 0 or a positive number")
-        op.values.__timeout = t
+        op.values.timeout = t
     
-    # __timeout
+    # timeout
     op.add_option("-t", "--timeout", type="int", dest="timeout", metavar="SECS", action="callback", callback=checkTimeout,
                   default=defaultOptions['timeout'], help="notification timeout in secs (use 0 to disable) "
                   "[default: 7]")
