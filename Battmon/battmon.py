@@ -44,8 +44,8 @@ URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 23
-BATTERY_CRITICAL_VALUE = 7 
+BATTERY_LOW_VALUE = 14
+BATTERY_CRITICAL_VALUE = 7
 BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
@@ -477,8 +477,10 @@ class Application:
                     if self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: discharging check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        if self.__sound and (not self.__notify or self.__critical):
+                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
+                        # check if play sound, scary logic
+                        if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
+                        #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
                         # send notification
                         if self.__notify and not self.__critical:
@@ -500,8 +502,10 @@ class Application:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: low capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        if self.__sound and (not self.__notify or self.__critical):
+                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
+                        # check if play sound, scary logic  
+                        if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
+                        #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
                         #send notification
                         if self.__notify and not self.__critical:
@@ -523,8 +527,10 @@ class Application:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: critical capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        if self.__sound and (not self.__notify or self.__critical):
+                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
+                        # check if play sound, scary logic
+                        #if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):  
+                        if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
                         #send notification
                         if self.__notify:
@@ -546,8 +552,10 @@ class Application:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: shutdown check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        if self.__sound and (not self.__notify or self.__critical):
+                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
+                        # check if play sound, scary logic  
+                        #if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
+                        if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandMedium)
                         # send notification
                         if self.__notify:
@@ -564,14 +572,17 @@ class Application:
                         # make some warnings before shutting down
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                             for i in range(0, 5, +1):
-                                if self.__sound and (not self.__notify or self.__critical):
-                                    os.popen(self.__soundCommandLow)
+                                os.popen(self.__soundCommandLow)
                                 time.sleep(i)                       
                             # check once more if system should go down
                             if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                                 time.sleep(2)
                                 os.popen(self.__soundCommandMedium)
-                                os.popen(HIBERNATE_COMMAND_ACTION)              
+                                if not self.__test:
+                                    os.popen(HIBERNATE_COMMAND_ACTION)
+                                else:
+                                    print("Test mode: Hibernating... Program will be sleep for 10sek" )
+                                    time.sleep(10)     
                             else:
                                 # wait 4sek till battery values update
                                 time.sleep(4)
@@ -584,7 +595,9 @@ class Application:
                         if self.__debug:
                             print("debug mode: full battery check (%s() in Application class)") % (self.runMainLoop.__name__)
                             print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        if self.__sound and (not self.__notify or self.__critical):    
+                        # check if play sound, scary logic  
+                        if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
+                        #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):   
                             os.popen(self.__soundCommandLow)
                         # send notification
                         if self.__notify and not self.__critical:  
@@ -603,7 +616,9 @@ class Application:
                         if self.__debug:
                             print("debug mode: battery charging check (%s() in Application class)") % (self.runMainLoop.__name__)
                             print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        if self.__sound and (not self.__notify or self.__critical):
+                        # check if play sound, scary logic  
+                        if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
+                        #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
                         # send notification
                         if self.__notify and not self.__critical:
@@ -628,7 +643,9 @@ class Application:
                 if self.__debug:
                     print("debug mode: no battery present check")
                     print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                if self.__sound and (not self.__notify or self.__critical):
+                # check if play sound, scary logic  
+                #if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
+                if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                     os.popen(self.__soundCommandLow)
                 # send notification
                 if self.__notify:
