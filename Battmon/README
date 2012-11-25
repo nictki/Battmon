@@ -10,13 +10,20 @@ Features:
  - options can be given on the command line (see battmon --help for details)
 
 Prerequisites:
- - python-notify, python-gtk2, notification-daemon
- - optional sox (playing sounds), vlock (program to lock one or more sessions on the Linux console)
+ - python2 
+ - optional python-notify, python-gtk2, notification-daemon (for notification)
+ - optional sox (for sounds)
+ - optional vlock (program to lock one or more sessions on the Linux console)
 
 Changes:
+ - 25.11.2012
+  improved check if battery is present or not
+  added better warnings if some optional dependency is missing
+  added sound files to github
+  minor bug fixes
+  
  - 16.11.2012
-  new stable
-  no more acpi needed, battery percentage and remaining time based now on sysfs
+  no more acpi needed, battery percentage and remaining time is read form /sys/class/power_supply
   some improvements, fixed logic
    
  - 19.10.2012
