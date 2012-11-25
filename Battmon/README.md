@@ -12,33 +12,33 @@
 * clickable pop-up's buttons (suspend, hibernate, shutdown...)
 * options can be given on the command line (see battmon --help for details)
 
-### Prerequisites:
-* python2 (for basic functionality)
-* optional python-notify, python-gtk2, notification-daemon (for notification)
-* optional sox (for sounds)
-* optional vlock (program to lock one or more sessions on the Linux console)
+## Prerequisites:
+* **python2** (for basic functionality)
+* optional ***python-notify***, ***python-gtk2***, ***notification-daemon*** (for notification)
+* optional ***sox*** (for sounds)
+* optional ***vlock*** (program to lock one or more sessions on the Linux console)
 
-### Changelog:
-* 25.11.2012
-  * improved check if battery is present or not
-  * added better warnings if some optional dependency is missing
-  * added sound files to github
-  * minor bug fixes
+## Changelog:
+* ***25.11.2012***
+ * improved check if battery is present or not
+ * added better warnings if some optional dependency is missing
+ * added sound files to github
+ * minor bug fixes
   
-* 16.11.2012
-  * no more acpi needed, battery percentage and remaining time is read form /sys/class/power_supply
-  * some improvements, fixed logic
+* ***16.11.2012***
+ * no more acpi needed, battery percentage and remaining time is read form /sys/class/power_supply
+ * some improvements, fixed logic
   
-* 17.10.2012
-  * fixed 'no battery present' loop
-  * fixed battery and adapter detections
-  * added pop'ups prerequisites checking for vlock, sox, pynotify, acpi and sound files
+* ***17.10.2012***
+ * fixed 'no battery present' loop
+ * fixed battery and adapter detections
+ * added pop'ups prerequisites checking for vlock, sox, pynotify, acpi and sound files
   
-* 12.10.2012
-  * new stable released
-  * added possibility to fork program in background
-  * added possibility to run only one copy of program
-  * minor fixes
+* ***12.10.2012***
+ * new stable released
+ * added possibility to fork program in background
+ * added possibility to run only one copy of program
+ * minor fixes
 
 ## Notes:
  Be sure that your ck-list-sessions output gives something like this:
