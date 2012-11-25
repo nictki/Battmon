@@ -448,7 +448,8 @@ class Application:
     def __checkIfRunning(self, name):
         output = commands.getoutput('ps -A')
         if name in output and pynotify_module:
-            os.popen(self.__soundCommandLow)
+            if self.__sound:
+                os.popen(self.__soundCommandLow)
             self.__notifier.sendNofiication('Battmon is already running',
                                           'To run more then one copy of Battmon,\nrun Battmon with -m option',
                                           'cancel, Ok ', self.__notifyActions.cancelAction,
@@ -457,7 +458,8 @@ class Application:
                                           self.__notifyActions.defaultClose)
             sys.exit(1)
         elif name in output and self.__notifySend:
-            os.popen(self.__soundCommandMedium)
+            if self.__sound:
+                os.popen(self.__soundCommandLow)
             os.popen('''notify-send "Battmon is already running !!!" "To run more then one copy of Battmon,\nrun Battmon with -m option"''')
             sys.exit(1)
         elif name in output:
@@ -562,7 +564,7 @@ class Application:
                             # wait 4sek till battery values update
                             time.sleep(4)
                             if self.__sound:
-                                os.popen(self.__soundCommandLow)
+                                os.popen(self.__soundCommandMedium)
                             self.__notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
                                                             '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
                                                             'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
@@ -572,12 +574,14 @@ class Application:
                         # make some warnings before shutting down
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                             for i in range(0, 5, +1):
-                                os.popen(self.__soundCommandLow)
+                                if self.__sound:
+                                    os.popen(self.__soundCommandMedium)
                                 time.sleep(i)                       
                             # check once more if system should go down
                             if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                                 time.sleep(2)
-                                os.popen(self.__soundCommandMedium)
+                                if self.__sound:
+                                    os.popen(self.__soundCommandMedium)
                                 if not self.__test:
                                     os.popen(HIBERNATE_COMMAND_ACTION)
                                 else:
