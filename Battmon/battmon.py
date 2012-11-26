@@ -48,9 +48,9 @@ URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 85
-BATTERY_CRITICAL_VALUE = 84
-BATTERY_HIBERNATE_LEVEL = 83
+BATTERY_LOW_VALUE = 17
+BATTERY_CRITICAL_VALUE = 7
+BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
 SOUND_FILE_NAME = 'warning.wav'
@@ -797,7 +797,7 @@ if __name__ == '__main__':
     
     # show notifications
     op.add_option("-N", "--no-notifications", action="store_false", dest="notify",
-                  default=defaultOptions['notify'], help="Son't show any desktop notifications, even critical ones. --critical-notifications option will be ignored "
+                  default=defaultOptions['notify'], help="Don't show any desktop notifications, even critical ones. --critical-notifications option will be ignored "
                   "[default: false]")
     
     # show only critical notifications
@@ -832,3 +832,4 @@ if __name__ == '__main__':
     ml = Application(debug=options.debug, test=options.test, daemon=options.daemon, more_then_one=options.more_then_one, 
                      notify=options.notify, critical=options.critical, no_actions=options.no_actions, sound=options.sound, timeout=options.timeout)
     ml.runMainLoop()
+    
