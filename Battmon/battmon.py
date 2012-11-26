@@ -20,13 +20,17 @@ import sys
 import os
 import glob
 import time
+import optparse
 from ctypes import cdll
 import commands
 
-import gobject
-import gtk
-import optparse
-
+try:
+    import gobject
+    pygobject_module = True
+except ImportError as iee:
+    print("Unable to import pynotify module, thus no clickable notifications will be displayed. ")
+    pygobject_module = False
+    
 try:
     import pynotify
     pynotify_module = True
@@ -35,18 +39,18 @@ except ImportError as iee:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '1.2~svn25112012'
+VERSION = '1.2~svn26112012'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers like awesome, dwm, xmonad. ' 
-                'Tested with python-notify-0.1.1, pygtk-2.24.0 and notification-daemon-0.5.0')
+                'Tested with python-notify-0.1.1, dev-python/pygobject-2.28.6 and notification-daemon-0.5.0')
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
 URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 14
-BATTERY_CRITICAL_VALUE = 7
-BATTERY_HIBERNATE_LEVEL = 3
+BATTERY_LOW_VALUE = 85
+BATTERY_CRITICAL_VALUE = 84
+BATTERY_HIBERNATE_LEVEL = 83
 
 # command actions
 SOUND_FILE_NAME = 'warning.wav'
@@ -57,13 +61,14 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/', '/usr/local/bin/', '/bin/', '/usr/sbin/', '/
 
 # power action class    
 class NotifyActions:  
-    def __init__(self, debug=False, test=False, lockCommand=None):
+    def __init__(self, debug=False, test=False, lockCommand=None, no_actions=False):
         self.__debug = debug
         self.__tets = test
         self.__lockCommand = lockCommand
-  
+        self.__no_actions = no_actions
+    
     # suspend to disk
-    def hibernateAction(self, n, action):
+    def hibernateAction(self, n, action):     
         assert action == "hibernate"
         if self.__debug:
             print("debug mode: hibernate action")
@@ -73,10 +78,12 @@ class NotifyActions:
             os.system(HIBERNATE_COMMAND_ACTION)
             os.system(self.__lockCommand)
         n.close()
-        loop.quit()
-    
+        if not self.__no_actions:
+            global loop
+            loop.quit()
+  
     # suspend to ram
-    def suspendAction(self, n, action):
+    def suspendAction(self, n, action):     
         assert action == "suspend"
         if self.__debug:
             print("debug mode: suspend action")      
@@ -86,7 +93,9 @@ class NotifyActions:
             os.system(SUSPEND_COMMAND_ACTION)
             os.system(self.__lockCommand)
         n.close()
-        loop.quit()
+        if not self.__no_actions:
+            global loop
+            loop.quit()
     
     # shutdown
     def poweroffAction(self, n, action):
@@ -98,7 +107,9 @@ class NotifyActions:
         else:
             os.system(POWEROFF_COMMAND_ACTION)
         n.close()
-        loop.quit()
+        if not self.__no_actions:
+            global loop
+            loop.quit()
     
     # cancel action
     def cancelAction(self, n, action):
@@ -108,17 +119,22 @@ class NotifyActions:
         if self.__tets:
             print("test mode: cancel __notify")
         n.close()
-        loop.quit()
+        if not self.__no_actions:
+            global loop
+            loop.quit()
 
     # default close command
     def defaultClose(self, n):
+        
         if self.__debug:
             print("debug mode: close action")
         if self.__tets:
             print("test mode: close __notify")
         n.close()
-        loop.quit()
-        
+        if not self.__no_actions:
+            global loop
+            loop.quit()
+    
 # battery values class
 class BatteryValues:
     __PATH = "/sys/class/power_supply/*/"
@@ -244,12 +260,15 @@ class BatteryValues:
                 return(False)
             
 class Notifier:
-    def __init__(self, debug=False, timeout=None):
+    def __init__(self, debug=False, timeout=None, no_actions=False):
         # variables
         self.__debug = debug
         self.__timeout = timeout
-        self.__arg1 = None
-        self.__arg2 = None 
+        self.__no_actions = no_actions
+    
+    __updateNotify = False
+    __arg1 = None
+    __arg2 = None 
    
     # sanitize add_action() first two parameters
     def __sanitizeAction(self, action):
@@ -264,53 +283,93 @@ class Notifier:
                         action3string, action3,
                         defaultCloseCommand):
         
-        global loop
-        loop = gobject.MainLoop()
-         
+        
+        if not self.__no_actions:
+            global loop
+            loop = gobject.MainLoop()
+        else:
+            pass
+        
         if pynotify_module:
             global n
-            pynotify.init("Battmon")
-            if self.__debug:
-                print("debug mode: updating notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
-            # initialize pynotify variable 
-            n = pynotify.Notification(summary=summary, message=message)
-            # clear all actions first
-            n.clear_actions()
-            # add actions
-            if (action1string != None and action1 != None):
+            if self.__updateNotify:               
                 if self.__debug:
-                    print("debug mode: first button: ", self.__arg1, self.__arg2, action1)                  
-                self.__sanitizeAction(action1string)
-                n.add_action(self.__arg1, self.__arg2, action1)
+                    print("debug mode: updating notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
+                n.clear_actions()
+                # add actions
+                if (action1string != None and action1 != None):
+                    if self.__debug:
+                        print("debug mode: first button: ", self.__arg1, self.__arg2, action1)                  
+                    self.__sanitizeAction(action1string)
+                    n.add_action(self.__arg1, self.__arg2, action1)
                                  
-            if (action2string != None and action2 != None):
-                if self.__debug:
-                    print("debug mode: second button: ", self.__arg1, self.__arg2, action2)          
-                self.__sanitizeAction(action2string)
-                n.add_action(self.__arg1, self.__arg2, action2)
+                if (action2string != None and action2 != None):
+                    if self.__debug:
+                        print("debug mode: second button: ", self.__arg1, self.__arg2, action2)          
+                    self.__sanitizeAction(action2string)
+                    n.add_action(self.__arg1, self.__arg2, action2)
                     
-            if (action3string != None and action3 != None):
-                if self.__debug:
-                    print("debug mode: third button: ", self.__arg1, self.__arg2, action3)                 
-                self.__sanitizeAction(action3string)
-                n.add_action(self.__arg1, self.__arg2, action3)
+                if (action3string != None and action3 != None):
+                    if self.__debug:
+                        print("debug mode: third button: ", self.__arg1, self.__arg2, action3)                 
+                    self.__sanitizeAction(action3string)
+                    n.add_action(self.__arg1, self.__arg2, action3)
                    
-            # default close
-            n.connect("closed", defaultCloseCommand)           
-            # set __timeout
-            if self.__timeout == 0:
-                n.set_timeout(pynotify.EXPIRES_NEVER)
-            else:
-                n.set_timeout(1000 * self.__timeout)
+                # default close
+                n.connect("closed", defaultCloseCommand)           
+                # set __timeout
+                if self.__timeout == 0:
+                    n.set_timeout(pynotify.EXPIRES_NEVER)
+                else:
+                    n.set_timeout(1000 * self.__timeout)
                 
-            n.update(summary=summary, message=message)
+                n.update(summary=summary, message=message)
+
+            if not self.__updateNotify:
+                if self.__debug:
+                    print("debug mode: in new notify statement (%s in Notifier class)") % (self.sendNofiication.__name__)
+                
+                pynotify.init("Battmon")
+                # initialize new notification
+                n = pynotify.Notification(summary=summary, message=message)
+                # add actions
+                if (action1string != None and action1 != None):
+                    if self.__debug:
+                        print("debug mode: first button: ", self.__arg1, self.__arg2, action1)                 
+                    self.__sanitizeAction(action1string)
+                    n.add_action(self.__arg1, self.__arg2, action1)
+            
+                if (action2string != None and action2 != None):
+                    if self.__debug:
+                        print("debug mode: second button: ", self.__arg1, self.__arg2, action2)                  
+                    self.__sanitizeAction(action2string)
+                    n.add_action(self.__arg1, self.__arg2, action2)
+                               
+                if (action3string != None and action3 != None):
+                    if self.__debug:
+                        print("debug mode: third button: ", self.__arg1, self.__arg2, action3)                    
+                    self.__sanitizeAction(action3string)
+                    n.add_action(self.__arg1, self.__arg2, action3)
+                
+                # default close
+                n.connect("closed", defaultCloseCommand)                           
+                # set timeout
+                if self.__timeout == 0:
+                    n.set_timeout(pynotify.EXPIRES_NEVER)
+                else:
+                    n.set_timeout(1000 * self.__timeout)
+                self.__updateNotify = True
+                
+        if not self.__no_actions:
             n.show()
-                        
-        loop.run()
+            loop.run()
+        elif self.__no_actions:
+            n.show()
+            #gtk.main()
         
 class Application:
     def __init__(self, debug, test, daemon, more_then_one,
-                 notify, critical, sound, timeout):
+                 notify, critical, no_actions, sound, timeout):
         
         # parameters
         self.__debug = debug
@@ -321,6 +380,7 @@ class Application:
         self.__critical = critical
         self.__sound = sound
         self.__timeout = timeout
+        self.__no_actions = no_actions
         
         # __sound files
         self.__soundCommandLow = ''
@@ -335,8 +395,8 @@ class Application:
         
         # classes instances
         self.__batteryValues = BatteryValues()
-        self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand)
-        self.__notifier = Notifier(self.__debug, self.__timeout)
+        self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand, self.__no_actions)
+        self.__notifier = Notifier(self.__debug, self.__timeout, self.__no_actions)
  
         # check for external programs and files      
         self.__checkNotifySend()
@@ -344,7 +404,13 @@ class Application:
         self.__checkPlay()
         self.__checkSoundsFiles()
         self.__batteryValues.findBatteryAndAC()
-           
+        
+        # check for pygobject module
+        if not pygobject_module:
+            self.__no_actions = True
+            if self.__notifySend:
+                os.popen('''notify-send "Dependency missing !!!" "You have to install pygobject, to get clickable notifications"''')
+                
         # check for pynotify module
         if not pynotify_module:
             self.__notify = False
@@ -479,8 +545,8 @@ class Application:
                     if self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: discharging check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
-                        # check if play sound, scary logic
+                            print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
+                        # check if play sound, warning scary logic
                         if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
                         #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
@@ -495,7 +561,8 @@ class Application:
                                                             'cancel, Ok ', self.__notifyActions.cancelAction, 
                                                             None, None,
                                                             None, None,
-                                                            self.__notifyActions.defaultClose)                           
+                                                            self.__notifyActions.defaultClose)
+                                                   
                         # have enough power and if we should stay in save battery level loop
                         while self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE and self.__batteryValues.isAcAdapterPresent() == False:
                             time.sleep(1)
@@ -504,8 +571,8 @@ class Application:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: low capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
-                        # check if play sound, scary logic  
+                            print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
+                        # check if play sound, warning scary logic  
                         if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
                         #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
@@ -529,13 +596,13 @@ class Application:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: critical capacity check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
-                        # check if play sound, scary logic
+                            print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
+                        # check if play sound, warning scary logic
                         #if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):  
                         if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
                         #send notification
-                        if self.__notify:
+                        if self.__notify and not self.__no_actions:
                             # wait 4sek till battery values update
                             time.sleep(4)
                             if self.__sound:
@@ -545,7 +612,19 @@ class Application:
                                                             'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
                                                             'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
                                                             'cancel, Cancel ', self.__notifyActions.cancelAction,
-                                                            self.__notifyActions.defaultClose)     
+                                                            self.__notifyActions.defaultClose)
+                        # check if no actions is used
+                        if self.__notify and self.__no_actions:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            if self.__sound:
+                                os.popen(self.__soundCommandLow)
+                            self.__notifier.sendNofiication('Battery critical level !!!',
+                                                            'Current capacity %s%s\nTime left: %s' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
+                                                            'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                            None, None,
+                                                            None, None,
+                                                            self.__notifyActions.defaultClose)   
                         # battery have enough power and check if we should stay in critical battery level loop
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE and self.__batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:                       
                             time.sleep(1)
@@ -554,13 +633,13 @@ class Application:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
                             print("debug mode: shutdown check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("test: %s, notify: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__critical, self.__sound)
-                        # check if play sound, scary logic  
+                            print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
+                        # check if play sound, warning scary logic  
                         #if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
                         if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandMedium)
                         # send notification
-                        if self.__notify:
+                        if self.__notify and not self.__no_actions:
                             # wait 4sek till battery values update
                             time.sleep(4)
                             if self.__sound:
@@ -569,6 +648,18 @@ class Application:
                                                             '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
                                                             'poweroff, Shutdown ', self.__notifyActions.poweroffAction,
                                                             'hibernate, Hibernate ', self.__notifyActions.hibernateAction,
+                                                            None, None,
+                                                            self.__notifyActions.defaultClose)
+                        # check if no actions is used
+                        if self.__notify and self.__no_actions:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            if self.__sound:
+                                os.popen(self.__soundCommandMedium)
+                            self.__notifier.sendNofiication('System will be hibernate in 10 seconds !!! ', 
+                                                            '<b>Battery critical level %s%s\nTime left: %s</b>' % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime()),
+                                                            'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                            None, None,
                                                             None, None,
                                                             self.__notifyActions.defaultClose)                    
                         # make some warnings before shutting down
@@ -598,8 +689,8 @@ class Application:
                     if self.__batteryValues.isAcAdapterPresent() == True and self.__batteryValues.isBatteryFullyCharged() == True and self.__batteryValues.isBatteryDischarging() == False:
                         if self.__debug:
                             print("debug mode: full battery check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        # check if play sound, scary logic  
+                            print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
+                        # check if play sound, warning scary logic  
                         if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
                         #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):   
                             os.popen(self.__soundCommandLow)
@@ -619,8 +710,8 @@ class Application:
                     if self.__batteryValues.isAcAdapterPresent() == True and self.__batteryValues.isBatteryFullyCharged() == False and self.__batteryValues.isBatteryDischarging() == False:
                         if self.__debug:
                             print("debug mode: battery charging check (%s() in Application class)") % (self.runMainLoop.__name__)
-                            print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
-                        # check if play sound, scary logic  
+                            print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
+                        # check if play sound, warning scary logic  
                         if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
                         #if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
                             os.popen(self.__soundCommandLow)
@@ -646,7 +737,7 @@ class Application:
             if self.__batteryValues.isBatteryPresent() == False:
                 if self.__debug:
                     print("debug mode: no battery present check")
-                    print("notify: %s, critical: %s, sound: %s") % (self.__notify, self.__critical, self.__sound)
+                    print("debug mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s") % (self.__test, self.__notify, self.__no_actions, self.__critical, self.__sound)
                 # check if play sound, scary logic  
                 #if (self.__sound and ((not self.__notify and not self.__critical) or (self.__notify and self.__critical) or (not self.__notify and self.__critical))):
                 if (self.__sound and ((not self.__notify or not self.__critical) and (not self.__notify or self.__critical))):
@@ -677,7 +768,8 @@ if __name__ == '__main__':
                      "notify": True,
                      "critical": False,
                      "sound": True,
-                     "timeout": 7}
+                     "timeout": 7,
+                     "no_actions": False}
     
     # arguments parser
     op = optparse.OptionParser(version="%prog " + VERSION,
@@ -685,54 +777,58 @@ if __name__ == '__main__':
     
     # debug options
     op.add_option("-D", "--debug", action="store_true", dest="debug",
-                  default=defaultOptions['debug'], help="give some informations useful to debugging "
+                  default=defaultOptions['debug'], help="Give some informations useful to debugging "
                   "[default: false]")
     
     # dry run (test commands)
     op.add_option("-T", "--test", action="store_true", dest="test",
-                  default=defaultOptions['test'], help="dry run, shows witch commands will be executed in normal mode (useful with --debug option) "
+                  default=defaultOptions['test'], help="Dry run, shows witch commands will be executed in normal mode (useful with --debug option) "
                   "[default: false]")
     
     # daemon
     op.add_option("-d", "--daemon", action="store_true", dest="daemon",
-                  default=defaultOptions['daemon'], help=" fork into the background "
+                  default=defaultOptions['daemon'], help="Fork in background "
                   "[default: false]")
     
     # allows to run only one instance of this program
     op.add_option("-m", "--run-more-copies", action="store_true", dest="more_then_one",
-                  default=defaultOptions['more_then_one'], help="allows to run more then one battmon copy " 
+                  default=defaultOptions['more_then_one'], help="Allows to run more then one battmon copy " 
                   "[default: false]")
     
     # show notifications
     op.add_option("-N", "--no-notifications", action="store_false", dest="notify",
-                  default=defaultOptions['notify'], help="don't show any desktop notifications, even critical ones. --critical-notifications option will be ignored "
+                  default=defaultOptions['notify'], help="Son't show any desktop notifications, even critical ones. --critical-notifications option will be ignored "
                   "[default: false]")
     
     # show only critical notifications
     op.add_option("-C", "--critical-notifications", action="store_true", dest="critical",
-                  default=defaultOptions['critical'], help="shows only critical battery notifications "
+                  default=defaultOptions['critical'], help="Shows only critical battery notifications "
+                  "[default: false]")
+    
+    # don't show action buttons
+    op.add_option("-A", "--no_ations", action="store_true", dest="no_actions",
+                  default=defaultOptions['no_actions'], help="Dont'n show actions buttons on popup's. With this options popup's don't provide any clickable actions, but thus program react faster "
                   "[default: false]")
     
     # don't play sound
     op.add_option("-S", "--no-sound", dest="sound", action="store_false", 
-                  default=defaultOptions['sound'], help="don't play sounds "
+                  default=defaultOptions['sound'], help="Don't play sounds "
                   "[default: false]")
     
     # check if notify timeout is correct >= 0
     def checkTimeout(option, opt_str, t, parser):
         t = int(t)
         if t < 0:
-            raise optparse.OptionValueError("notification timeout should be 0 or a positive number")
+            raise optparse.OptionValueError("Notification timeout should be 0 or a positive number !!!")
         op.values.timeout = t
     
     # timeout
     op.add_option("-t", "--timeout", type="int", dest="timeout", metavar="SECS", action="callback", callback=checkTimeout,
-                  default=defaultOptions['timeout'], help="notification timeout in secs (use 0 to disable) "
+                  default=defaultOptions['timeout'], help="Notification timeout in secs (use 0 to disable) "
                   "[default: 7]")
     
     (options, _) = op.parse_args()
     
     ml = Application(debug=options.debug, test=options.test, daemon=options.daemon, more_then_one=options.more_then_one, 
-                     notify=options.notify, critical=options.critical, sound=options.sound, timeout=options.timeout)
+                     notify=options.notify, critical=options.critical, no_actions=options.no_actions, sound=options.sound, timeout=options.timeout)
     ml.runMainLoop()
-    gtk.main()
