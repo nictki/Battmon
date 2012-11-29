@@ -987,13 +987,14 @@ if __name__ == '__main__':
                   action="store_true", 
                   dest="use_clickable_buttons", 
                   default=defaultOptions['use_clickable_buttons'], 
-                  help="shows clickable buttons on notifications, " \
-                        "this option is NOT completely Implemented , " \
-                        "it's working quite well, BUT: " \
-                        "when you use this program with THIS option and you set timeout to 0, " \
-                        "you will NOT have clickable notification, because the clickable notification " \
-                        "will be waiting for user reaction and thus loop it selves"
-                        "if you have ANY suggestions please mail me "
+                  help="shows clickable buttons on notifications, this option " \
+                        "is NOT completely implemented, it's working quite " \
+                        "well, but it's some laggy, notification will be always waiting for " \
+                        "user reaction or till notification timeout is up, so e.g... " \
+                        "when you set timeout for 1k sek and your battery is fast empty, " \
+                        "and you do nothing, then... " \
+                        "it was'nt my fault, you have been warned !!!, " \
+                        "if you have ANY suggestions please mail me"
                         "(default: false)")
     
     # don't play sound

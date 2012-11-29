@@ -97,11 +97,11 @@ To list all available options run with `-h` or `--help`
 					(default: false)
 	-B, --use-clickable-buttons
 					shows clickable buttons on notifications, this option
-                    is NOT completely Implemented , it's working quite
-                    well, BUT: when you use this program with THIS option
-                    and you set timeout to 0, you will NOT have clickable
-                    notification, because program will be always waiting  
-                    for user reaction, and thus its kind of death loop, 
+                    is NOT completely implemented, it's working quite
+                    well, but it's some "laggy", notification will be always waiting for 
+                    user reaction or till notification timeout is up, so e.g...
+                    when you set timeout for 1k sek and your battery is fast empty, 
+                    then... it was'nt my fault, you have been warned !!!, 
                     if you have ANY suggestions please mail me 
                     (default: false)
 	-S, --no-sound	don't play sounds 
