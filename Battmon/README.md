@@ -20,9 +20,8 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 
 ## Changelog:
 **29.11.2012**
-* 2.0-beta2
-* new functionality added
-* clickable notifications disabled per default, see `program options`
+* 2.0-beta3
+* clickable notifications removed, to buggy
 * program can now works only with notify-send (without `pynotify`), but will show only basic notifications (no battery charge times, charge level..)
 * code refactoring
 * code cleanup
@@ -95,15 +94,6 @@ To list all available options run with `-h` or `--help`
 	-C, --critical-notifications
 					shows only critical battery notifications 
 					(default: false)
-	-B, --use-clickable-buttons
-					shows clickable buttons on notifications, this option
-                    is NOT completely implemented, it's working quite
-                    well, but it's kind of "laggy", notification will be always waiting for 
-                    user reaction or till notifications time is up, 
-                    note: when you set time option for 0 sek, 
-                    this option will be ignored !
-                    if you have ANY suggestions please mail me
-                    (default: false)
 	-S, --no-sound	don't play sounds 
   					(default: false)
   	-t SECS, --timeout=SECS	
