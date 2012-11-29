@@ -9,8 +9,7 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 * works in background
 * configurable
 * no tray icon
-* notifications (clickable notifications are disabled by default) see note, but this feature can be enabled using --use-buttons buttons (suspend, hibernate, shutdown...),
- this feature can be disabled to get better program performance
+* notifications (clickable notifications are disabled by default) see `program options`
 * options can be given on the command line (see battmon --help for details)
 
 ## Prerequisites:
@@ -23,9 +22,8 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 **27.11.2012**
 * new version
 * new functionality added
-* clickable notifications disabled per default, see program options
+* clickable notifications disabled per default, see `program options`
 * program can now works only with notify-send (without `pynotify`), but will show only basic notifications (no battery charge times, charge level..)
-* program logic changed, see program options options
 * code refactoring
 * code cleanup
 
@@ -103,8 +101,8 @@ To list all available options run with `-h` or `--help`
                     is NOT completely Implemented , it's working quite
                     well, BUT: when you use this program with THIS option
                     and you set timeout to 0, you will NOT have clickable
-                    notification, because the clickable notification will
-                    be waiting for user reaction and thus loop it selvesif
+                    notification, because program will be always waiting  
+                    for user reaction, and thus its kind of death loop, 
                     you have ANY suggestions please mail me 
                     (default: false)
 	-S, --no-sound	don't play sounds 
