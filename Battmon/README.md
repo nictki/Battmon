@@ -43,7 +43,6 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 * added pop'ups prerequisites checking for vlock, sox, pynotify, acpi and sound files
   
 **12.10.2012**
-* new stable released
 * added possibility to fork program in background
 * added possibility to run only one copy of program
 * minor fixes
