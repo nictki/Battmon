@@ -45,9 +45,9 @@ URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 96
-BATTERY_CRITICAL_VALUE = 95
-BATTERY_HIBERNATE_LEVEL = 94
+BATTERY_LOW_VALUE = 17
+BATTERY_CRITICAL_VALUE = 10
+BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
 SOUND_FILE_NAME = 'warning.wav'
