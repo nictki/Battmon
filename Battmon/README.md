@@ -103,7 +103,7 @@ To list all available options run with `-h` or `--help`
                     and you set timeout to 0, you will NOT have clickable
                     notification, because program will be always waiting  
                     for user reaction, and thus its kind of death loop, 
-                    you have ANY suggestions please mail me 
+                    if you have ANY suggestions please mail me 
                     (default: false)
 	-S, --no-sound	don't play sounds 
   					(default: false)
