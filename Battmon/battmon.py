@@ -990,10 +990,9 @@ if __name__ == '__main__':
                   help="shows clickable buttons on notifications, this option " \
                         "is NOT completely implemented, it's working quite " \
                         "well, but it's some laggy, notification will be always waiting for " \
-                        "user reaction or till notification timeout is up, so e.g... " \
-                        "when you set timeout for 1k sek and your battery is fast empty, " \
-                        "and you do nothing, then... " \
-                        "it was'nt my fault, you have been warned !!!, " \
+                        "user reaction or till notifications time is up, " \
+                        "note: when you set time option for 0 sek, " \
+                        "this option will be ignored !" \
                         "if you have ANY suggestions please mail me"
                         "(default: false)")
     
