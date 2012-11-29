@@ -30,7 +30,7 @@ try:
 except ImportError as iee:
     print("Import Error: " + str(iee) + "\n" \
           "Unable to import pyobject module, thus no clickable notifications will be displayed. \n" \
-          "Install pygobject, to get more informations in your notifications\n")
+          "Install pygobject, to get this feature\n")
     pygobject_module = False
     
 try:
@@ -38,12 +38,12 @@ try:
     pynotify_module = True
 except ImportError as iee:
     print("Import Error: " + str(iee) + "\n" \
-          "Unable to import pynotify module, thus no notifications will by displayed. \n"  \
-          "Install pynotify, to get clickable notifications\n")
+          "Unable to import pynotify module, thus no clickable notifications will by displayed. \n"  \
+          "Install pynotify, to get this feature\n")
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '2.0~svn26112012'
+VERSION = '2.0-beta2~svn29112012'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers' \
                 'like awesome, dwm, xmonad.' 
                 'Tested with python-notify-0.1.1 and notification-daemon-0.5.0')
@@ -53,9 +53,9 @@ URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
-BATTERY_LOW_VALUE = 55
-BATTERY_CRITICAL_VALUE = 54
-BATTERY_HIBERNATE_LEVEL = 52
+BATTERY_LOW_VALUE = 17
+BATTERY_CRITICAL_VALUE = 10
+BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
 SOUND_FILE_NAME = 'warning.wav'
@@ -78,93 +78,7 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/share/sounds/', 
                        './sounds']
 
-# power action class    
-class NotifyActions:  
-    def __init__(self, debug=False, test=False, 
-                 lockCommand=None, use_clickable_buttons=False):
-        self.__debug = debug
-        self.__tets = test
-        self.__lockCommand = lockCommand
-        self.__use_clickable_buttons = use_clickable_buttons
-    
-    # suspend to disk
-    def hibernateAction(self, n, action):     
-        assert action == "hibernate"
-        if self.__debug:
-            print("Debug Mode: hibernate action")
-        if self.__tets:
-            print("Test Mode: hibernating command executed")
-        else:
-            os.system(HIBERNATE_COMMAND_ACTION)
-            os.system(self.__lockCommand)
-        if self.__use_clickable_buttons:
-            global loop
-            n.close()
-            loop.quit()
-        if not self.__use_clickable_buttons:
-            n.close()
-  
-    # suspend to ram
-    def suspendAction(self, n, action):     
-        assert action == "suspend"
-        if self.__debug:
-            print("Debug Mode: suspend action")      
-        if self.__tets:
-            print("Test Mode: suspend command executed")
-        else:
-            os.system(SUSPEND_COMMAND_ACTION)
-            os.system(self.__lockCommand)
-        if self.__use_clickable_buttons:
-            global loop
-            n.close()
-            loop.quit()
-        if not self.__use_clickable_buttons:
-            n.close()
-    
-    # shutdown
-    def poweroffAction(self, n, action):
-        assert action == 'poweroff'
-        if self.__debug:
-            print("Debug Mode: poweroff action")
-        if self.__tets:
-            print("Test Mode: poweroff command executed")
-        else:
-            os.system(POWEROFF_COMMAND_ACTION)
-        if self.__use_clickable_buttons:
-            global loop
-            n.close()
-            loop.quit()
-        if not self.__use_clickable_buttons:
-            n.close()
-    
-    # cancel action
-    def cancelAction(self, n, action):
-        assert action == "cancel"
-        if self.__debug:
-            print("Debug Mode: cancel action")
-        if self.__tets:
-            print("Test Mode: cancel notification")
-        if self.__use_clickable_buttons:
-            global loop
-            n.close()
-            loop.quit()
-        if not self.__use_clickable_buttons:
-            n.close()
-             
-    # default close command
-    def defaultClose(self, n):
-        
-        if self.__debug:
-            print("Debug Mode: close action")
-        if self.__tets:
-            print("Test Mode: close notifification")
-        if self.__use_clickable_buttons:
-            global loop
-            n.close()
-            loop.quit()
-        if not self.__use_clickable_buttons:
-            n.close()
-    
+
 # battery values class
 class BatteryValues:
     __PATH = "/sys/class/power_supply/*/"
@@ -312,12 +226,6 @@ class Notifier:
                         action2string, action2,
                         action3string, action3,
                         defaultCloseCommand):
-           
-        if self.__use_clickable_buttons:
-            global loop
-            loop = gobject.MainLoop()
-        else:
-            pass
         
         if pynotify_module:
             global n
@@ -360,8 +268,8 @@ class Notifier:
                     print("Debug Mode: in new notify statement (%s in Notifier class)") \
                     % (self.sendNofiication.__name__)
                 
+                # initialize
                 pynotify.init("Battmon")
-                # initialize new notification
                 n = pynotify.Notification(summary=summary, message=message)
                 # add actions
                 if (action1string != None and action1 != None):
@@ -390,14 +298,97 @@ class Notifier:
                 else:
                     n.set_timeout(1000 * self.__timeout)
                 self.__updateNotify = True
-                
-            if self.__use_clickable_buttons:
+            
+            # check if clickable and time, if time 0,
+            # use regular ones to avoid loop problem
+            if self.__use_clickable_buttons and self.__timeout > 0:
                 n.show()
                 loop.run()
-            elif not self.__use_clickable_buttons:
+            #elif not self.__use_clickable_buttons:
+            else:
                 n.show()
                 #gtk.main()
-        
+
+# power action class    
+class NotifyActions():  
+    def __init__(self, debug = False, test=False, lockCommand=None, use_clickable_buttons=False):
+        self.__debug = debug
+        self.__tets = test
+        self.__lockCommand = lockCommand
+        self.__use_clickable_buttons = use_clickable_buttons
+    
+    # suspend to disk
+    def hibernateAction(self, n, action):     
+        assert action == "hibernate"
+        if self.__debug:
+            print("Debug Mode: hibernate action")
+        if self.__tets:
+            print("Test Mode: hibernating command executed")
+        else:
+            os.system(HIBERNATE_COMMAND_ACTION)
+            os.system(self.__lockCommand)
+        if self.__use_clickable_buttons:
+            n.close()
+            loop.quit()
+        if not self.__use_clickable_buttons:
+            n.close()
+  
+    # suspend to ram
+    def suspendAction(self, n, action):     
+        assert action == "suspend"
+        if self.__debug:
+            print("Debug Mode: suspend action")      
+        if self.__tets:
+            print("Test Mode: suspend command executed")
+        else:
+            os.system(SUSPEND_COMMAND_ACTION)
+            os.system(self.__lockCommand)
+        if self.__use_clickable_buttons:
+            n.close()
+            loop.quit()
+        if not self.__use_clickable_buttons:
+            n.close()
+    
+    # shutdown
+    def poweroffAction(self, n, action):
+        assert action == 'poweroff'
+        if self.__debug:
+            print("Debug Mode: poweroff action")
+        if self.__tets:
+            print("Test Mode: poweroff command executed")
+        else:
+            os.system(POWEROFF_COMMAND_ACTION)
+        if self.__use_clickable_buttons:
+            n.close()
+            loop.quit()
+        if not self.__use_clickable_buttons:
+            n.close()
+    
+    # cancel action
+    def cancelAction(self, n, action):
+        assert action == "cancel"
+        if self.__debug:
+            print("Debug Mode: cancel action")
+        if self.__tets:
+            print("Test Mode: cancel notification")
+        if self.__use_clickable_buttons:
+            n.close()
+            loop.quit()
+        if not self.__use_clickable_buttons:
+            n.close()
+             
+    # default close command
+    def defaultClose(self, n):        
+        if self.__debug:
+            print("Debug Mode: close action")
+        if self.__tets:
+            print("Test Mode: close notifification")
+        if self.__use_clickable_buttons:
+            n.close()
+            loop.quit()
+        if not self.__use_clickable_buttons:
+            n.close()
+          
 class MainRun:
     def __init__(self, debug, test, daemon, more_then_one,
                  notify, critical, use_clickable_buttons, sound, timeout):
@@ -409,10 +400,15 @@ class MainRun:
         self.__more_then_one = more_then_one
         self.__notify = notify
         self.__critical = critical
-        self.__sound = sound
+        self.__sound = sound    
         self.__timeout = timeout
         self.__use_clickable_buttons = use_clickable_buttons
         
+        global loop
+        if self.__use_clickable_buttons and self.__timeout > 0: 
+            loop = gobject.MainLoop()
+        else:
+            pass
         # __sound files commands
         self.__soundCommandLow = ''
         self.__soundCommandMedium = ''
@@ -424,17 +420,19 @@ class MainRun:
         self.__notifySend = None
         self.__currentProgramPath = ''
         
-        # classes instances
+        # initialize BatteryValues class for basic values of battery
         self.__batteryValues = BatteryValues()
-        self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand, self.__use_clickable_buttons)
-        self.__notifier = Notifier(self.__debug, self.__timeout, self.__use_clickable_buttons)
- 
+        
         # check for external programs and files      
         self.__checkNotifySend()
         self.__checkVlock()
         self.__checkPlay()
         self.__checkSoundsFiles()
         self.__batteryValues.findBatteryAndAC()
+        
+        # initialize notifications classes
+        self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand, self.__use_clickable_buttons)
+        self.__notifier = Notifier(self.__debug, self.__timeout, self.__use_clickable_buttons)
         
         # check for pygobject module
         if not pygobject_module:
@@ -572,14 +570,9 @@ class MainRun:
             sys.exit(1)
         else:
             pass
-        
-    # Battery discharging notifications and sounds
+    
+    # battery discharging monit
     def __Discharing(self):
-        if self.__debug:
-            print("Debug Mode: discharging check (%s() in MainRun class)") \
-                    % (self.runMainLoop.__name__)
-            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
-                    % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
         # check if play sound, warning scary logic
         if (self.__sound and ((not self.__notify and not self.__critical) \
                               or (self.__notify and self.__critical) \
@@ -601,14 +594,10 @@ class MainRun:
                                             self.__notifyActions.defaultClose)
         # notification through linotify
         if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "Discharging"''')  
-                
+            os.popen('''notify-send "Discharging"''')
+            
+    # battery low capacity monit 
     def __LowCapacityLevel(self):
-        if self.__debug:
-            print("Debug Mode: low capacity check (%s() in MainRun class)") \
-                % (self.runMainLoop.__name__)
-            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
-                 % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
         # check if play sound, warning scary logic  
         if (self.__sound and ((not self.__notify and not self.__critical) \
                               or (self.__notify and self.__critical) \
@@ -631,13 +620,9 @@ class MainRun:
         # notification send through libnotify
         if self.__notifySend and not pynotify_module:
             os.popen('''notify-send "Battery low level"''')
-                    
+    
+    # battery critical level monit             
     def __CriticalBatteryLevel(self):
-        if self.__debug:
-            print("Debug Mode: critical capacity check (%s() in MainRun class)") \
-                % (self.runMainLoop.__name__)
-            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
-                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
         # check if play sound, warning scary logic
         if (self.__sound and ((not self.__notify or not self.__critical) \
                               and (not self.__notify or self.__critical))):
@@ -670,16 +655,12 @@ class MainRun:
                                             None, None,
                                             None, None,
                                             self.__notifyActions.defaultClose)   
-        # notification through linotify
+        # notification through libnotify
         if self.__notifySend and not pynotify_module:
             os.popen('''notify-send "Battery critical level"''')
-                    
+    
+    # battery shutdown level monit       
     def __ShutdownBatteryLevel(self):
-        if self.__debug:
-            print("Debug Mode: shutdown check (%s() in MainRun class)") \
-                % (self.runMainLoop.__name__)
-            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
-                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
         # check if play sound, warning scary logic  
         if (self.__sound and ((not self.__notify or not self.__critical) \
                               and (not self.__notify or self.__critical))):
@@ -715,13 +696,9 @@ class MainRun:
         # notification through linotify
         if self.__notifySend and not pynotify_module:
             os.popen('''notify-send "System will be hibernate in 10 seconds !!!" "Battery critical level"''')
-            
+     
+    # battery full monit  
     def __FullBattery(self):
-        if self.__debug:
-            print("Debug Mode: full battery check (%s() in MainRun class)") \
-                % (self.runMainLoop.__name__)
-            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
-                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
         # check if play sound, warning scary logic  
         if (self.__sound and ((not self.__notify and not self.__critical) \
                               or (self.__notify and self.__critical) \
@@ -738,13 +715,9 @@ class MainRun:
         # notification through libnotify
         if self.__notifySend and not pynotify_module:
             os.popen('''notify-send "Battery fully charged"''')
-
+    
+    # charging monit
     def __ChargingBattery(self):
-        if self.__debug:
-            print("Debug Mode: battery charging check (%s() in MainRun class)") \
-                % (self.runMainLoop.__name__)
-            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
-                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
         # check if play sound, warning scary logic  
         if (self.__sound and ((not self.__notify and not self.__critical) \
                               or (self.__notify and self.__critical) \
@@ -767,6 +740,7 @@ class MainRun:
             if self.__notifySend and not pynotify_module:
                 os.popen('''notify-send "Charging"''')
     
+    # no battery monit
     def __NoBattery(self):
         if self.__debug:
             print("Debug Mode: no battery present check")
@@ -788,7 +762,7 @@ class MainRun:
         # notification through linotify
         if self.__notifySend and not pynotify_module:
             os.popen('''notify-send "Battery not present..." "Be careful with your AC cabel !!!"''')
-             
+   
     # start main loop         
     def runMainLoop(self):     
         while True:       
@@ -798,10 +772,15 @@ class MainRun:
                 if self.__batteryValues.isAcAdapterPresent() == False \
                     and self.__batteryValues.isBatteryDischarging() == True:   
                                 
-                    # not low or critical capacity level
+                    # discharging 
                     if self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE \
                         and self.__batteryValues.isAcAdapterPresent() == False:
-                        # discharging actions
+                        if self.__debug:
+                            print("Debug Mode: discharging check (%s() in MainRun class)") \
+                                % (self.runMainLoop.__name__)
+                            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
+                        # discharging monit
                         self.__Discharing()
                         # have enough power and if we should stay in save battery level loop
                         while self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE \
@@ -812,7 +791,12 @@ class MainRun:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE and \
                         self.__batteryValues.battCurrentCapacity() > BATTERY_CRITICAL_VALUE and \
                         self.__batteryValues.isAcAdapterPresent() == False:
-                        # low level actions
+                        if self.__debug:
+                            print("Debug Mode: low level battery check (%s() in MainRun class)") \
+                                % (self.runMainLoop.__name__)
+                            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
+                        # low level monit
                         self.__LowCapacityLevel()
                         # battery have enough power and check if we should stay in low battery level loop
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_LOW_VALUE \
@@ -824,6 +808,11 @@ class MainRun:
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE \
                         and self.__batteryValues.battCurrentCapacity() > BATTERY_HIBERNATE_LEVEL \
                         and self.__batteryValues.isAcAdapterPresent() == False:
+                        if self.__debug:
+                            print("Debug Mode: critical battery level check (%s() in MainRun class)") \
+                                % (self.runMainLoop.__name__)
+                            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
                         self.__CriticalBatteryLevel()
                         # battery have enough power and check if we should stay in critical battery level loop
                         while self.__batteryValues.battCurrentCapacity() <= BATTERY_CRITICAL_VALUE \
@@ -833,40 +822,56 @@ class MainRun:
                 
                     # shutdown level 
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
-                    and self.__batteryValues.isAcAdapterPresent() == False:
-                        # shutdown actions actions
+                        and self.__batteryValues.isAcAdapterPresent() == False:
+                        if self.__debug:
+                            print("Debug Mode: shutdown battery level check (%s() in MainRun class)") \
+                                % (self.runMainLoop.__name__)
+                            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
+                        # shutdown actions monit
                         self.__ShutdownBatteryLevel()      
                         # make some warnings before shutting down
-                        while self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
+                               
+                        # check once more if system should go down
+                        if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
                             and self.__batteryValues.isAcAdapterPresent() == False:
-                            for i in range(0, 5, +1):
-                                if self.__sound:
-                                    os.popen(self.__soundCommandMedium)
-                                time.sleep(i)                       
-                            # check once more if system should go down
-                            if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
-                                and self.__batteryValues.isAcAdapterPresent() == False:
-                                time.sleep(2)
-                                if self.__sound:
-                                    os.popen(self.__soundCommandMedium)
-                                if not self.__test:
+                            time.sleep(2)
+                            if self.__sound:
+                                os.popen(self.__soundCommandMedium)
+                            if not self.__test:
+                                while self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
+                                    and self.__batteryValues.isAcAdapterPresent() == False:
+                                    for i in range(0, 5, +1):
+                                        if self.__sound:
+                                            os.popen(self.__soundCommandMedium)
+                                
+                                    time.sleep(i)                
                                     os.popen(HIBERNATE_COMMAND_ACTION)
-                                else:
-                                    print("Test Mode: Hibernating... Program will be sleep for 10sek" )
-                                    time.sleep(10)     
                             else:
-                                # wait 4sek till battery values update
-                                time.sleep(4)
-                                pass
+                                for i in range(0, 5, +1):
+                                    if self.__sound:
+                                        os.popen(self.__soundCommandMedium)
+                                print("Test Mode: Hibernating... Program will be sleep for 10sek" )
+                                time.sleep(10)   
+                        else:
+                            # wait 4sek till battery values update
+                            time.sleep(4)
+                            pass
             
                 # check if we have ac connected
                 if self.__batteryValues.isAcAdapterPresent() == True \
                     and self.__batteryValues.isBatteryDischarging() == False:
+                    
                     # battery is fully charged
                     if self.__batteryValues.isAcAdapterPresent() == True \
                         and self.__batteryValues.isBatteryFullyCharged() == True \
                         and self.__batteryValues.isBatteryDischarging() == False:
-                        # full baterry actions
+                        if self.__debug:
+                            print("Debug Mode: full battery check (%s() in MainRun class)") \
+                                % (self.runMainLoop.__name__)
+                            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
+                        # full battery monit
                         self.__FullBattery()
                         # full charged loop
                         while self.__batteryValues.isAcAdapterPresent() == True \
@@ -878,7 +883,12 @@ class MainRun:
                     if self.__batteryValues.isAcAdapterPresent() == True \
                         and self.__batteryValues.isBatteryFullyCharged() == False \
                         and self.__batteryValues.isBatteryDischarging() == False:
-                        # battery charging actions
+                        if self.__debug:
+                            print("Debug Mode: charging check (%s() in MainRun class)") \
+                                % (self.runMainLoop.__name__)
+                            print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                                % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
+                        # charging nonit
                         self.__ChargingBattery()
                         # online loop
                         while self.__batteryValues.isAcAdapterPresent() == True \
@@ -890,7 +900,12 @@ class MainRun:
             
             # check for no battery
             if self.__batteryValues.isBatteryPresent() == False:
-                # no battery actions actions
+                if self.__debug:
+                    print("Debug Mode: full battery check (%s() in MainRun class)") \
+                            % (self.runMainLoop.__name__)
+                    print("Debug Mode: test: %s, notify: %s, no actions: %s, critical: %s, sound: %s\n") \
+                            % (self.__test, self.__notify, self.__use_clickable_buttons, self.__critical, self.__sound)
+                # no battery monit
                 self.__NoBattery()
                 # loop to deal with situation when we don't have any battery
                 while self.__batteryValues.isBatteryPresent() == False:
@@ -938,7 +953,7 @@ if __name__ == '__main__':
                   action="store_true", 
                   dest="daemon", 
                   default=defaultOptions['daemon'], 
-                  help="fork in background "
+                  help="start as a daemon, i.e. in the background "
                     "(default: false)")
     
     # allows to run only one instance of this program
@@ -967,14 +982,18 @@ if __name__ == '__main__':
                   help="shows only critical battery notifications "
                         "(default: false)")
     
-    # don't show action buttons
+    # don't show action button
     op.add_option("-B", "--use-clickable-buttons", 
                   action="store_true", 
                   dest="use_clickable_buttons", 
                   default=defaultOptions['use_clickable_buttons'], 
                   help="shows clickable buttons on notifications, " \
-                        "this option is not implemented completely, " \
-                        "it's working quite well, but has some 'lag'"
+                        "this option is NOT completely Implemented , " \
+                        "it's working quite well, BUT: " \
+                        "when you use this program with THIS option and you set timeout to 0, " \
+                        "you will NOT have clickable notification, because the clickable notification " \
+                        "will be waiting for user reaction and thus loop it selves"
+                        "if you have ANY suggestions please mail me "
                         "(default: false)")
     
     # don't play sound
@@ -1001,7 +1020,7 @@ if __name__ == '__main__':
                   callback=checkTimeout,
                   default=defaultOptions['timeout'], 
                   help="notification timeout in secs (use 0 to disable), " \
-                        "works only now with pynotify\n" \
+                        "works only with pynotify\n" \
                         "(default: 7)")
     
     (options, _) = op.parse_args()

@@ -19,8 +19,8 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 * optional **vlock** (program to lock one or more sessions on the Linux console)
 
 ## Changelog:
-**27.11.2012**
-* new version
+**29.11.2012**
+* 2.0-beta2
 * new functionality added
 * clickable notifications disabled per default, see `program options`
 * program can now works only with notify-send (without `pynotify`), but will show only basic notifications (no battery charge times, charge level..)
