@@ -35,7 +35,7 @@ except ImportError as iee:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '2.0-beta2~svn29112012'
+VERSION = '2.0-beta3~svn29112012'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers' \
                 'like awesome, dwm, xmonad.' 
                 'Tested with python-notify-0.1.1 and notification-daemon-0.5.0')
@@ -299,94 +299,8 @@ class Notifier:
 class NotifyActions():  
     def __init__(self, debug = False, test=False, lockCommand=None,):
         self.__debug = debug
-        self.__tets = test    # suspend to disk
-    def hibernateAction(self, n, action):
-        __n = n     
-        assert action == "hibernate"
-        if self.__debug:
-            print("Debug Mode: hibernate action")
-        if self.__tets:
-            print("Test Mode: hibernating command executed")
-        else:
-            os.system(HIBERNATE_COMMAND_ACTION)
-            os.system(self.__lockCommand)
-        if not self.__use_clickable_buttons:
-            n.close()
-  
-    # suspend to ram
-    def suspendAction(self, n, action):     
-        assert action == "suspend"
-        if self.__debug:
-            print("Debug Mode: suspend action")      
-        if self.__tets:
-            print("Test Mode: suspend command executed")
-        else:
-            os.system(SUSPEND_COMMAND_ACTION)
-            os.system(self.__lockCommand)
-        if not self.__use_clickable_buttons:
-            n.close()
-    
-    # shutdown
-    def poweroffAction(self, n, action):
-        assert action == 'poweroff'
-        if self.__debug:
-            print("Debug Mode: poweroff action")
-        if self.__tets:
-            print("Test Mode: poweroff command executed")
-        else:
-            os.system(POWEROFF_COMMAND_ACTION)
-        if not self.__use_clickable_buttons:
-            n.close()
-
-    
-#    # suspend to disk
-#    def hibernateAction(self, n, action):
-#        __n = n     
-#        assert action == "hibernate"
-#        if self.__debug:
-#            print("Debug Mode: hibernate action")
-#        if self.__tets:
-#            print("Test Mode: hibernating command executed")
-#        else:
-#            os.system(HIBERNATE_COMMAND_ACTION)
-#            os.system(self.__lockCommand)
-#        if self.__use_clickable_buttons:
-#            __n.close()
-#            loop.quit()
-#        if not self.__use_clickable_buttons:
-#            n.close()
-#  
-#    # suspend to ram
-#    def suspendAction(self, n, action):     
-#        assert action == "suspend"
-#        if self.__debug:
-#            print("Debug Mode: suspend action")      
-#        if self.__tets:
-#            print("Test Mode: suspend command executed")
-#        else:
-#            os.system(SUSPEND_COMMAND_ACTION)
-#            os.system(self.__lockCommand)
-#        if self.__use_clickable_buttons:
-#            n.close()
-#            loop.quit()
-#        if not self.__use_clickable_buttons:
-#            n.close()
-#    
-#    # shutdown
-#    def poweroffAction(self, n, action):
-#        assert action == 'poweroff'
-#        if self.__debug:
-#            print("Debug Mode: poweroff action")
-#        if self.__tets:
-#            print("Test Mode: poweroff command executed")
-#        else:
-#            os.system(POWEROFF_COMMAND_ACTION)
-#        if self.__use_clickable_buttons:
-#            n.close()
-#            loop.quit()
-#        if not self.__use_clickable_buttons:
-#            n.close()
-    
+        self.__tets = test 
+        
     # cancel action
     def cancelAction(self, n, action):
         assert action == "cancel"
