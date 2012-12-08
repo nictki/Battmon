@@ -21,7 +21,7 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 ## Changelog:
 **29.11.2012**
 * 2.0-beta3
-* clickable notifications removed, to buggy
+* clickable notifications removed, to buggy for me, to get latest stable clickable version go [here] (https://github.com/downloads/nictki/Battmon/battmon-1.2~svn26112012.tar.gz)
 * program can now works only with notify-send (without `pynotify`), but will show only basic notifications (no battery charge times, charge level..)
 * code refactoring
 * code cleanup
