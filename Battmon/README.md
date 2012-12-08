@@ -27,9 +27,9 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 * code cleanup
 
 **25.11.2012**
-* improved check if battery is present or not
-* added better warnings if some optional dependency is missing
-* added sound files to github
+* improve check if battery is present or not
+* add better warnings if some optional dependency is missing
+* add sound files to github
 * minor bug fixes
 
 **16.11.2012**
@@ -37,13 +37,13 @@ Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-dae
 * some improvements, fixed logic
 
 **17.10.2012**
-* fixed 'no battery present' loop
-* fixed battery and adapter detections
-* added pop'ups prerequisites checking for vlock, sox, pynotify, acpi and sound files
+* fix 'no battery present' loop
+* fix battery and adapter detections
+* add pop'ups prerequisites checking for vlock, sox, pynotify, acpi and sound files
   
 **12.10.2012**
-* added possibility to fork program in background
-* added possibility to run only one copy of program
+* add possibility to fork program in background
+* add possibility to run only one copy of program
 * minor fixes
 
 ## Notes:
