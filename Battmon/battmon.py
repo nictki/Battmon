@@ -72,6 +72,12 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/share/sounds/', 
                        './sounds']
 
+# default lock command 
+DEFAULT_LOCK_COMMAND="vlock"
+
+# default play command
+DEFAULT_PLAYER_COMMAND="play"
+
 
 # battery values class
 class BatteryValues:
@@ -363,7 +369,7 @@ class MainRun:
             print("NO SENDING !!!!!!")
         
         # check for external programs and files
-        self.__checkVlock()
+        self.__checkLockCommand()
         self.__checkSoundsFiles()
         self.__checkPlay()
         
@@ -399,15 +405,16 @@ class MainRun:
             
     # check if we have sox            
     def __checkPlay(self):       
-        if self.__checkInPath('play'):
+        if self.__checkInPath(DEFAULT_PLAYER_COMMAND):
             self.__soundPlayer = self.__currentProgramPath        
         # if not found sox in path, send popup notification about it 
         elif pynotify_module:
             self.__sound = False 
             pynotify.init("No play")
-            self.__notifier.sendNofiication('Dependency missing !!!' , 
-                                            '''<b>Please check if you have installed sox</b>\n\n''' \
-                                            '''Without sox, no sounds will be played''',
+            self.__notifier.sendNofiication('<b>Dependency missing !!!</b><\n> ', 
+                                            '''Please check if you have installed<b> '''\
+                                            +  DEFAULT_PLAYER_COMMAND + '''</b>\n\n''' \
+                                            '''Without''' + DEFAULT_PLAYER_COMMAND + ''' no sounds will be played''',
                                             'cancel, Ok ', self.__notifyActions.cancelAction,
                                             None, None,
                                             None, None,
@@ -420,17 +427,15 @@ class MainRun:
             print("Dependency missing !!!\nYou have to install sox to play sounds\n")
             
     # check if we have vlock            
-    def __checkVlock(self): 
-        if self.__checkInPath('vlock'):
+    def __checkLockCommand(self): 
+        if self.__checkInPath(DEFAULT_LOCK_COMMAND):
             self.__lockCommand = (self.__currentProgramPath + ' -n')
 
         # if not found vlock in path, send popup notification about it 
         elif pynotify_module:
-            self.__notifier.sendNofiication('Dependency missing !!!' , 
-                                            '''<b>Please check if you have installed vlock</b>\n\n''' \
-                                            '''Without vlock, no session will be lock on the Linux console.''' \
-                                            '''\n\nYou can get vlock from: ''' \
-                                            '''<a href="http://freecode.com/projects/vlock">vlock</a>''',
+            self.__notifier.sendNofiication('''<b>Dependency missing !!!</b>\n''',
+                                            '''Please check if you have <b>''' \
+                                            + DEFAULT_LOCK_COMMAND + ''' </b>installed session lock program</b>\n\n''',
                                             'cancel, Ok ', self.__notifyActions.cancelAction,
                                             None, None,
                                             None, None,
