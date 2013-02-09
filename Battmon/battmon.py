@@ -73,10 +73,10 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        './sounds']
 
 # default lock command 
-DEFAULT_LOCK_COMMAND="vlock"
+DEFAULT_LOCK_COMMAND='vlock'
 
 # default play command
-DEFAULT_PLAYER_COMMAND="play"
+DEFAULT_PLAYER_COMMAND='play'
 
 
 # battery values class
@@ -204,10 +204,11 @@ class BatteryValues:
                 return(False)
             
 class Notifier:
-    def __init__(self, debug=False, timeout=None):
+    def __init__(self, debug=False, timeout=None, check_dunst=None):
         # variables
         self.__debug = debug
         self.__timeout = timeout
+        self.__dunst = check_dunst
         #self.__use_clickable_buttons = use_clickable_buttons
     
     __updateNotify = False
@@ -227,7 +228,8 @@ class Notifier:
                         action3string, action3,
                         defaultCloseCommand):
         
-        if pynotify_module:
+        # check if dunst is installed
+        if pynotify_module and not self.__dunst:
             global n
             if self.__updateNotify:               
                 if self.__debug:
@@ -299,8 +301,42 @@ class Notifier:
                 else:
                     self.__n.set_timeout(1000 * self.__timeout)
                 self.__updateNotify = True
-  
+            
             self.__n.show()
+            
+        elif self.__dunst:
+            if self.__updateNotify:               
+                if self.__debug:
+                    print("Debug Mode: updating notify statement (%s in Notifier class)") \
+                        % (self.sendNofiication.__name__)
+                self.__n.clear_actions()
+                
+                # set __timeout
+                if self.__timeout == 0:
+                    self.__n.set_timeout(pynotify.EXPIRES_NEVER)
+                else:
+                    self.__n.set_timeout(1000 * self.__timeout)
+                
+                self.__n.update(summary=summary, message=message)
+
+            if not self.__updateNotify:
+                if self.__debug:
+                    print("Debug Mode: in new notify statement (%s in Notifier class)") \
+                        % (self.sendNofiication.__name__)
+                
+                # initialize
+                pynotify.init("Battmon")
+                n = pynotify.Notification(summary=summary, message=message)
+                self.__n = n
+                                
+                # set timeout
+                if self.__timeout == 0:
+                    self.__n.set_timeout(pynotify.EXPIRES_NEVER)
+                else:
+                    self.__n.set_timeout(1000 * self.__timeout)
+                self.__updateNotify = True
+  
+                self.__n.show()
             #gtk.main()
 
 # power action class    
@@ -340,16 +376,18 @@ class MainRun:
         self.__sound = sound    
         self.__timeout = timeout
         #self.__use_clickable_buttons = use_clickable_buttons
-        # __sound files commands
-        self.__soundCommandLow = ''
-        self.__soundCommandMedium = ''
-        self.__soundCommandHigh = ''
         
         # external programs
         self.__lockCommand = ''
         self.__soundPlayer = ''
         self.__notifySend = ''
         self.__currentProgramPath = ''
+        self.__check_dunst = False
+        
+        # sound files
+        self.__soundCommandLow = ''
+        self.__soundCommandMedium = ''
+        self.__soundCommandHigh = ''
         
         # initialize BatteryValues class for basic values of battery
         self.__batteryValues = BatteryValues()
@@ -357,21 +395,22 @@ class MainRun:
         
         # check if we can send notifications
         self.__checkNotifySend()
+        self.__checkDunst()
         
         # check for pynotify module
-        if not pynotify_module:
+        if not pynotify_module and self.__notifySend:
             os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications"''')
         elif self.__notifySend:
             # initialize notifications classes
             self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand)
-            self.__notifier = Notifier(self.__debug, self.__timeout)
+            self.__notifier = Notifier(self.__debug, self.__timeout, self.__check_dunst)
         else:
             print("NO SENDING !!!!!!")
         
         # check for external programs and files
         self.__checkLockCommand()
-        self.__checkSoundsFiles()
         self.__checkPlay()
+        self.__checkSoundsFiles()
         
         # check if program already running and set name
         if not self.__more_then_one:
@@ -395,6 +434,37 @@ class MainRun:
         except OSError as ose:
             print("Error: " + str(ose))
     
+     # set name for this program, thus works 'killall Battmon'
+    def __setProcName(self, name):
+        libc = cdll.LoadLibrary('libc.so.6')
+        libc.prctl(15, name, 0, 0, 0)
+        
+    # we want only one instance of this program
+    def __checkIfRunning(self, name):
+        output = commands.getoutput('ps -A')
+        if name in output and pynotify_module:
+            if self.__sound:
+                os.popen(self.__soundCommandLow)
+            self.__notifier.sendNofiication('Battmon is already running',
+                                          'To run more then one copy of Battmon,\nrun Battmon with -m option',
+                                          'cancel, Ok ', self.__notifyActions.cancelAction,
+                                          None, None,
+                                          None, None,
+                                          self.__notifyActions.defaultClose)
+            sys.exit(1)
+        elif name in output and self.__notifySend:
+            if self.__sound:
+                os.popen(self.__soundCommandLow)
+            os.popen('''notify-send "Battmon is already running !!!" "To run more then one copy of Battmon,\nrun Battmon with -m option"''')
+            sys.exit(1)
+        elif name in output:
+            print("Battmon is already running !!!" \
+                  "\nTo run more then one copy of Battmon," \
+                  "\nrun Battmon with -m option\n")
+            sys.exit(1)
+        else:
+            pass
+    
     # check for notify-send
     def __checkNotifySend(self):
         if self.__checkInPath('notify-send'):
@@ -403,10 +473,15 @@ class MainRun:
             self.__notifySend = False
             print("Dependency missing !!!\nYou have to install libnotify !!!\n")
             
+    #check if we have dunst there
+    def __checkDunst(self):
+        if self.__checkInPath('dunst'):
+            self.__check_dunst = True
+            
     # check if we have sox            
     def __checkPlay(self):       
         if self.__checkInPath(DEFAULT_PLAYER_COMMAND):
-            self.__soundPlayer = self.__currentProgramPath        
+            self.__soundPlayer = self.__currentProgramPath
         # if not found sox in path, send popup notification about it 
         elif pynotify_module:
             self.__sound = False 
@@ -467,40 +542,9 @@ class MainRun:
                 os.popen('''notify-send "Dependency missing !!!" "Check if you have sound files in you path"''')
             else:
                 print("Dependency missing !!!\nYou have to install vlock to lock your session\n")
-
-    # set name for this program, thus works 'killall Battmon'
-    def __setProcName(self, name):
-        libc = cdll.LoadLibrary('libc.so.6')
-        libc.prctl(15, name, 0, 0, 0)
-        
-    # we want only one instance of this program
-    def __checkIfRunning(self, name):
-        output = commands.getoutput('ps -A')
-        if name in output and pynotify_module:
-            if self.__sound:
-                os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Battmon is already running',
-                                          'To run more then one copy of Battmon,\nrun Battmon with -m option',
-                                          'cancel, Ok ', self.__notifyActions.cancelAction,
-                                          None, None,
-                                          None, None,
-                                          self.__notifyActions.defaultClose)
-            sys.exit(1)
-        elif name in output and self.__notifySend:
-            if self.__sound:
-                os.popen(self.__soundCommandLow)
-            os.popen('''notify-send "Battmon is already running !!!" "To run more then one copy of Battmon,\nrun Battmon with -m option"''')
-            sys.exit(1)
-        elif name in output:
-            print("Battmon is already running !!!" \
-                  "\nTo run more then one copy of Battmon," \
-                  "\nrun Battmon with -m option\n")
-            sys.exit(1)
-        else:
-            pass
     
     # battery discharging monit
-    def __Discharing(self):
+    def __BatteryDischarging(self):
         # check if play sound, warning scary logic
         if (self.__sound and ((not self.__notify and not self.__critical) \
                               or (self.__notify and self.__critical) \
@@ -681,7 +725,7 @@ class MainRun:
                             print("Debug Mode: test: %s, notify: %s, critical: %s, sound: %s\n") \
                                 % (self.__test, self.__notify, self.__critical, self.__sound)
                         # discharging monit
-                        self.__Discharing()
+                        self.__BatteryDischarging()
                         # have enough power and if we should stay in save battery level loop
                         while self.__batteryValues.battCurrentCapacity() > BATTERY_LOW_VALUE \
                                 and self.__batteryValues.isAcAdapterPresent() == False:
