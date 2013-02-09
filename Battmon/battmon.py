@@ -24,7 +24,9 @@ import optparse
 from ctypes import cdll
 import commands
 import gtk
-    
+
+global pynotify_module
+
 try:
     import pynotify
     pynotify_module = True
@@ -338,31 +340,33 @@ class MainRun:
         self.__soundCommandHigh = ''
         
         # external programs
-        self.__lockCommand = None
-        self.__soundPlayer = None
-        self.__notifySend = None
+        self.__lockCommand = ''
+        self.__soundPlayer = ''
+        self.__notifySend = ''
         self.__currentProgramPath = ''
         
         # initialize BatteryValues class for basic values of battery
         self.__batteryValues = BatteryValues()
-        
-        # check for external programs and files      
-        self.__checkNotifySend()
-        self.__checkVlock()
-        self.__checkPlay()
-        self.__checkSoundsFiles()
         self.__batteryValues.findBatteryAndAC()
         
-        # initialize notifications classes
-        self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand)
-        self.__notifier = Notifier(self.__debug, self.__timeout)
-                 
+        # check if we can send notifications
+        self.__checkNotifySend()
+        
         # check for pynotify module
         if not pynotify_module:
-            self.__notify = False
-            if self.__notifySend:
-                os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications"''')
-                
+            os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications"''')
+        elif self.__notifySend:
+            # initialize notifications classes
+            self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand)
+            self.__notifier = Notifier(self.__debug, self.__timeout)
+        else:
+            print("NO SENDING !!!!!!")
+        
+        # check for external programs and files
+        self.__checkVlock()
+        self.__checkSoundsFiles()
+        self.__checkPlay()
+        
         # check if program already running and set name
         if not self.__more_then_one:
             self.__checkIfRunning(NAME)
@@ -372,7 +376,7 @@ class MainRun:
         if self.__daemon and not self.__debug:
             if os.fork() != 0:
                 sys.exit()
-        
+    
     # check if in path
     def __checkInPath(self, programName):
         try:
@@ -418,10 +422,10 @@ class MainRun:
     # check if we have vlock            
     def __checkVlock(self): 
         if self.__checkInPath('vlock'):
-            self.__lockCommand = (self.__currentProgramPath + ' -n')        
+            self.__lockCommand = (self.__currentProgramPath + ' -n')
+
         # if not found vlock in path, send popup notification about it 
-        elif pynotify_module: 
-            pynotify.init("No vlock")
+        elif pynotify_module:
             self.__notifier.sendNofiication('Dependency missing !!!' , 
                                             '''<b>Please check if you have installed vlock</b>\n\n''' \
                                             '''Without vlock, no session will be lock on the Linux console.''' \
@@ -435,28 +439,30 @@ class MainRun:
             os.popen('''notify-send "Dependency missing !!!" "You have to install vlock to lock session"''')
         else:
             print("Dependency missing !!!\nYou have to install vlock to lock your session\n")
-            
+    
     # check if sound files exist
     def __checkSoundsFiles(self):
-        if self.__checkInPath(SOUND_FILE_NAME):
-            self.__soundCommandLow = '%s -V1 -q -v 10 %s' % (self.__soundPlayer, self.__currentProgramPath)
-            self.__soundCommandMedium = '%s -V1 -q -v 25 %s' % (self.__soundPlayer, self.__currentProgramPath)
-            self.__soundCommandHigh = '%s -V1 -q -v 40 %s' % (self.__soundPlayer, self.__currentProgramPath)
-        elif pynotify_module:
-            self.__notifier.sendNofiication('Dependency missing !!!' , 
-                                            '''<b>Please check if you have sound files in you path</b>\n\n''' \
-                                            '''Without them, no sounds will be played.\n\n''' \
-                                            '''You can get them from this program site: ''' \
-                                            '''<a href="https://github.com/nictki/Battmon">Battmon</a>''',
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose)
-        elif self.__notifySend:
-            os.popen('''notify-send "Dependency missing !!!" "Check if you have sound files in you path"''')
-        else:
-            print("Dependency missing !!!\nYou have to install vlock to lock your session\n")
-                 
+        try:
+            if self.__checkInPath(SOUND_FILE_NAME):
+                self.__soundCommandLow = '%s -V1 -q -v 10 %s' % (self.__soundPlayer, self.__currentProgramPath)
+                self.__soundCommandMedium = '%s -V1 -q -v 25 %s' % (self.__soundPlayer, self.__currentProgramPath)
+                self.__soundCommandHigh = '%s -V1 -q -v 40 %s' % (self.__soundPlayer, self.__currentProgramPath)
+        except:
+            if pynotify_module:
+                self.__notifier.sendNofiication('Dependency missing !!!' , 
+                                                '''<b>Please check if you have sound files in you path</b>\n\n''' \
+                                                '''Without them, no sounds will be played.\n\n''' \
+                                                '''You can get them from this program site: ''' \
+                                                '''<a href="https://github.com/nictki/Battmon">Battmon</a>''',
+                                                'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose)
+            elif self.__notifySend:
+                os.popen('''notify-send "Dependency missing !!!" "Check if you have sound files in you path"''')
+            else:
+                print("Dependency missing !!!\nYou have to install vlock to lock your session\n")
+
     # set name for this program, thus works 'killall Battmon'
     def __setProcName(self, name):
         libc = cdll.LoadLibrary('libc.so.6')
