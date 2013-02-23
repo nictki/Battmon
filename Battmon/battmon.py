@@ -24,6 +24,7 @@ import optparse
 from ctypes import cdll
 import commands
 import gtk
+from bzrlib.switch import switch
 
 global pynotify_module
 
@@ -31,7 +32,7 @@ try:
     import pynotify
     pynotify_module = True
 except ImportError as iee:
-    print("Import Error: " + str(iee) + "\n" \
+    print("Import Error: " + str(iee) + '''\n''' \
           "Unable to import pynotify module, thus no clickable notifications will by displayed. \n"  \
           "Install pynotify, to get this feature\n")
     pynotify_module = False
@@ -48,7 +49,7 @@ LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
 BATTERY_LOW_VALUE = 17
-BATTERY_CRITICAL_VALUE = 10
+BATTERY_CRITICAL_VALUE = 14
 BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
@@ -72,12 +73,11 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/share/sounds/', 
                        './sounds']
 
-# default lock command 
-DEFAULT_LOCK_COMMAND='vlock'
-
 # default play command
-DEFAULT_PLAYER_COMMAND='play'
+DEFAULT_PLAYER_COMMAND = 'play'
 
+# screen lockers
+DEFAULT_LOCK_COMMAND = ['xscreensaver-command', 'slimlock', 'vlock']
 
 # battery values class
 class BatteryValues:
@@ -125,7 +125,7 @@ class BatteryValues:
             try:
                 return(int(v))
             except ValueError:
-                return(0)
+                return 0
     
     # get battery time in seconds
     def __getBatteryTimes(self):      
@@ -175,7 +175,7 @@ class BatteryValues:
     # get current battery capacity
     def battCurrentCapacity(self):
         v = self.__getValue(self.__BAT_PATH + 'capacity')
-        return(int(v))
+        return int(v)
    
     # check if battery discharging
     def isBatteryDischarging(self):
@@ -271,7 +271,7 @@ class Notifier:
                     % (self.sendNofiication.__name__)
                 
                 # initialize
-                pynotify.init("Battmon")
+                pynotify.init("Battmon: ")
                 n = pynotify.Notification(summary=summary, message=message)
                 self.__n = n
                 # add actions
@@ -321,11 +321,11 @@ class Notifier:
 
             if not self.__updateNotify:
                 if self.__debug:
-                    print("Debug Mode: in new notify statement (%s in Notifier class)") \
-                        % (self.sendNofiication.__name__)
+                    print "Debug Mode: in new notify statement (%s in Notifier class)"\
+                          % (self.sendNofiication.__name__)
                 
                 # initialize
-                pynotify.init("Battmon")
+                pynotify.init("Battmon: ")
                 n = pynotify.Notification(summary=summary, message=message)
                 self.__n = n
                                 
@@ -361,7 +361,7 @@ class NotifyActions():
         if self.__tets:
             print("Test Mode: close notifification")
         n.close()
-          
+
 class MainRun:
     def __init__(self, debug, test, daemon, more_then_one,
                  notify, critical, sound, timeout):
@@ -394,7 +394,7 @@ class MainRun:
         self.__batteryValues.findBatteryAndAC()
         
         # check if we can send notifications
-        self.__checkNotifySend()
+        self.__checkNotifySend()      
         self.__checkDunst()
         
         # check for pynotify module
@@ -407,15 +407,15 @@ class MainRun:
         else:
             print("NO SENDING !!!!!!")
         
-        # check for external programs and files
-        self.__checkLockCommand()
-        self.__checkPlay()
-        self.__checkSoundsFiles()
-        
         # check if program already running and set name
         if not self.__more_then_one:
             self.__checkIfRunning(NAME)
             self.__setProcName(NAME)
+        
+        # check for external programs and files
+        self.__checkLockCommand()
+        self.__checkPlay()
+        self.__checkSoundsFiles()
     
         # fork in background
         if self.__daemon and not self.__debug:
@@ -428,7 +428,7 @@ class MainRun:
             for p in EXTRA_PROGRAMS_PATH:    
                 if os.path.isfile(p + programName):
                     self.__currentProgramPath = (p + programName)
-                    return(True) 
+                    return True
             else:
                 return(False)
         except OSError as ose:
@@ -445,8 +445,9 @@ class MainRun:
         if name in output and pynotify_module:
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Battmon is already running',
-                                          'To run more then one copy of Battmon,\nrun Battmon with -m option',
+            pynotify.init("Battmon: ")
+            self.__notifier.sendNofiication('''<b>Battmon is already running</b>\n''',
+                                          'To run more then one copy of Battmon,\n run Battmon with -m option',
                                           'cancel, Ok ', self.__notifyActions.cancelAction,
                                           None, None,
                                           None, None,
@@ -485,7 +486,7 @@ class MainRun:
         # if not found sox in path, send popup notification about it 
         elif pynotify_module:
             self.__sound = False 
-            pynotify.init("No play")
+            pynotify.init("Battmon: ")
             self.__notifier.sendNofiication('<b>Dependency missing !!!</b><\n> ', 
                                             '''Please check if you have installed<b> '''\
                                             +  DEFAULT_PLAYER_COMMAND + '''</b>\n\n''' \
@@ -501,24 +502,75 @@ class MainRun:
             self.__sound = False
             print("Dependency missing !!!\nYou have to install sox to play sounds\n")
             
-    # check if we have vlock            
-    def __checkLockCommand(self): 
-        if self.__checkInPath(DEFAULT_LOCK_COMMAND):
-            self.__lockCommand = (self.__currentProgramPath + ' -n')
-
-        # if not found vlock in path, send popup notification about it 
-        elif pynotify_module:
-            self.__notifier.sendNofiication('''<b>Dependency missing !!!</b>\n''',
-                                            '''Please check if you have <b>''' \
-                                            + DEFAULT_LOCK_COMMAND + ''' </b>installed session lock program</b>\n\n''',
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose)
-        elif self.__notifySend:
-            os.popen('''notify-send "Dependency missing !!!" "You have to install vlock to lock session"''')
-        else:
-            print("Dependency missing !!!\nYou have to install vlock to lock your session\n")
+    
+    # check witch program will lock our screen
+    # priority is: xscreensaver, slimlock and vlock
+    def __checkLockCommand(self):
+        for i in DEFAULT_LOCK_COMMAND:
+            if self.__checkInPath(i):
+                ## xcsreensaver
+                if i == "xscreensaver-command":
+                    self.__lockCommand = i + " -lock"
+                    if pynotify_module:
+                        pynotify.init("Battmon: ")
+                        self.__notifier.sendNofiication('''Xscreensaver will be used to lock screen''',
+                                                        "",
+                                                        'canel, Ok', self.__notifyActions.cancelAction,
+                                                        None, None,
+                                                        None, None,
+                                                        self.__notifyActions.defaultClose)
+                    elif self.__notifySend:
+                         os.popen('''Xscreensaver will be used to lock screen''')
+                    else:
+                        print('''Xscreensaver will be used to lock screen''')
+                    break
+                # vlock
+                elif i == "vlock":
+                    self.__lockCommand = i + " -n"
+                    if pynotify_module:
+                        pynotify.init("Battmon: ")
+                        self.__notifier.sendNofiication('''Vlock will be used to lock screen''',
+                                                        "",
+                                                        'cancel, Ok', self.__notifyActions.cancelAction,
+                                                        None, None,
+                                                        None, None,
+                                                        self.__notifyActions.defaultClose)
+                    elif self.__notifySend:
+                         os.popen('''Vlock will be used to lock screen''')
+                    else:
+                        print('''Vlock will be used to lock screen''')
+                    break
+                # slimlock
+                elif i == "slimlock":
+                    self.__lockCommand = i + ""
+                    if pynotify_module:
+                        pynotify.init("Battmon: ")
+                        self.__notifier.sendNofiication('''Slimlock will be used to lock screen''',
+                                                        "",
+                                                        'cancel, Ok', self.__notifyActions.cancelAction,
+                                                        None, None,
+                                                        None, None,
+                                                        self.__notifyActions.defaultClose)
+                    elif self.__notifySend:
+                         os.popen('''Slimlock will be used to lock screen''')
+                    else:
+                        print('''Slimlock will be used to lock screen''')
+                    break
+            else:
+                if pynotify_module:
+                    pynotify.init("Battmon: ")
+                    self.__notifier.sendNofiication('''<b>Dependency missing !!!</b>\n''',
+                                                    '''Please check if you have <b>''' \
+                                                    '''xscreensaver, vlock or slimlock ''' \
+                                                    ''' </b>installed, without them session lock program</b>\n\n''',
+                                                    'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                    None, None,
+                                                    None, None,
+                                                    self.__notifyActions.defaultClose)
+                elif self.__notifySend:
+                    os.popen('''notify-send "Dependency missing !!!" "You have to install xscreensaver, vlock or simlock to lock session"''')
+                else:
+                    print("Dependency missing !!!\nYou have to install xscreensaver, vlock or simlock to lock your session\n")
     
     # check if sound files exist
     def __checkSoundsFiles(self):
@@ -529,6 +581,7 @@ class MainRun:
                 self.__soundCommandHigh = '%s -V1 -q -v 40 %s' % (self.__soundPlayer, self.__currentProgramPath)
         except:
             if pynotify_module:
+                pynotify.init("Battmon: ")
                 self.__notifier.sendNofiication('Dependency missing !!!' , 
                                                 '''<b>Please check if you have sound files in you path</b>\n\n''' \
                                                 '''Without them, no sounds will be played.\n\n''' \
