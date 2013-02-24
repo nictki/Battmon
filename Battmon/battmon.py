@@ -23,10 +23,9 @@ import time
 import optparse
 from ctypes import cdll
 import commands
-#import gtk
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.0-rc1~svn23022013'
+VERSION = '2.0-rc4~svn24022013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers' \
                 'like awesome, dwm, xmonad.' 
                 'Tested with python-notify-0.1.1 and notification-daemon-0.5.0')
@@ -40,17 +39,20 @@ BATTERY_LOW_VALUE = 17
 BATTERY_CRITICAL_VALUE = 7
 BATTERY_HIBERNATE_LEVEL = 3
 
-# command actions
-SOUND_FILE_NAME = 'warning.wav'
-POWEROFF_COMMAND_ACTION = 'dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit ' \
+# sound file
+SOUND_FILE_NAME = 'info.wav'
+
+# commands to power of, suspend or hibernate
+POWEROFF_COMMAND = 'dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit ' \
                         '/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop'
 
-SUSPEND_COMMAND_ACTION = 'dbus-send --system --print-reply --dest=org.freedesktop.UPower ' \
+SUSPEND_COMMAND = 'dbus-send --system --print-reply --dest=org.freedesktop.UPower ' \
                          '/org/freedesktop/UPower org.freedesktop.UPower.Suspend'
 
-HIBERNATE_COMMAND_ACTION = 'dbus-send --system --print-reply --dest=org.freedesktop.UPower '\
+HIBERNATE_COMMAND = 'dbus-send --system --print-reply --dest=org.freedesktop.UPower '\
                          '/org/freedesktop/UPower org.freedesktop.UPower.Hibernate'
-                         
+
+# path's for external things 
 EXTRA_PROGRAMS_PATH = ['/usr/bin/', 
                        '/usr/local/bin/', 
                        '/bin/', 
@@ -63,6 +65,14 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
 
 # default play command
 DEFAULT_PLAYER_COMMAND = 'play'
+# change -v option to make sounds louder or lower
+DEFAULT_PLAYER_VOLUME_LOW = ' -V1 -q -v2'
+DEFAULT_PLAYER_VOLUME_MEDIUM = ' -V1 -q -v4'
+DEFAULT_PLAYER_VOLUME_HIGH = ' -V1 -q -v6'
+
+# screen lockers
+LOCK_COMMANDS = ['i3lock', 'xscreensaver-command', 'slimlock', 'vlock']
+DEFAULT_LOCK_COMMAND = 'i3lock'
 
 # battery values class
 class BatteryValues:
@@ -207,6 +217,7 @@ class MainRun:
         self.__soundPlayer = ''
         self.__notifySend = ''
         self.__currentProgramPath = ''
+        self.__lockCommand = ''
         
         # sound files
         self.__soundCommandLow = ''
@@ -228,6 +239,7 @@ class MainRun:
         # check for external programs and files
         self.__checkPlay()
         self.__checkSoundsFiles()
+        self.__checkLockCommand()
     
         # fork in background
         if self.__daemon and not self.__debug:
@@ -296,9 +308,9 @@ class MainRun:
     def __checkSoundsFiles(self):
         try:
             if self.__checkInPath(SOUND_FILE_NAME):
-                self.__soundCommandLow = '%s -V1 -q -v 10 %s' % (self.__soundPlayer, self.__currentProgramPath)
-                self.__soundCommandMedium = '%s -V1 -q -v 25 %s' % (self.__soundPlayer, self.__currentProgramPath)
-                self.__soundCommandHigh = '%s -V1 -q -v 40 %s' % (self.__soundPlayer, self.__currentProgramPath)
+                self.__soundCommandLow = '%s %s %s' % (self.__soundPlayer, DEFAULT_PLAYER_VOLUME_LOW, self.__currentProgramPath)
+                self.__soundCommandMedium = '%s %s %s' % (self.__soundPlayer, DEFAULT_PLAYER_VOLUME_MEDIUM, self.__currentProgramPath)
+                self.__soundCommandHigh = '%s %s %s' % (self.__soundPlayer, DEFAULT_PLAYER_VOLUME_HIGH, self.__currentProgramPath)
         except:
             if self.__notifySend:
                 notify_send_string = '''notify-send "Dependency missing !!!" "Check if you have sound files in you path" %s %s''' \
@@ -306,6 +318,49 @@ class MainRun:
                 os.popen(notify_send_string)
             else:
                 print("Dependency missing !!!\n No sound files found\n")
+    
+    # check witch program will lock our screen
+    # priority is: xscreensaver, slimlock and vlock
+    def __checkLockCommand(self):
+        if self.__checkInPath(DEFAULT_LOCK_COMMAND):
+            # i3lock
+            if DEFAULT_LOCK_COMMAND == "i3lock":
+                self.__lockCommand = DEFAULT_LOCK_COMMAND + " -c 000000"
+                    
+                if self.__notifySend:
+                     os.popen('''notify-send "i3lock will be used to lock screen" -a Battmon''')
+                else:
+                    print('''i3lock will be used to lock screen''')
+                    
+            # xcsreensaver
+            elif DEFAULT_LOCK_COMMAND == "xscreensaver-command":
+                self.__lockCommand = DEFAULT_LOCK_COMMAND + " -lock"
+                if self.__notifySend:
+                    os.popen('''notify-send "xscreensaver will be used to lock screen" -a Battmon''')
+                else:
+                    print('''xscreensaver will be used to lock screen''')
+    
+            # vlock
+            elif DEFAULT_LOCK_COMMAND == "vlock":
+                self.__lockCommand = DEFAULT_LOCK_COMMAND + " -n"
+                if self.__notifySend:
+                    os.popen('''notify-send "vlock will be used to lock screen" -a Battmon''')
+                else:
+                    print('''vlock will be used to lock screen''')
+    
+            # slimlock
+            elif DEFAULT_LOCK_COMMAND == "slimlock":
+                self.__lockCommand = DEFAULT_LOCK_COMMAND
+                if self.__notifySend:
+                    os.popen('''notify-send "slimlock will be used to lock screen" -a Battmon''')
+                else:
+                    print('''slimlock will be used to lock screen''')
+    
+        else:
+            if self.__notifySend:
+                os.popen('''notify-send "Dependency missing !!!" "Please check if you have intalled one of this: i3lock, xscreensaver,vlock or simlock, without this programms your session won't be locked" -a Battmon''')
+            else:
+                print("Dependency missing !!!\nPlease check if you have intalled one of this: i3lock, xscreensaver,vlock or simlock, without this programms your session won't be locked\n")
     
     # battery discharging monit
     def __BatteryDischarging(self):
@@ -343,7 +398,7 @@ class MainRun:
                 os.popen(self.__soundCommandLow)
             # notification send through libnotify
             if self.__notifySend:
-                notify_send_string = '''notify-send "Battery low level" "Current capacity %s%s\nTime left: %s'" %s %s''' \
+                notify_send_string = '''notify-send "Low battery level!!!\n" "Current capacity %s%s\n Time left: %s'" %s %s''' \
                                      % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string) 
             else:
@@ -363,14 +418,14 @@ class MainRun:
                 os.popen(self.__soundCommandLow)   
             # notification through libnotify
             if self.__notifySend:
-                notify_send_string = '''notify-send "Critical bettery level!!!\" "Current capacity %s%s\nTime left: %s" %s %s''' \
+                notify_send_string = '''notify-send "Critical bettery level!!!\n" "Current capacity %s%s\n Time left: %s" %s %s''' \
                                     % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             else:
                 print("Critical battery level")
             
     # battery shutdown level monit       
-    def __ShutdownBatteryLevel(self):
+    def __HibernateBatteryLevel(self):
         # check if play sound, warning scary logic  
         if (self.__sound and ((not self.__notify or not self.__critical) \
                               and (not self.__notify or self.__critical))):
@@ -383,11 +438,11 @@ class MainRun:
                 os.popen(self.__soundCommandMedium)
             # notification through linotify
             if self.__notifySend:
-                notify_send_string = '''notify-send "System will be hibernate in 10 seconds !!!\n" "Battery critical level: %s%s\nTime left: %s" %s %s''' \
+                notify_send_string = '''notify-send "System will be hibernate in 12 seconds !!!\n" "Battery critical level: %s%s\n Time left: %s" %s %s''' \
                                     % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             else:
-                print("System will be hibernate in 10 seconds !!!")
+                print("System will be hibernate in 12 seconds !!!")
             
     # battery full monit  
     def __FullBattery(self):
@@ -448,7 +503,7 @@ class MainRun:
                 os.popen(self.__soundCommandLow)
             # notification through linotify
             if self.__notifySend:
-                notify_send_string = '''notify-send "Battery not present..." "Be careful with your AC cabel !!!" %s %s''' \
+                notify_send_string = '''notify-send "Battery not present...\n" "Be careful with your AC cabel !!!" %s %s''' \
                                     % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             else:
@@ -511,7 +566,7 @@ class MainRun:
                             and self.__batteryValues.isAcAdapterPresent() == False:                       
                             time.sleep(1)
                 
-                    # shutdown level 
+                    # hibernate level 
                     elif self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
                         and self.__batteryValues.isAcAdapterPresent() == False:
                         if self.__debug:
@@ -519,28 +574,56 @@ class MainRun:
                                 % (self.runMainLoop.__name__)
                             print("Debug Mode: test: %s, notify: %s, critical: %s, sound: %s\n") \
                                 % (self.__test, self.__notify, self.__critical, self.__sound)
-                        # shutdown actions monit
-                        self.__ShutdownBatteryLevel()      
-                        # make some warnings before shutting down
+                        # hibernate action monit
+                        self.__HibernateBatteryLevel()      
+                        # make some warnings before hibernateing
                                
-                        # check once more if system should go down
+                        # check once more if system will be hibernate
                         if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
                             and self.__batteryValues.isAcAdapterPresent() == False:
                             time.sleep(2)
                             if self.__sound:
-                                os.popen(self.__soundCommandMedium)
+                                os.popen(self.__soundCommandLow)
                             if not self.__test:
-                                while self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
+                                if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
                                     and self.__batteryValues.isAcAdapterPresent() == False:
-                                    for i in range(0, 5, +1):
-                                        if self.__sound:
-                                            os.popen(self.__soundCommandMedium)
-                                
-                                    time.sleep(i)                
-                                    os.popen(HIBERNATE_COMMAND_ACTION)
+                                    
+                                    for i in range(0, 6, +1):
+                                        # check if ac was plugged
+                                        if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
+                                            and self.__batteryValues.isAcAdapterPresent() == False:
+                                            if self.__sound:
+                                                time.sleep(1)
+                                                print("in first for loop")
+                                                os.popen(self.__soundCommandLow)
+                                            elif not self.__sound:
+                                                print("sleep for 6 sek")
+                                                time.sleep(6)
+                                                print("end off sleep")
+                                                break
+                                    
+                                    # one more check if ac was plugged
+                                    if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
+                                            and self.__batteryValues.isAcAdapterPresent() == False:
+                                        
+                                        os.popen(self.__soundCommandLow)
+                                        notify_send_string = '''notify-send "System will be hibernate !!!\n" "You have 6sek to plug Ac cabel\nBattery critical level: %s%s\n Time left: %s" %s %s''' \
+                                                            % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                        os.popen(notify_send_string)
+                                        time.sleep(6)
+                                        
+                                    # LAST CHECK befero hibernating
+                                    if self.__batteryValues.battCurrentCapacity() <= BATTERY_HIBERNATE_LEVEL \
+                                        and self.__batteryValues.isAcAdapterPresent() == False:
+                                        # lock screen and hibernate
+                                        os.popen(self.__lockCommand)                
+                                        os.popen(SUSPEND_COMMAND)
+                            
+                            # test block
                             else:
-                                for i in range(0, 5, +1):
+                                for i in range(0, 6, +1):
                                     if self.__sound:
+                                        time.sleep(1)
                                         os.popen(self.__soundCommandMedium)
                                 print("Test Mode: Hibernating... Program will be sleep for 10sek" )
                                 time.sleep(10)   

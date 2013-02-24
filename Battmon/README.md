@@ -15,13 +15,16 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 ## Prerequisites:
 * **python2** and **libnotify** (for basic functionality)
 * optional **sox** (for sounds)
+* optional `i3lock`, `xscreensaver`, `vlock` or `slimlock` to lock user session before hibernating
 
 ## Changelog:
 **24.02.2013**
-* 2.0-rc1
+* 2.0-rc4
 * get rid of pynitfy module, evething goes throught notify-send
+* notify-send shows all informations, like battery charge time, battery level etc
 * code cleanup
 * some improvements
+* re-add session lock commands
 
 **29.11.2012**
 * 2.0-beta3
