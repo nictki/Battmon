@@ -2,23 +2,27 @@
 
 ## Description:
 **Battmon** is simple battery monitoring program written in python especially for tiling window managers like xmonad, dwm or awesome.
-Program was tested with `gentoo` and `python-notify-0.1.1` and `notification-daemon-0.5.0`.
+Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 ## Features:
 * very light (for really basic functionality you need only `python2` installed)
 * works in background
 * configurable
 * no tray icon
-* notifications (clickable notifications are disabled by default) see `program options`
+* notifications
 * options can be given on the command line (see battmon --help for details)
 
 ## Prerequisites:
 * **python2** and **libnotify** (for basic functionality)
-* optional **python-notify** (for normal program functionality, like clickable notifications)
 * optional **sox** (for sounds)
-* optional **vlock** (program to lock one or more sessions on the Linux console)
 
 ## Changelog:
+**24.02.2013**
+* 2.0-rc1
+* get rid of pynitfy module, evething goes throught notify-send
+* code cleanup
+* some improvements
+
 **29.11.2012**
 * 2.0-beta3
 * clickable notifications removed, to buggy for me, to get latest stable clickable version go [here] (https://github.com/downloads/nictki/Battmon/battmon-1.2~svn26112012.tar.gz)
