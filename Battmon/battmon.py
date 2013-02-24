@@ -384,9 +384,9 @@ class MainRun:
         self.__checkDunst()
         
         # check for pynotify module
-        if not pynotify_module and self.__notifySend:
-            os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications" -a Battmon''')
-        elif self.__notifySend:
+        #if not pynotify_module and self.__notifySend:
+        #    os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications" -a Battmon''')
+        if self.__notifySend:
             # initialize notifications classes
             self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand)
             self.__notifier = Notifier(self.__debug, self.__timeout, self.__check_dunst)
@@ -615,7 +615,9 @@ class MainRun:
                                                 self.__notifyActions.defaultClose)
             # notification through linotify
             if self.__notifySend and not pynotify_module:
-                os.popen('''notify-send "Discharging" -a Battmon''')
+                notify_send_string = '''notify-send "Discharging" "Current capacity: %s%s\nTime left: %s" %s''' \
+                                     % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-a Battmon')
+                os.popen(notify_send_string)
             else:
                 print("Discharging")
             
@@ -644,7 +646,9 @@ class MainRun:
                 
             # notification send through libnotify
             if self.__notifySend and not pynotify_module:
-                os.popen('''notify-send "Battery low level" -a Battmon''')
+                notify_send_string = '''notify-send "Battery low level" "Current capacity %s%s\nTime left: %s'" %s''' \
+                                     % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-a Battmon')
+                os.popen(notify_send_string) 
             else:
                 print("Low battery level")
            
@@ -671,8 +675,9 @@ class MainRun:
                                                 self.__notifyActions.defaultClose)   
             # notification through libnotify
             if self.__notifySend and not pynotify_module:
-                os.popen('''notify-send "Critical bettery level" -a Battmon''')
-                
+                notify_send_string = '''notify-send "Critical bettery level!!!\" "Current capacity %s%s\nTime left: %s" %s''' \
+                                    % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-a Battmon')
+                os.popen(notify_send_string)
             else:
                 print("Critical battery level")
             
@@ -690,7 +695,7 @@ class MainRun:
                 os.popen(self.__soundCommandMedium)
             if pynotify_module:
                 self.__notifier.sendNofiication('System will be hibernate in 10 seconds !!!', 
-                                                'Battery level critical: %s%s\nTime left: %s' \
+                                                'Battery critical level: %s%s\nTime left: %s' \
                                                 % (self.__batteryValues.battCurrentCapacity(), \
                                                 '%', self.__batteryValues.batteryTime()),
                                                 'cancel, Ok ', self.__notifyActions.cancelAction,
@@ -699,9 +704,11 @@ class MainRun:
                                                 self.__notifyActions.defaultClose)
             # notification through linotify
             if self.__notifySend and not pynotify_module:
-                os.popen('''notify-send "System will be hibernate in 10 seconds !!!" "Battery critical level" -a Battmon''')
+                notify_send_string = '''notify-send "System will be hibernate in 10 seconds !!!\n" "Battery critical level: %s%s\nTime left: %s" %s''' \
+                                    % (self.__batteryValues.battCurrentCapacity(), '%', self.__batteryValues.batteryTime(), '-a Battmon')
+                os.popen(notify_send_string)
             else:
-                print("Critical battery level")
+                print("System will be hibernate in 10 seconds !!!")
             
     # battery full monit  
     def __FullBattery(self):
@@ -752,7 +759,9 @@ class MainRun:
                                                 self.__notifyActions.defaultClose)
             # notification through libnotify
             if self.__notifySend and not pynotify_module:
-                os.popen('''notify-send "Charging" -a Battmon''')
+                notify_send_string = '''notify-send "Charging\n" "Time left to fully charge: %s\n" %s'''\
+                % (self.__batteryValues.batteryTime(), '-a Battmon')
+                os.popen(notify_send_string)
             else:
                 print("Charging")
             
