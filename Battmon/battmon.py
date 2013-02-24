@@ -24,7 +24,6 @@ import optparse
 from ctypes import cdll
 import commands
 import gtk
-from bzrlib.switch import switch
 
 global pynotify_module
 
@@ -38,7 +37,7 @@ except ImportError as iee:
     pynotify_module = False
 
 NAME = "Battmon"
-VERSION = '2.0-beta3~svn29112012'
+VERSION = '2.0-beta4~svn23022013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers' \
                 'like awesome, dwm, xmonad.' 
                 'Tested with python-notify-0.1.1 and notification-daemon-0.5.0')
@@ -49,7 +48,7 @@ LICENSE = "GNU GPLv2+"
 
 # default battery capacity levels
 BATTERY_LOW_VALUE = 17
-BATTERY_CRITICAL_VALUE = 14
+BATTERY_CRITICAL_VALUE = 7
 BATTERY_HIBERNATE_LEVEL = 3
 
 # command actions
@@ -77,7 +76,7 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
 DEFAULT_PLAYER_COMMAND = 'play'
 
 # screen lockers
-DEFAULT_LOCK_COMMAND = ['xscreensaver-command', 'slimlock', 'vlock']
+DEFAULT_LOCK_COMMAND = ['i3lock', 'xscreensaver-command', 'slimlock', 'vlock']
 
 # battery values class
 class BatteryValues:
@@ -271,7 +270,7 @@ class Notifier:
                     % (self.sendNofiication.__name__)
                 
                 # initialize
-                pynotify.init("Battmon: ")
+                pynotify.init("Battmon")
                 n = pynotify.Notification(summary=summary, message=message)
                 self.__n = n
                 # add actions
@@ -303,41 +302,28 @@ class Notifier:
                 self.__updateNotify = True
             
             self.__n.show()
-            
+        
+        # send notification throught duns   
         elif self.__dunst:
-            if self.__updateNotify:               
-                if self.__debug:
-                    print("Debug Mode: updating notify statement (%s in Notifier class)") \
-                        % (self.sendNofiication.__name__)
-                self.__n.clear_actions()
-                
-                # set __timeout
-                if self.__timeout == 0:
-                    self.__n.set_timeout(pynotify.EXPIRES_NEVER)
-                else:
-                    self.__n.set_timeout(1000 * self.__timeout)
-                
-                self.__n.update(summary=summary, message=message)
-
-            if not self.__updateNotify:
-                if self.__debug:
-                    print "Debug Mode: in new notify statement (%s in Notifier class)"\
-                          % (self.sendNofiication.__name__)
-                
-                # initialize
-                pynotify.init("Battmon: ")
-                n = pynotify.Notification(summary=summary, message=message)
-                self.__n = n
+            if self.__debug:
+                print "Debug Mode: in new notify statement (%s in Notifier class)"\
+                      % (self.sendNofiication.__name__)
+            # initialize
+            pynotify.init("Battmon")
+            n = pynotify.Notification(summary=summary, message=message)
+            self.__n = n
                                 
-                # set timeout
-                if self.__timeout == 0:
-                    self.__n.set_timeout(pynotify.EXPIRES_NEVER)
-                else:
-                    self.__n.set_timeout(1000 * self.__timeout)
-                self.__updateNotify = True
+            # set timeout
+            if self.__timeout == 0:
+                self.__n.set_timeout(pynotify.EXPIRES_NEVER)
+            else:
+                self.__n.set_timeout(1000 * self.__timeout)
+            self.__updateNotify = True
   
-                self.__n.show()
+            self.__n.show()
             #gtk.main()
+        else:
+            pass
 
 # power action class    
 class NotifyActions():  
@@ -399,13 +385,13 @@ class MainRun:
         
         # check for pynotify module
         if not pynotify_module and self.__notifySend:
-            os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications"''')
+            os.popen('''notify-send "Dependency missing !!!" "Install pynotify to get more information in your notifications" -a Battmon''')
         elif self.__notifySend:
             # initialize notifications classes
             self.__notifyActions = NotifyActions(self.__debug, self.__test, self.__lockCommand)
             self.__notifier = Notifier(self.__debug, self.__timeout, self.__check_dunst)
         else:
-            print("NO SENDING !!!!!!")
+            print("NO NOTIFYCATIONS !!!!!!")
         
         # check if program already running and set name
         if not self.__more_then_one:
@@ -445,7 +431,6 @@ class MainRun:
         if name in output and pynotify_module:
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            pynotify.init("Battmon: ")
             self.__notifier.sendNofiication('''<b>Battmon is already running</b>\n''',
                                           'To run more then one copy of Battmon,\n run Battmon with -m option',
                                           'cancel, Ok ', self.__notifyActions.cancelAction,
@@ -456,7 +441,7 @@ class MainRun:
         elif name in output and self.__notifySend:
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            os.popen('''notify-send "Battmon is already running !!!" "To run more then one copy of Battmon,\nrun Battmon with -m option"''')
+            os.popen('''notify-send "Battmon is already running !!!" "To run more then one copy of Battmon,\nrun Battmon with -m option -a Battmon"''')
             sys.exit(1)
         elif name in output:
             print("Battmon is already running !!!" \
@@ -485,8 +470,7 @@ class MainRun:
             self.__soundPlayer = self.__currentProgramPath
         # if not found sox in path, send popup notification about it 
         elif pynotify_module:
-            self.__sound = False 
-            pynotify.init("Battmon: ")
+            self.__sound = False
             self.__notifier.sendNofiication('<b>Dependency missing !!!</b><\n> ', 
                                             '''Please check if you have installed<b> '''\
                                             +  DEFAULT_PLAYER_COMMAND + '''</b>\n\n''' \
@@ -497,7 +481,7 @@ class MainRun:
                                             self.__notifyActions.defaultClose)
         elif self.__notifySend:
             self.__sound = False
-            os.popen('''notify-send "Dependency missing !!!" "You have to install sox to play sounds"''')
+            os.popen('''notify-send "Dependency missing !!!" "You have to install sox to play sounds" -a Battmon''')
         else:
             self.__sound = False
             print("Dependency missing !!!\nYou have to install sox to play sounds\n")
@@ -508,69 +492,81 @@ class MainRun:
     def __checkLockCommand(self):
         for i in DEFAULT_LOCK_COMMAND:
             if self.__checkInPath(i):
-                ## xcsreensaver
-                if i == "xscreensaver-command":
-                    self.__lockCommand = i + " -lock"
+                # i3lock
+                if i == "i3lock":
+                    self.__lockCommand = i + " -c 000000"
                     if pynotify_module:
-                        pynotify.init("Battmon: ")
-                        self.__notifier.sendNofiication('''Xscreensaver will be used to lock screen''',
-                                                        "",
+                        self.__notifier.sendNofiication('''i3lock will be used to lock screen''',
+                                                        None,
                                                         'canel, Ok', self.__notifyActions.cancelAction,
                                                         None, None,
                                                         None, None,
                                                         self.__notifyActions.defaultClose)
                     elif self.__notifySend:
-                         os.popen('''Xscreensaver will be used to lock screen''')
+                         os.popen('''notify-send "i3lock will be used to lock screen" -a Battmon''')
                     else:
-                        print('''Xscreensaver will be used to lock screen''')
+                        print('''i3lock will be used to lock screen''')
+                    break
+                # xcsreensaver
+                if i == "xscreensaver-command":
+                    self.__lockCommand = i + " -lock"
+                    if pynotify_module:
+                        self.__notifier.sendNofiication('''xscreensaver will be used to lock screen''',
+                                                        None,
+                                                        'canel, Ok', self.__notifyActions.cancelAction,
+                                                        None, None,
+                                                        None, None,
+                                                        self.__notifyActions.defaultClose)
+                    elif self.__notifySend:
+                         os.popen('''notify-send "xscreensaver will be used to lock screen" -a Battmon''')
+                    else:
+                        print('''xscreensaver will be used to lock screen''')
                     break
                 # vlock
                 elif i == "vlock":
                     self.__lockCommand = i + " -n"
                     if pynotify_module:
-                        pynotify.init("Battmon: ")
-                        self.__notifier.sendNofiication('''Vlock will be used to lock screen''',
-                                                        "",
+                        #pynotify.init("Battmon: ")
+                        self.__notifier.sendNofiication('''vlock will be used to lock screen''',
+                                                        None,
                                                         'cancel, Ok', self.__notifyActions.cancelAction,
                                                         None, None,
                                                         None, None,
                                                         self.__notifyActions.defaultClose)
                     elif self.__notifySend:
-                         os.popen('''Vlock will be used to lock screen''')
+                         os.popen('''notify-send "vlock will be used to lock screen" -a Battmon''')
                     else:
-                        print('''Vlock will be used to lock screen''')
+                        print('''vlock will be used to lock screen''')
                     break
                 # slimlock
                 elif i == "slimlock":
                     self.__lockCommand = i + ""
                     if pynotify_module:
-                        pynotify.init("Battmon: ")
-                        self.__notifier.sendNofiication('''Slimlock will be used to lock screen''',
-                                                        "",
+                        self.__notifier.sendNofiication('''slimlock will be used to lock screen''',
+                                                        None,
                                                         'cancel, Ok', self.__notifyActions.cancelAction,
                                                         None, None,
                                                         None, None,
                                                         self.__notifyActions.defaultClose)
                     elif self.__notifySend:
-                         os.popen('''Slimlock will be used to lock screen''')
+                         os.popen('''notify-send "slimlock will be used to lock screen" -a Battmon''')
                     else:
-                        print('''Slimlock will be used to lock screen''')
+                        print('''slimlock will be used to lock screen''')
                     break
             else:
                 if pynotify_module:
-                    pynotify.init("Battmon: ")
                     self.__notifier.sendNofiication('''<b>Dependency missing !!!</b>\n''',
-                                                    '''Please check if you have <b>''' \
-                                                    '''xscreensaver, vlock or slimlock ''' \
-                                                    ''' </b>installed, without them session lock program</b>\n\n''',
+                                                    '''Please check if you have intalled one of this: <b>''' \
+                                                    '''i3lock, xscreensaver, vlock or slimlock ''' \
+                                                    ''' </b>without this programms your session won't be locked</b>\n\n''',
                                                     'cancel, Ok ', self.__notifyActions.cancelAction,
                                                     None, None,
                                                     None, None,
                                                     self.__notifyActions.defaultClose)
                 elif self.__notifySend:
-                    os.popen('''notify-send "Dependency missing !!!" "You have to install xscreensaver, vlock or simlock to lock session"''')
+                    os.popen('''notify-send "Dependency missing !!!" "Please check if you have intalled one of this: i3lock, xscreensaver,vlock or simlock, without this programms your session won't be locked" -a Battmon''')
                 else:
-                    print("Dependency missing !!!\nYou have to install xscreensaver, vlock or simlock to lock your session\n")
+                    print("Dependency missing !!!\nPlease check if you have intalled one of this: i3lock, xscreensaver,vlock or simlock, without this programms your session won't be locked\n")
     
     # check if sound files exist
     def __checkSoundsFiles(self):
@@ -581,7 +577,6 @@ class MainRun:
                 self.__soundCommandHigh = '%s -V1 -q -v 40 %s' % (self.__soundPlayer, self.__currentProgramPath)
         except:
             if pynotify_module:
-                pynotify.init("Battmon: ")
                 self.__notifier.sendNofiication('Dependency missing !!!' , 
                                                 '''<b>Please check if you have sound files in you path</b>\n\n''' \
                                                 '''Without them, no sounds will be played.\n\n''' \
@@ -592,7 +587,7 @@ class MainRun:
                                                 None, None,
                                                 self.__notifyActions.defaultClose)
             elif self.__notifySend:
-                os.popen('''notify-send "Dependency missing !!!" "Check if you have sound files in you path"''')
+                os.popen('''notify-send "Dependency missing !!!" "Check if you have sound files in you path" -a Battmon''')
             else:
                 print("Dependency missing !!!\nYou have to install vlock to lock your session\n")
     
@@ -609,17 +604,20 @@ class MainRun:
             time.sleep(4)
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Discharging', 
-                                            'Current capacity: %s%s\nTime left: %s' \
-                                            % (self.__batteryValues.battCurrentCapacity(), \
-                                            '%', self.__batteryValues.batteryTime()), 
-                                            'cancel, Ok ', self.__notifyActions.cancelAction, 
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose)
-        # notification through linotify
-        if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "Discharging"''')
+            if pynotify_module:
+                self.__notifier.sendNofiication('Discharging', 
+                                                'Current capacity: %s%s\nTime left: %s' \
+                                                % (self.__batteryValues.battCurrentCapacity(), \
+                                                '%', self.__batteryValues.batteryTime()), 
+                                                'cancel, Ok ', self.__notifyActions.cancelAction, 
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose)
+            # notification through linotify
+            if self.__notifySend and not pynotify_module:
+                os.popen('''notify-send "Discharging" -a Battmon''')
+            else:
+                print("Discharging")
             
     # battery low capacity monit 
     def __LowCapacityLevel(self):
@@ -634,18 +632,22 @@ class MainRun:
             time.sleep(4)
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Battery low level' ,
-                                            'Current capacity %s%s\nTime left: %s' \
-                                            % (self.__batteryValues.battCurrentCapacity(), \
-                                            '%', self.__batteryValues.batteryTime()),
-                                            None, None,
-                                            None, None,
-                                            'cancel,  Ok ', self.__notifyActions.cancelAction,
-                                            self.__notifyActions.defaultClose)
-        # notification send through libnotify
-        if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "Battery low level"''')
-    
+            if pynotify_module:
+                self.__notifier.sendNofiication('Battery low level' ,
+                                                'Current capacity %s%s\nTime left: %s' \
+                                                % (self.__batteryValues.battCurrentCapacity(), \
+                                                '%', self.__batteryValues.batteryTime()),
+                                                None, None,
+                                                None, None,
+                                                'cancel,  Ok ', self.__notifyActions.cancelAction,
+                                                self.__notifyActions.defaultClose)
+                
+            # notification send through libnotify
+            if self.__notifySend and not pynotify_module:
+                os.popen('''notify-send "Battery low level" -a Battmon''')
+            else:
+                print("Low battery level")
+           
     # battery critical level monit             
     def __CriticalBatteryLevel(self):
         # check if play sound, warning scary logic
@@ -658,18 +660,22 @@ class MainRun:
             time.sleep(4)
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Battery critical level !!!',
-                                            'Current capacity %s%s\nTime left: %s' \
-                                            % (self.__batteryValues.battCurrentCapacity(), \
-                                            '%', self.__batteryValues.batteryTime()),
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose)   
-        # notification through libnotify
-        if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "Battery critical level"''')
-    
+            if pynotify_module:
+                self.__notifier.sendNofiication('Critical battery level !!!',
+                                                'Current capacity %s%s\nTime left: %s' \
+                                                % (self.__batteryValues.battCurrentCapacity(), \
+                                               '%', self.__batteryValues.batteryTime()),
+                                                'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose)   
+            # notification through libnotify
+            if self.__notifySend and not pynotify_module:
+                os.popen('''notify-send "Critical bettery level" -a Battmon''')
+                
+            else:
+                print("Critical battery level")
+            
     # battery shutdown level monit       
     def __ShutdownBatteryLevel(self):
         # check if play sound, warning scary logic  
@@ -682,18 +688,21 @@ class MainRun:
             time.sleep(4)
             if self.__sound:
                 os.popen(self.__soundCommandMedium)
-            self.__notifier.sendNofiication('System will be hibernate in 10 seconds !!!', 
-                                            'Battery level critical: %s%s\nTime left: %s' \
-                                            % (self.__batteryValues.battCurrentCapacity(), \
-                                            '%', self.__batteryValues.batteryTime()),
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose)
-        # notification through linotify
-        if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "System will be hibernate in 10 seconds !!!" "Battery critical level"''')
-     
+            if pynotify_module:
+                self.__notifier.sendNofiication('System will be hibernate in 10 seconds !!!', 
+                                                'Battery level critical: %s%s\nTime left: %s' \
+                                                % (self.__batteryValues.battCurrentCapacity(), \
+                                                '%', self.__batteryValues.batteryTime()),
+                                                'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose)
+            # notification through linotify
+            if self.__notifySend and not pynotify_module:
+                os.popen('''notify-send "System will be hibernate in 10 seconds !!!" "Battery critical level" -a Battmon''')
+            else:
+                print("Critical battery level")
+            
     # battery full monit  
     def __FullBattery(self):
         # check if play sound, warning scary logic  
@@ -702,16 +711,23 @@ class MainRun:
                               or (not self.__notify and self.__critical))):
             os.popen(self.__soundCommandLow)
         # send notification
-        if self.__notify and not self.__critical:  
-            self.__notifier.sendNofiication('Battery fully charged', 
-                                            '',
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose) 
-        # notification through libnotify
-        if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "Battery fully charged"''')
+        if self.__notify and not self.__critical:
+            # wait 5sek till battery values update
+            time.sleep(5)
+            if self.__sound:
+                os.popen(self.__soundCommandLow)
+            if pynotify_module:
+                self.__notifier.sendNofiication('Battery fully charged', 
+                                                '',
+                                                'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose) 
+            # notification through libnotify
+            if self.__notifySend and not pynotify_module:
+                os.popen('''notify-send "Battery fully charged" -a Battmon''')
+            else:
+                print("Fully charged")
     
     # charging monit
     def __ChargingBattery(self):
@@ -726,17 +742,20 @@ class MainRun:
             time.sleep(5)
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Charging',
-                                            'Time left to fully charge: %s\n' \
-                                            % self.__batteryValues.batteryTime(),
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose)
+            if pynotify_module:
+                self.__notifier.sendNofiication('Charging',
+                                                'Time left to fully charge: %s\n' \
+                                                % self.__batteryValues.batteryTime(),
+                                                'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose)
             # notification through libnotify
             if self.__notifySend and not pynotify_module:
-                os.popen('''notify-send "Charging"''')
-    
+                os.popen('''notify-send "Charging" -a Battmon''')
+            else:
+                print("Charging")
+            
     # no battery monit
     def __NoBattery(self):
         if self.__debug:
@@ -749,16 +768,20 @@ class MainRun:
             os.popen(self.__soundCommandLow)
         # send notification
         if self.__notify:
+            time.sleep(1)
             if self.__sound:
                 os.popen(self.__soundCommandLow)
-            self.__notifier.sendNofiication('Battery not present...', '<b>Be careful with your AC cabel !!!</b>',
-                                            'cancel, Ok ', self.__notifyActions.cancelAction,
-                                            None, None,
-                                            None, None,
-                                            self.__notifyActions.defaultClose) 
-        # notification through linotify
-        if self.__notifySend and not pynotify_module:
-            os.popen('''notify-send "Battery not present..." "Be careful with your AC cabel !!!"''')
+            if pynotify_module:
+                self.__notifier.sendNofiication('Battery not present...', '<b>Be careful with your AC cabel !!!</b>',
+                                                'cancel, Ok ', self.__notifyActions.cancelAction,
+                                                None, None,
+                                                None, None,
+                                                self.__notifyActions.defaultClose) 
+            # notification through linotify
+            if self.__notifySend and not pynotify_module:
+                os.popen('''notify-send "Battery not present..." "Be careful with your AC cabel !!!" -a Battmon''')
+            else:
+                print("NO BATTERY !!!")
    
     # start main loop         
     def runMainLoop(self):     
