@@ -18,6 +18,10 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 * optional `i3lock`, `xscreensaver`, `vlock` or `slimlock` to lock user session before hibernating
 
 ## Changelog:
+**25.02.2013**
+* 2.0 final version
+* fixes, refactoring, cleanup
+
 **24.02.2013**
 * 2.0-rc4
 * get rid of pynitfy module, evething goes throught notify-send
