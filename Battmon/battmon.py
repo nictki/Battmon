@@ -447,7 +447,7 @@ class MainRun:
             else:
                 print("Critical battery level")
 
-    # battery shutdown level notification
+    # hibernate level notification
     def __HibernateBatteryLevel(self):
         # check if play sound, warning scary logic  
         if (self.__sound and ((not self.__notify or not self.__critical)
@@ -540,7 +540,7 @@ class MainRun:
     # start main loop         
     def runMainLoop(self):
         while True:
-        # check if we have battery
+            # check if we have battery
             while self.__batteryValues.isBatteryPresent():
                 # check if battery is discharging to stay in normal battery level
                 if (not self.__batteryValues.isAcAdapterPresent()
@@ -712,7 +712,8 @@ class MainRun:
                         pass
 
             # check for no battery
-            if not self.__batteryValues.isBatteryPresent():
+            #if not self.__batteryValues.isBatteryPresent():
+            else:
                 if self.__debug:
                     print("Debug Mode: full battery check (%s() in MainRun class)"
                           % self.runMainLoop.__name__)
