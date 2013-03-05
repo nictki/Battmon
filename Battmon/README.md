@@ -81,47 +81,48 @@ To list all available options run with `-h` or `--help`
 
 ## Options:
 
-  --version         show program's version number and exit
-  -h, --help            show this help message and exit
-  -D, --debug           give some useful information for debugging
-                        (default: false)
-  -T, --test            dry run, print extra informations on terminal, (useful with --debug option)
-                        (default: false)
-  -d, --demonize        start in daemon mode
-                        (default: false)
-  -m, --run-more-copies allows to run more then one battmon copy
-                        (default: false)
-  -l PATH, --lock-command-path=PATH
-                        specify path to screen locker program, when not
-                        specified, i3lock one will be used
-  -n, --no-notifications
-                        don't show any desktop notifications, with options the
-                        follow options will be ignored:
-                        -C/--critical-notifications and -S/--no-sound
-                        (default: false)
-  -c, --critical-notifications
-                        shows only critical battery notifications
-                        (default: false)
-  -f PATH, --sound-file-path=PATH
-                        specify path to sound file, when not specified,
-                        standard one will be used
-  -s, --no-sound        don't play sounds
-                        (default: false)
-  -a (1-17), --set-sound-loudness=(1-17)
-                        set notifications sound volume level
-                        (default: 4)
-  -t seconds, --timeout=seconds
-                        notification timeout in secs (use 0 to disable),
-                        (default: 6)
-  -b seconds, --battery-update-interval=seconds
-                        battery update interval in secs
-                        (default: 7)
-  -O (1-100), --low-level-value=(1-100)
-                        set battery low value
-                        (default: 17)
-  -R (1-100), --critical-level-value=(1-100)
-                        set battery critical value
-                        (default: 7)
-  -I (1-100), --hibernate-level-value=(1-100)
-                        (default: 4)
-                        set battery hibernate value
+    --version               show program's version number and exit
+    -h, --help              show this help message and exit
+    -D, --debug             give some useful information for debugging
+                            (default: false)
+    -T, --test              dry run, print extra informations on terminal, (useful with --debug option)
+                            (default: false)
+    -d, --demonize          start in daemon mode
+                            (default: false)
+    -m, --run-more-copies   allows to run more then one battmon copy
+                            (default: false)
+    -l PATH, --lock-command-path=PATH
+                            specify path to screen locker program, when not
+                            specified, i3lock one will be used
+    -n, --no-notifications
+                            don't show any desktop notifications, with options the
+                            follow options will be ignored:
+                            -C/--critical-notifications and -S/--no-sound
+                            (default: false)
+    -c, --critical-notifications
+                            shows only critical battery notifications
+                            (default: false)
+    -f PATH, --sound-file-path=PATH
+                            specify path to sound file, when not specified,
+                            standard one will be used
+    -s, --no-sound          don't play sounds
+                            (default: false)
+    -a (1-17), --set-sound-loudness=(1-17)
+                            set notifications sound volume level
+                            (default: 4)
+    -t seconds, --timeout=seconds
+                            notification timeout in secs (use 0 to disable),
+                            (default: 6)
+    -b seconds, --battery-update-interval=seconds
+                            battery update interval in secs
+                            (default: 7)
+    -O (1-100), --low-level-value=(1-100)
+                            set battery low value
+                            (default: 17)
+    -R (1-100), --critical-level-value=(1-100)
+                            set battery critical value
+                            (default: 7)
+    -I (1-100), --hibernate-level-value=(1-100)
+                            (default: 4)
+                            set battery hibernate value
+    
