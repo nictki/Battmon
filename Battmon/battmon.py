@@ -493,12 +493,12 @@ class MainRun:
             elif self.__checkInPath(__sound_file_name):
                 self.__soundCommand = '%s -V1 -q -v%s %s' % (self.__soundPlayer, self.__sound_volume, self.__currentProgramPath)
         except IOError as ioerr:
-            print("No sound file found: %s" & str(ioerr))
+            print("No sound file found: %s" % str(ioerr))
             if self.__notifySend:
                 notify_send_string = '''notify-send "Dependency missing !!!" \
                                     "Check if you have sound files in %s." \
                                     "If you've specified your own sound file path, " \
-                                    "please check if it was correctly"''' \
+                                    "please check if it was correctly" %s %s''' \
                                      % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             else:

@@ -13,15 +13,15 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* **python2** and **libnotify** (for basic functionality)
-* optional **sox** (for sounds)
-* optional program to lock user session before hibernating, default i3lock
+* `python2` and `libnotify` (for basic functionality)
+* optional `sox` (for sounds)
+* optional program to lock user session before hibernating (default `i3lock`)
 
 ## Changelog:
 **06.03.2013**
 * 2.1-rc1 version
 * add option to set sound volume and to specify sound file
-* add option to specify screen lock program (default: i3lock)
+* add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
 * add possibility to set through low, critical and hibernate battery value levels
 * many small fixes and improvements
