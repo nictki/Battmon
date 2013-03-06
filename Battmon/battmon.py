@@ -25,7 +25,7 @@ from ctypes import cdll
 import commands
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.1-rc2~svn06032013'
+VERSION = '2.1~svn06032013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.'
                'Tested with python-notify-0.1.1 and notification-daemon-0.5.0')

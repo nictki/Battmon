@@ -19,7 +19,7 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 ## Changelog:
 **06.03.2013**
-* 2.1-rc1 version
+* 2.1 version
 * add option to specify default minimal battery level value action (default: hibernate)
 
 **06.03.2013**
