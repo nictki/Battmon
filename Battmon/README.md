@@ -1,7 +1,7 @@
 # Battmon
 
 ## Description:
-**Battmon** is simple battery monitoring program written in python especially for tiling window managers like xmonad, dwm or awesome.
+**Battmon** is simple battery monitoring program written in python especially for tiling window managers like `xmonad`, `dwm` or `awesome`.
 Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 ## Features:
@@ -20,11 +20,15 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 ## Changelog:
 **06.03.2013**
 * 2.1-rc1 version
+* add option to specify default minimal battery level value action (default: hibernate)
+
+**06.03.2013**
+* 2.1-rc1 version
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
 * add possibility to set through low, critical and hibernate battery value levels
-* many small fixes and improvements
+* small fixes and improvements
 
 **25.02.2013**
 * 2.0 final version
@@ -48,11 +52,11 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 **25.11.2012**
 * improve check if battery is present or not
 * add better warnings if some optional dependency is missing
-* add sound files to github
+* add new sound file
 * minor bug fixes
 
 ## Notes:
-Be sure that your ck-list-sessions output gives something like this:
+If you want to use hibernate, suspend or poweroff, be sure that your `ck-list-sessions output` gives something like this:
  
 	$: ck-list-sessions
    	...
@@ -60,8 +64,6 @@ Be sure that your ck-list-sessions output gives something like this:
    	...
    	is-local = TRUE
    	...
-   	
-Otherwise some of program functionality (like shutdown, suspend...) may not work.
 
 ## How to run:
 After unpacking make battmon executable
@@ -125,4 +127,9 @@ To list all available options run with `-h` or `--help`
     -I (1-100), --hibernate-level-value=(1-100)
                             (default: 4)
                             set battery hibernate value
-    
+    -e <ARG>, --hibernate-level-command=<ARG>
+                            Specify default hibernate battery level action,
+                            possible actions are: ",
+                            "hibernate`, `suspend` and `poweroff`
+                            (default: hibernate)
+
