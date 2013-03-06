@@ -25,7 +25,7 @@ from ctypes import cdll
 import commands
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.1~svn06032013'
+VERSION = '2.1.2~svn06032013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.'
                'Tested with python-notify-0.1.1 and notification-daemon-0.5.0')
@@ -357,7 +357,8 @@ class BatteryNotifacations:
 class MainRun:
     def __init__(self, debug, test, daemon, more_then_one_copy, lock_command,
                  notify, critical, sound_file, sound, sound_volume, timeout, battery_update_timeout,
-                 battery_low_value, battery_critical_value, battery_hibernate_value, minimal_battery_level_command):
+                 battery_low_value, battery_critical_value, battery_hibernate_value,
+                 minimal_battery_level_command, no_battery_remainder):
 
         # parameters
         self.__debug = debug
@@ -376,8 +377,7 @@ class MainRun:
         self.__battery_critical_value = battery_critical_value
         self.__battery_hibernate_value = battery_hibernate_value
         self.__minimal_battery_level_command = minimal_battery_level_command
-
-        print(self.__minimal_battery_level_command)
+        self.__no_battery_remainder = no_battery_remainder
 
         # external programs
         self.__sound_player = ''
@@ -431,7 +431,8 @@ class MainRun:
             print("- battery low level value: %s" % self.__battery_low_value)
             print("- battery critical level value: %s" % self.__battery_critical_value)
             print("- battery hibernate level value: %s" % self.__battery_hibernate_value)
-            print("- battery hibernate level value command: %s\n" % self.__minimal_battery_level_command)
+            print("- battery hibernate level value command: %s" % self.__minimal_battery_level_command)
+            print("- no battery remainder: %smin\n" % self.__no_battery_remainder)
             print("**********************")
             print("* !!! Debug Mode !!! *")
             print("**********************\n")
@@ -795,8 +796,14 @@ class MainRun:
 
                 # loop to deal with situation when we don't have any battery
                 while not self.__battery_values.is_battery_present():
-                    # no battery, wait 60sek
-                    time.sleep(60)
+                    if not self.__no_battery_remainder == 0:
+                        time.sleep(self.__no_battery_remainder * 60)
+                        # notification
+                        self.__notification.no_battery()
+                    else:
+                        # no battery, wait 60sek
+                        time.sleep(60)
+
                     # check if battery was plugged
                     self.__battery_values.find_battery_and_ac()
                     pass
@@ -825,7 +832,8 @@ if __name__ == '__main__':
                       "battery_low_value": 17,
                       "battery_critical_value": 7,
                       "battery_hibernate_value": 4,
-                      "minimal_battery_level_command": 'hibernate'}
+                      "minimal_battery_level_command": 'hibernate',
+                      "no_battery_remainder": 0}
 
     # debug options
     op.add_option("-D", "--debug",
@@ -1052,8 +1060,26 @@ if __name__ == '__main__':
                   type="string",
                   metavar="<ARG>",
                   default=defaultOptions['minimal_battery_level_command'],
-                  help='''Specify default hibernate battery level action, possible actions are: ",
-                        "hibernate`, `suspend` and `poweroff` (default: hibernate)''')
+                  help='''Specify default hibernate battery level action, possible actions are: \
+                        `hibernate`, `suspend` and `poweroff` (default: hibernate)''')
+
+    # set no battery notification
+    def set_no_battery_remainder(option, opt_str, r, parser):
+        r = int(r)
+        if r < 0:
+            raise optparse.OptionValueError("\nNo battery remainder value must be bigger then 0")
+
+        op.values.no_battery_remainder = r
+
+    op.add_option("-r", "--no-battery-reminder",
+                  action="callback",
+                  dest="no_battery_remainder",
+                  type="int",
+                  metavar="minutes",
+                  callback=set_no_battery_remainder,
+                  default=defaultOptions['no_battery_remainder'],
+                  help='''Set no battery remainder in minutes, when set to 0, no warnings will be displayed, \
+                            (default: 0)''')
 
     (options, args) = op.parse_args()
 
@@ -1072,6 +1098,7 @@ if __name__ == '__main__':
                  battery_low_value=options.battery_low_value,
                  battery_critical_value=options.battery_critical_value,
                  battery_hibernate_value=options.battery_hibernate_value,
-                 minimal_battery_level_command=options.minimal_battery_level_command)
+                 minimal_battery_level_command=options.minimal_battery_level_command,
+                 no_battery_remainder=options.no_battery_remainder)
 
     ml.run_main_loop()

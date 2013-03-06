@@ -19,6 +19,10 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 ## Changelog:
 **06.03.2013**
+* 2.1.1 version
+* add option to specify time for "no battery" remainder (default: 0/disabled)
+
+**06.03.2013**
 * 2.1 version
 * add option to specify default minimal battery level value action (default: hibernate)
 
@@ -129,7 +133,11 @@ To list all available options run with `-h` or `--help`
                             set battery hibernate value
     -e <ARG>, --hibernate-level-command=<ARG>
                             Specify default hibernate battery level action,
-                            possible actions are: ",
-                            "hibernate`, `suspend` and `poweroff`
+                            possible actions are:
+                            `hibernate`, `suspend` and `poweroff`
                             (default: hibernate)
+    -r minutes, --no-battery-reminder=minutes
+                            Set no battery remainder in minutes, when set to 0, no
+                            warnings will be displayed,
+                            (default: 0)
 
