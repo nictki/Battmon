@@ -13,7 +13,7 @@
 
 ## Prerequisites:
 * `python2`
-* `libnotify` (notifications)
+* `libnotify` (pop up notifications)
 * optional `sox` (sounds)
 * optional program to lock user session before hibernating (default `i3lock`)
 
@@ -35,7 +35,7 @@
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
-* add possibility to set through low, critical and hibernate battery value levels
+* add possibility to set through low, critical and minimal battery value levels
 * small fixes and improvements
 
 **25.02.2013**
@@ -103,9 +103,9 @@ To list all available options run Battmon with `-h` or `--help`
                             battery low value (default: 17)
     -R (1-100), --critical-level-value=(1-100)
                             battery critical value (default: 7)
-    -I (1-100), --hibernate-level-value=(1-100)
-                            battery hibernate value (default: 4)
-    -e <ARG>, --hibernate-level-command=<ARG>
+    -I (1-100), --minimal-level-value=(1-100)
+                            battery minimal value (default: 4)
+    -e <ARG>, --minimal-level-command=<ARG>
                             minimal battery level actions are:
                             'hibernate', 'suspend' and 'poweroff' (default: hibernate)
     -r minutes, --no-battery-reminder=minutes

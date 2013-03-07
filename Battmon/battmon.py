@@ -354,7 +354,7 @@ class BatteryNotifications:
 class MainRun:
     def __init__(self, debug, test, daemon, more_then_one_copy, lock_command,
                  notify, critical, sound_file, sound, sound_volume, timeout, battery_update_timeout,
-                 battery_low_value, battery_critical_value, battery_hibernate_value,
+                 battery_low_value, battery_critical_value, battery_minimal_value,
                  minimal_battery_level_command, no_battery_remainder, no_start_notifications):
 
         # parameters
@@ -372,7 +372,7 @@ class MainRun:
         self.__battery_update_timeout = battery_update_timeout
         self.__battery_low_value = battery_low_value
         self.__battery_critical_value = battery_critical_value
-        self.__battery_hibernate_value = battery_hibernate_value
+        self.__battery_minimal_value = battery_minimal_value
         self.__minimal_battery_level_command = minimal_battery_level_command
         self.__no_battery_remainder = no_battery_remainder
         self.__no_start_notifications = no_start_notifications
@@ -428,7 +428,7 @@ class MainRun:
             print("- battery update interval: %s" % self.__battery_update_timeout)
             print("- battery low level value: %s" % self.__battery_low_value)
             print("- battery critical level value: %s" % self.__battery_critical_value)
-            print("- battery hibernate level value: %s" % self.__battery_hibernate_value)
+            print("- battery hibernate level value: %s" % self.__battery_minimal_value)
             print("- battery minimal level value command: %s" % self.__minimal_battery_level_command)
             print("- no battery remainder: %smin" % self.__no_battery_remainder)
             print("- no start remainder: %s\n" % self.__no_start_notifications)
@@ -658,7 +658,7 @@ class MainRun:
 
                     # critical capacity level
                     elif (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
-                            self.__battery_hibernate_value and not self.__battery_values.is_ac_present()):
+                            self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
                             print("DEBUG: critical battery level check (%s() in MainRun class)"
@@ -670,11 +670,11 @@ class MainRun:
 
                         # battery have enough power and check if we should stay in critical battery level loop
                         while (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
-                                self.__battery_hibernate_value and not self.__battery_values.is_ac_present()):
+                                self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # hibernate level
-                    elif (self.__battery_values.battery_current_capacity() <= self.__battery_hibernate_value
+                    elif (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
                           and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
@@ -686,7 +686,7 @@ class MainRun:
                         self.__notification.minimal_battery_level()
 
                         # check once more if system will be hibernate
-                        if (self.__battery_values.battery_current_capacity() <= self.__battery_hibernate_value
+                        if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
                                 and False == self.__battery_values.is_ac_present()):
                             time.sleep(2)
 
@@ -694,13 +694,13 @@ class MainRun:
                                 os.popen(self.__sound_command)
 
                             if not self.__test:
-                                if (self.__battery_values.battery_current_capacity() <= self.__battery_hibernate_value
+                                if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
                                         and not self.__battery_values.is_ac_present()):
 
                                     for i in range(0, 6, +1):
                                         # check if ac was plugged
                                         if (self.__battery_values.battery_current_capacity()
-                                                <= self.__battery_hibernate_value
+                                                <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
 
                                             if self.__sound:
@@ -712,7 +712,7 @@ class MainRun:
 
                                     # one more check if ac was plugged
                                     if (self.__battery_values.battery_current_capacity()
-                                            <= self.__battery_hibernate_value
+                                            <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
                                         os.popen(self.__sound_command)
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
@@ -725,7 +725,7 @@ class MainRun:
 
                                     # LAST CHECK before hibernating
                                     if (self.__battery_values.battery_current_capacity()
-                                            <= self.__battery_hibernate_value
+                                            <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
                                         # lock screen and hibernate
                                         os.popen(self.__sound_command)
@@ -830,7 +830,7 @@ if __name__ == '__main__':
                       "batteryUpdateInterval": 7,
                       "battery_low_value": 17,
                       "battery_critical_value": 7,
-                      "battery_hibernate_value": 4,
+                      "battery_minimal_value": 4,
                       "minimal_battery_level_command": 'hibernate',
                       "no_battery_remainder": 0,
                       "no_start_notifications": False}
@@ -986,9 +986,9 @@ if __name__ == '__main__':
             raise optparse.OptionValueError("\nLow battery level must be greater than %s (critical battery value)"
                                             % op.values.battery_critical_value)
 
-        if l <= op.values.battery_hibernate_value:
+        if l <= op.values.battery_minimal_value:
             raise optparse.OptionValueError("\nLow battery level must be greater than %s (hibernate battery value)"
-                                            % op.values.battery_hibernate_value)
+                                            % op.values.battery_minimal_value)
 
         op.values.battery_low_value = l
 
@@ -1011,9 +1011,9 @@ if __name__ == '__main__':
         if c >= op.values.battery_low_value:
             raise optparse.OptionValueError("\nCritical battery level must be smaller than %s (low battery value)"
                                             % op.values.battery_low_value)
-        if c <= op.values.battery_hibernate_value:
+        if c <= op.values.battery_minimal_value:
             raise optparse.OptionValueError("\nCritical battery level must be greater than %s (hibernate battery value)"
-                                            % op.values.battery_hibernate_value)
+                                            % op.values.battery_minimal_value)
         op.values.battery_critical_value = c
 
     # battery critical value
@@ -1027,7 +1027,7 @@ if __name__ == '__main__':
                   help="battery critical value (default: 7)")
 
     # battery hibernate value setter
-    def set_battery_hibernate_value(option, opt_str, h, parser):
+    def set_battery_minimal_value(option, opt_str, h, parser):
         h = int(h)
         if h > 100 or h <= 0:
             raise optparse.OptionValueError("\nHibernate battery level must be a positive number between 1 and 100")
@@ -1038,20 +1038,20 @@ if __name__ == '__main__':
         if h >= op.values.battery_critical_value:
             raise optparse.OptionValueError("\nHibernate battery level must be smaller than %s (critical battery value)"
                                             % op.values.battery_critical_value)
-        op.values.battery_hibernate_value = h
+        op.values.battery_minimal_value = h
 
     # battery hibernate value
-    op.add_option("-I", "--hibernate-level-value",
+    op.add_option("-I", "--minimal-level-value",
                   action="callback",
-                  dest="battery_hibernate_value",
+                  dest="battery_minimal_value",
                   type="int",
                   metavar="(1-100)",
-                  callback=set_battery_hibernate_value,
-                  default=defaultOptions['battery_hibernate_value'],
-                  help="battery hibernate value (default: 4)")
+                  callback=set_battery_minimal_value,
+                  default=defaultOptions['battery_minimal_value'],
+                  help="battery minimal value (default: 4)")
 
     # set hibernate battery level command
-    op.add_option("-e", "--hibernate-level-command",
+    op.add_option("-e", "--minimal-level-command",
                   action="store",
                   dest="minimal_battery_level_command",
                   type="string",
@@ -1101,7 +1101,7 @@ if __name__ == '__main__':
                  battery_update_timeout=options.batteryUpdateInterval,
                  battery_low_value=options.battery_low_value,
                  battery_critical_value=options.battery_critical_value,
-                 battery_hibernate_value=options.battery_hibernate_value,
+                 battery_minimal_value=options.battery_minimal_value,
                  minimal_battery_level_command=options.minimal_battery_level_command,
                  no_battery_remainder=options.no_battery_remainder,
                  no_start_notifications=options.no_start_notifications)
