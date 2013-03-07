@@ -2,7 +2,6 @@
 
 ## Description:
 **Battmon** is simple battery monitoring program written in python especially for tiling window managers like `xmonad`, `dwm` or `awesome`.
-Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 ## Features:
 * very light (for really basic functionality you need only `python2` installed)
@@ -13,13 +12,15 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* `python2` and `libnotify` (for basic functionality)
-* optional `sox` (for sounds)
+* `python2`
+* `libnotify` (notifications)
+* optional `sox` (sounds)
 * optional program to lock user session before hibernating (default `i3lock`)
 
 ## Changelog:
 **07.03.2013**
 * probably EOF
+* small fixes
 
 **06.03.2013**
 * 2.1.2 final version
@@ -43,8 +44,8 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 **24.02.2013**
 * 2.0-rc4
-* get rid of pynotify module, everything goes throuht notify-send
-* notify-send shows all information, like battery charge time, battery level etc
+* get rid of pynotify module, use notify-send instead
+* notify-send shows all information, like battery charge time, level etc
 * code cleanup
 * some improvements
 * re-add session lock commands
@@ -60,7 +61,7 @@ If you want to use hibernate, suspend or poweroff, be sure that your `ck-list-se
    	...
 
 ## How to run:
-After unpacking make battmon executable
+Make battmon executable:
 	
 	chmod +x ./battmon.py
 
@@ -71,7 +72,7 @@ and run like:
 or
 	python ./battmon.py
 
-To list all available options run with `-h` or `--help`
+To list all available options run Battmon with `-h` or `--help`
 	
 	python ./battmon.py -h
 

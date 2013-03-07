@@ -220,8 +220,8 @@ class BatteryNotifications:
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("Discharging")
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+                print("DISCHARGING")
 
     # battery low capacity notification
     def low_capacity_level(self):
@@ -237,14 +237,14 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "LOW BATTERY LEVEL !!!\n" \
-                                     "current capacity %s%s\n time left: %s" %s %s''' \
+                notify_send_string = '''notify-send "LOW BATTERY LEVEL\n" \
+                                     "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("Low battery level")
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+                print("LOW BATTERY LEVEL")
 
     # battery critical level notification
     def critical_battery_level(self):
@@ -259,14 +259,14 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "CRITICAL BATTERY LEVEL !!!\n" \
-                                     "current capacity %s%s\n time left: %s" %s %s''' \
+                notify_send_string = '''notify-send "CRITICAL BATTERY LEVEL\n" \
+                                     "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("Critical battery level")
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+                print("CRITICAL BATTERY LEVEL")
 
     # hibernate level notification
     def minimal_battery_level(self):
@@ -280,15 +280,14 @@ class BatteryNotifications:
             if self.__notify_send and self.__battery_values.battery_time() is not None:
                 if self.__sound:
                     os.popen(self.__sound_command)
-                notify_send_string = '''notify-send "MINIMAL BATTERY LEVEL !!!\n" \
-                                    "please plug AC adapter in...\n\n battery minimal level: %s%s\n \
-                                     time left: %s" %s %s''' \
+                notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
+                                    "please plug AC adapter in...\n\n current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("System will be hibernate in 12 seconds !!!")
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+                print("!!! MINIMAL BATTERY LEVEL !!!")
 
     # battery full notification
     def full_battery(self):
@@ -304,11 +303,11 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "BATTERY FULL CHARGED" %s %s''' \
+                notify_send_string = '''notify-send "BATTERY FULL" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("fully charged")
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+                print("BATTERY FULL")
 
     # charging notification
     def battery_charging(self):
@@ -324,12 +323,12 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "CHARGING BATTERY\n" "time left to fully charge: %s\n" %s %s''' \
+                notify_send_string = '''notify-send "CHARGING\n" "time left to full charge: %s\n" %s %s''' \
                                      % (self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("Charging")
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+                print("CHARGING")
 
     # no battery notification
     def no_battery(self):
@@ -348,7 +347,7 @@ class BatteryNotifications:
                 notify_send_string = '''notify-send "!!! NO BATTERY !!!\n" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
+            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
                 print("NO BATTERY !!!")
 
 
@@ -488,13 +487,13 @@ class MainRun:
         # if not found sox in path, send notification about it
         elif self.__notify_send:
             self.__sound = False
-            notify_send_string = '''notify-send "DEPENDENCY MISSING !!!\n" \
+            notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
                                 "You have to install sox to play sounds" %s %s''' \
                                  % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
-        else:
+        elif not self.__notify_send:
             self.__sound = False
-            print("DEPENDENCY MISSING:\nYou have to install sox to play sounds.\n")
+            print("DEPENDENCY MISSING:\n You have to install sox to play sounds.\n")
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
@@ -511,13 +510,13 @@ class MainRun:
         except IOError as ioerr:
             print("No sound file found: %s" % str(ioerr))
             if self.__notify_send:
-                notify_send_string = '''notify-send "DEPENDENCY MISSING !!!\n" \
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
                                     "Check if you have sound files in %s.\n \
                                     If you've specified your own sound file path,\n  \
                                     please check if it was correctly" %s %s''' \
                                      % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
+            elif not self.__notify_send:
                 print("DEPENDENCY MISSING:\n No sound files found\n")
 
     # check witch program will lock screen
@@ -541,7 +540,7 @@ class MainRun:
                                          % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                     os.popen(notify_send_string)
 
-                elif not self.__no_start_notifications:
+                elif not self.__no_start_notifications and not self.__notify_send:
                     print("using default program to lock screen")
 
             elif self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and not os.path.exists(DEFAULT_SCREEN_LOCK_COMMAND):
@@ -553,13 +552,13 @@ class MainRun:
                                          % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                     os.popen(notify_send_string)
 
-                elif not self.__no_start_notifications:
+                elif not self.__no_start_notifications and not self.__notify_send:
                     print("i3lock will be used to lock screen")
 
         except IOError as ioerr:
             print("Lock command file not fount: %s" % str(ioerr))
             if self.__notify_send:
-                notify_send_string = '''notify-send "DEPENDENCY MISSING !!!\n" \
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
                                     "please check if you have installed i3lock,\n \
                                     this is default lock screen program,\n \
                                     you can specify your favorite screen lock program\n \
@@ -567,10 +566,12 @@ class MainRun:
                                     otherwise your session won't be locked" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            else:
-                print("DEPENDENCY MISSING:\n"
-                      "Please check if you have installed one of this: "
-                      "i3lock, xscreensaver,vlock or simlock, without this programs your session won't be locked\n")
+            elif not self.__notify_send:
+                print("DEPENDENCY MISSING:\n please check if you have installed i3lock, \
+                        this is default lock screen program, \
+                        you can specify your favorite screen lock program \
+                        running this program with -l PATH, \
+                        otherwise your session won't be locked")
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
@@ -601,7 +602,7 @@ class MainRun:
                                  % (__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
 
-        elif not self.__no_start_notifications:
+        elif not self.__no_start_notifications and not self.__notify_send:
             print("under minimal battery level system will be: %s" % __temp)
 
     # check for battery update times
@@ -626,7 +627,7 @@ class MainRun:
                             and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
-                            print("Debug Mode: discharging check (%s() in MainRun class)"
+                            print("DEBUG: discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
 
                         # notification
@@ -643,7 +644,7 @@ class MainRun:
                             self.__battery_critical_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
-                            print("Debug Mode: low level battery check (%s() in MainRun class)"
+                            print("DEBUG: low level battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
 
                         # notification
@@ -660,7 +661,7 @@ class MainRun:
                             self.__battery_hibernate_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
-                            print("Debug Mode: critical battery level check (%s() in MainRun class)"
+                            print("DEBUG: critical battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
 
                         # notification
@@ -677,7 +678,7 @@ class MainRun:
                           and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
-                            print("Debug Mode: hibernate battery level check (%s() in MainRun class)"
+                            print("DEBUG: hibernate battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
 
                         # notification
@@ -714,8 +715,8 @@ class MainRun:
                                             <= self.__battery_hibernate_value
                                             and not self.__battery_values.is_ac_present()):
                                         os.popen(self.__sound_command)
-                                        notify_send_string = '''notify-send "MINIMAL BATTERY LEVEL !!!\n" \
-                                                                "last chance to plug in AC cable...\n\nbattery critical level: %s%s\n time left: %s" %s %s''' \
+                                        notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
+                                                                "last chance to plug in AC cable...\n\n current capacity: %s%s\n time left: %s" %s %s''' \
                                                              % (self.__battery_values.battery_current_capacity(), '%',
                                                                 self.__battery_values.battery_time(),
                                                                 '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -733,12 +734,12 @@ class MainRun:
                                         os.popen(self.__minimal_battery_level_command)
 
                             # test block
-                            else:
+                            elif self.__test:
                                 for i in range(0, 6, +1):
                                     if self.__sound:
                                         time.sleep(1)
                                         os.popen(self.__sound_command)
-                                print("Test Mode: Hibernating... Program will be sleep for 10sek")
+                                print("TEST: Hibernating... Program will be sleep for 10sek")
                                 time.sleep(10)
                         else:
                             pass
@@ -751,7 +752,7 @@ class MainRun:
                         and self.__battery_values.is_battery_fully_charged()
                             and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
-                            print("Debug Mode: full battery check (%s() in MainRun class)"
+                            print("DEBUG: full battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
 
                         # notification
@@ -770,7 +771,7 @@ class MainRun:
                             and not self.__battery_values.is_battery_discharging()):
 
                         if self.__debug:
-                            print("Debug Mode: charging check (%s() in MainRun class)"
+                            print("DEBUG: charging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
 
                         # notification
@@ -788,7 +789,7 @@ class MainRun:
             # check for no battery
             else:
                 if self.__debug:
-                    print("Debug Mode: no battery check (%s() in MainRun class)"
+                    print("DEBUG: no battery check (%s() in MainRun class)"
                           % self.run_main_loop.__name__)
 
                 # notification
