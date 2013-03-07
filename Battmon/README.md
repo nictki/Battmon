@@ -8,7 +8,7 @@
 * works in background
 * configurable
 * no tray icon
-* notifications
+* pop-up notifications
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
