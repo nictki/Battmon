@@ -18,8 +18,11 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 * optional program to lock user session before hibernating (default `i3lock`)
 
 ## Changelog:
+**07.03.2013**
+* probably EOF
+
 **06.03.2013**
-* 2.1.2 version
+* 2.1.2 final version
 * add option to specify time for "no battery" remainder (default: 0/disabled)
 
 **06.03.2013**
@@ -40,24 +43,11 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 **24.02.2013**
 * 2.0-rc4
-* get rid of pynotify module, everything goes throught notify-send
-* notify-send shows all informations, like battery charge time, battery level etc
+* get rid of pynotify module, everything goes throuht notify-send
+* notify-send shows all information, like battery charge time, battery level etc
 * code cleanup
 * some improvements
 * re-add session lock commands
-
-**29.11.2012**
-* 2.0-beta3
-* clickable notifications removed, to buggy for me, to get latest stable clickable version go [here] (https://github.com/downloads/nictki/Battmon/battmon-1.2~svn26112012.tar.gz)
-* program can now works only with notify-send (without `pynotify`), but will show only basic notifications (no battery charge times, charge level..)
-* code refactoring
-* code cleanup
-
-**25.11.2012**
-* improve check if battery is present or not
-* add better warnings if some optional dependency is missing
-* add new sound file
-* minor bug fixes
 
 ## Notes:
 If you want to use hibernate, suspend or poweroff, be sure that your `ck-list-sessions output` gives something like this:
@@ -95,8 +85,7 @@ To list all available options run with `-h` or `--help`
     -m, --run-more-copies   run more then one instance (default: false)
     -l PATH <ARGS>, --lock-command-path=PATH <ARGS>
                             path to screen locker
-    -n, --no-notifications
-                            no notifications (default: false)
+    -n, --no-notifications  no notifications (default: false)
     -c, --critical-notifications
                             only critical battery notifications (default: false)
     -f PATH, --sound-file-path=PATH

@@ -27,7 +27,7 @@ import commands
 PROGRAM_NAME = "Battmon"
 VERSION = '2.1.2~svn07032013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
-               'like awesome, dwm, xmonad. Tested notification-daemon-0.5.0.')
+               'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
 URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
@@ -215,7 +215,7 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "DISCHARGING\n" "Current capacity: %s%s\n Time left: %s" %s %s''' \
+                notify_send_string = '''notify-send "DISCHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -238,7 +238,7 @@ class BatteryNotifications:
 
             if self.__notify_send:
                 notify_send_string = '''notify-send "LOW BATTERY LEVEL !!!\n" \
-                                     "Current capacity %s%s\n Time left: %s" %s %s''' \
+                                     "current capacity %s%s\n time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -260,7 +260,7 @@ class BatteryNotifications:
 
             if self.__notify_send:
                 notify_send_string = '''notify-send "CRITICAL BATTERY LEVEL !!!\n" \
-                                     "Current capacity %s%s\n Time left: %s" %s %s''' \
+                                     "current capacity %s%s\n time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -281,8 +281,8 @@ class BatteryNotifications:
                 if self.__sound:
                     os.popen(self.__sound_command)
                 notify_send_string = '''notify-send "MINIMAL BATTERY LEVEL !!!\n" \
-                                    "Please plug AC adapter in...\n\n battery minimal level: %s%s\n \
-                                     Time left: %s" %s %s''' \
+                                    "please plug AC adapter in...\n\n battery minimal level: %s%s\n \
+                                     time left: %s" %s %s''' \
                                      % (self.__battery_values.battery_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -324,7 +324,7 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "CHARGING BATTERY\n" "Time left to fully charge: %s\n" %s %s''' \
+                notify_send_string = '''notify-send "CHARGING BATTERY\n" "time left to fully charge: %s\n" %s %s''' \
                                      % (self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -461,15 +461,13 @@ class MainRun:
             if self.__sound:
                 os.popen(self.__sound_command)
 
-            notify_send_string = '''notify-send "Battmon already running !!!\n" %s %s''' \
+            notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING\n" %s %s''' \
                                  % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
             sys.exit(1)
 
         elif name in output:
-            print("Battmon is already running !!!"
-                  "\nTo run more then one copy of Battmon,"
-                  "\nrun Battmon with -m option\n")
+            print("BATTMON IS ALREADY RUNNING")
             sys.exit(1)
         else:
             pass
@@ -480,7 +478,7 @@ class MainRun:
             self.__notify_send = True
         else:
             self.__notify_send = False
-            print("Dependency missing !!!\nYou have to install libnotify !!!")
+            print("DEPENDENCY MISSING:\nYou have to install libnotify to have notifications.")
 
     # check if we have sound player
     def __check_play(self):
@@ -496,7 +494,7 @@ class MainRun:
             os.popen(notify_send_string)
         else:
             self.__sound = False
-            print("Dependency missing !!!\nYou have to install sox to play sounds\n")
+            print("DEPENDENCY MISSING:\nYou have to install sox to play sounds.\n")
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
@@ -520,7 +518,7 @@ class MainRun:
                                      % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             else:
-                print("Dependency missing !!!\n No sound files found\n")
+                print("DEPENDENCY MISSING:\n No sound files found\n")
 
     # check witch program will lock screen
     def __set_lock_command(self):
@@ -570,7 +568,7 @@ class MainRun:
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             else:
-                print("DEPENDENCY MISSING !!!\n"
+                print("DEPENDENCY MISSING:\n"
                       "Please check if you have installed one of this: "
                       "i3lock, xscreensaver,vlock or simlock, without this programs your session won't be locked\n")
 
@@ -604,8 +602,7 @@ class MainRun:
             os.popen(notify_send_string)
 
         elif not self.__no_start_notifications:
-            print("Below Critical level system will be %s, if you specified action in parameters,\n"
-                  "then please check if you done it correctly" % __temp)
+            print("under minimal battery level system will be: %s" % __temp)
 
     # check for battery update times
     def __check_battery_update_times(self):
@@ -717,9 +714,8 @@ class MainRun:
                                             <= self.__battery_hibernate_value
                                             and not self.__battery_values.is_ac_present()):
                                         os.popen(self.__sound_command)
-                                        notify_send_string = '''notify-send "System will be hibernate !!!\n" \
-                                                                "Last chance to plug in AC cable...\n\n \
-                                                                Battery critical level: %s%s\n Time left: %s" %s %s''' \
+                                        notify_send_string = '''notify-send "MINIMAL BATTERY LEVEL !!!\n" \
+                                                                "last chance to plug in AC cable...\n\nbattery critical level: %s%s\n time left: %s" %s %s''' \
                                                              % (self.__battery_values.battery_current_capacity(), '%',
                                                                 self.__battery_values.battery_time(),
                                                                 '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -750,7 +746,7 @@ class MainRun:
                 # check if we have ac connected
                 if self.__battery_values.is_ac_present() and not self.__battery_values.is_battery_discharging():
 
-                    # fully charged
+                    # full charged
                     if (self.__battery_values.is_ac_present()
                         and self.__battery_values.is_battery_fully_charged()
                             and not self.__battery_values.is_battery_discharging()):
