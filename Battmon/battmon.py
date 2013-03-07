@@ -1110,4 +1110,3 @@ if __name__ == '__main__':
                  no_start_notifications=options.no_start_notifications)
 
     ml.run_main_loop()
-    

@@ -19,7 +19,7 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 ## Changelog:
 **06.03.2013**
-* 2.1.1 version
+* 2.1.2 version
 * add option to specify time for "no battery" remainder (default: 0/disabled)
 
 **06.03.2013**
@@ -40,7 +40,7 @@ Program was tested with `gentoo`and `libnotify-0.7.5`.
 
 **24.02.2013**
 * 2.0-rc4
-* get rid of pynitfy module, evething goes throught notify-send
+* get rid of pynotify module, everything goes throught notify-send
 * notify-send shows all informations, like battery charge time, battery level etc
 * code cleanup
 * some improvements
@@ -89,55 +89,36 @@ To list all available options run with `-h` or `--help`
 
     --version               show program's version number and exit
     -h, --help              show this help message and exit
-    -D, --debug             give some useful information for debugging
-                            (default: false)
-    -T, --test              dry run, print extra informations on terminal, (useful with --debug option)
-                            (default: false)
-    -d, --demonize          start in daemon mode
-                            (default: false)
-    -m, --run-more-copies   allows to run more then one battmon copy
-                            (default: false)
-    -l PATH, --lock-command-path=PATH
-                            specify path to screen locker program, when not
-                            specified, i3lock one will be used
+    -D, --debug             print some useful information (default: false)
+    -T, --test              dry run (default: false)
+    -d, --demonize          daemon mode (default: false)
+    -m, --run-more-copies   run more then one instance (default: false)
+    -l PATH <ARGS>, --lock-command-path=PATH <ARGS>
+                            path to screen locker
     -n, --no-notifications
-                            don't show any desktop notifications, with options the
-                            follow options will be ignored:
-                            -C/--critical-notifications and -S/--no-sound
-                            (default: false)
+                            no notifications (default: false)
     -c, --critical-notifications
-                            shows only critical battery notifications
-                            (default: false)
+                            only critical battery notifications (default: false)
     -f PATH, --sound-file-path=PATH
-                            specify path to sound file, when not specified,
-                            standard one will be used
-    -s, --no-sound          don't play sounds
-                            (default: false)
+                            path to sound file
+    -s, --no-sound          no sounds (default: false)
     -a (1-17), --set-sound-loudness=(1-17)
-                            set notifications sound volume level
-                            (default: 4)
+                            notifications sound volume level (default: 4)
     -t seconds, --timeout=seconds
-                            notification timeout in secs (use 0 to disable),
-                            (default: 6)
+                            notification timeout (use 0 to disable) (default: 6)
     -b seconds, --battery-update-interval=seconds
-                            battery update interval in secs
-                            (default: 7)
+                            battery update interval (default: 7)
     -O (1-100), --low-level-value=(1-100)
-                            set battery low value
-                            (default: 17)
+                            battery low value (default: 17)
     -R (1-100), --critical-level-value=(1-100)
-                            set battery critical value
-                            (default: 7)
+                            battery critical value (default: 7)
     -I (1-100), --hibernate-level-value=(1-100)
-                            (default: 4)
-                            set battery hibernate value
+                            battery hibernate value (default: 4)
     -e <ARG>, --hibernate-level-command=<ARG>
-                            Specify default hibernate battery level action,
-                            possible actions are:
-                            `hibernate`, `suspend` and `poweroff`
-                            (default: hibernate)
+                            minimal battery level actions are:
+                            'hibernate', 'suspend' and 'poweroff' (default: hibernate)
     -r minutes, --no-battery-reminder=minutes
-                            Set no battery remainder in minutes, when set to 0, no
-                            warnings will be displayed,
-                            (default: 0)
+                            no battery remainder, 0 = no remainders (default: 0)
+    -q, --no-start-notifications
+                            no startup notifications (default: False)
 
