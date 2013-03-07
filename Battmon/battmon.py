@@ -1034,7 +1034,7 @@ if __name__ == '__main__':
         if h >= op.values.battery_low_value:
             raise optparse.OptionValueError("\nHibernate battery level must be smaller than %s (low battery value)"
                                             % op.values.battery_low_value)
-        if h >= op.values.battery_hibernate_value:
+        if h >= op.values.battery_critical_value:
             raise optparse.OptionValueError("\nHibernate battery level must be smaller than %s (critical battery value)"
                                             % op.values.battery_critical_value)
         op.values.battery_hibernate_value = h
