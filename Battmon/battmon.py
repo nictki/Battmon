@@ -323,7 +323,7 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "CHARGING\n" "time left to full charge: %s\n" %s %s''' \
+                notify_send_string = '''notify-send "CHARGING\n" "time left: %s\n" %s %s''' \
                                      % (self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
