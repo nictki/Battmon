@@ -20,6 +20,7 @@
 ## Changelog:
 **07.03.2013**
 * probably EOF
+* add check for python correct version
 * small fixes
 
 **06.03.2013**
