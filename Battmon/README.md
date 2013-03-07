@@ -69,8 +69,8 @@ and run like:
 
 	./battmon.py 
 
-or
-	python ./battmon.py
+or:
+    python ./battmon.py
 
 To list all available options run Battmon with `-h` or `--help`
 	
