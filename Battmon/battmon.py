@@ -32,9 +32,11 @@ try:
     #            "running this program with your python version may caused that this program won't be behave normal\n")
 
 except ImportError as ierr:
+    commands = None
     print("\nError: %s" % str(ierr))
     print("\n!!! UNSUPPORTED PYTHON VERSION !!!\n"
-          "this program run on python-2.7, you're using python-%s.%s.%s\n" % sys.version_info[:3])
+          "this program run on python-2.7, you're using python-%s.%s.%s\n"
+          % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     sys.exit(0)
 
 PROGRAM_NAME = "Battmon"
@@ -427,7 +429,7 @@ class MainRun:
             print("\n**********************")
             print("* !!! Debug Mode !!! *")
             print("**********************\n")
-            print("\n- python version: %s.%s.%s\n" % sys.version_info[:3])
+            print("- python version: %s.%s.%s\n" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
             print("- use debug: %s" % self.__debug)
             print("- use test: %s" % self.__test)
             print("- as daemon: %s" % self.__daemon)
@@ -611,13 +613,12 @@ class MainRun:
             __temp = "suspend"
 
         if self.__notify_send and not self.__no_start_notifications:
-            notify_send_string = '''notify-send "under minimal battery level system will be:\n\n" \
-                                "%s" %s %s''' \
+            notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
                                  % (__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
 
         elif not self.__no_start_notifications and not self.__notify_send:
-            print("under minimal battery level system will be: %s" % __temp)
+            print("below minimal battery level system will be: %s" % __temp)
 
     # check for battery update times
     def __check_battery_update_times(self):
