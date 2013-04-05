@@ -76,8 +76,8 @@ class BatteryValues:
         self.find_battery_and_ac()
 
     __PATH = "/sys/class/power_supply/*/"
-    __BAT_PATH = None
-    __AC_PATH = None
+    __BAT_PATH = ''
+    __AC_PATH = ''
     __is_battery_found = False
     __is_ac_found = False
 
