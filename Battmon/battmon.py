@@ -154,10 +154,10 @@ class BatteryValues:
         elif hours == 0 and mins > 1:
             return '%smin' % mins
 
-        elif hours > 1 and mins == 0:
+        elif hours >= 1 and mins == 0:
             return '%sh' % hours
 
-        elif hours > 1 and mins > 1:
+        elif hours >= 1 and mins > 1:
             return '%sh %smin' % (hours, mins)
 
     # return battery values
