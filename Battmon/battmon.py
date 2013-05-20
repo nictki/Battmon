@@ -591,13 +591,18 @@ class MainRun:
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
-        __power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
-                              "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
-        __hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
-                              "/org/freedesktop/UPower org.freedesktop.UPower.Hibernate"
-        __suspend_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
-                            "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
-
+        if commands.getoutput('ps -A | grep upower') != "":
+            __power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
+                                "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
+            __hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
+                                "/org/freedesktop/UPower org.freedesktop.UPower.Hibernate"
+            __suspend_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
+                                "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
+        else:
+            __power_off_command = "sudo /sbin/shutdown -h now"
+            __hibernate_command = "sudo /usr/sbin/pm-hibernate"
+            __suspend_command = "sudo /usr/sbin/pm-suspend"
+            
         __temp = ""
 
         if self.__minimal_battery_level_command == "poweroff":
@@ -747,7 +752,6 @@ class MainRun:
                                         time.sleep(1)
                                         os.popen(self.__lock_command)
                                         os.popen(self.__minimal_battery_level_command)
-
                             # test block
                             elif self.__test:
                                 for i in range(0, 6, +1):
