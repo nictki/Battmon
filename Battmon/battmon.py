@@ -593,29 +593,29 @@ class MainRun:
     def __set_minimal_battery_level_command(self):
         minimal_battery_commands = [ 'shutdown', 'pm-hibernate', 'pm-suspend']
         
-        __power_off_command = ''
-        __hibernate_command = ''
-        __suspend_command = ''
+        self.__power_off_command = ''
+        self.__hibernate_command = ''
+        self.__suspend_command = ''
         
         if commands.getoutput('ps -A | grep upower') != "":
-            __power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
+            self.__power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
-            __hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
+            self.__hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
                                 "/org/freedesktop/UPower org.freedesktop.UPower.Hibernate"
-            __suspend_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
+            self.__suspend_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
                                 "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
         else:
             for c in minimal_battery_commands:
                 for e in EXTRA_PROGRAMS_PATH:
                     if os.path.isfile(e + c):
                         if c == 'shutdown':
-                            __power_off_command = "sudo shutdown -h now"
+                            self.__power_off_command = "sudo shutdown -h now"
                         if c == 'pm-hibernate':
-                            __hibernate_command = "sudo /usr/sbin/pm-hibernate"
+                            self.__hibernate_command = "sudo /usr/sbin/pm-hibernate"
                         if c == 'pm-suspend':
-                            __suspend_command = "sudo /usr/sbin/pm-suspend"
+                            self.__suspend_command = "sudo /usr/sbin/pm-suspend"
         
-        if __power_off_command == '' and __hibernate_command == '' and __suspend_command == '':
+        if self.__power_off_command == '' and self.__hibernate_command == '' and self.__suspend_command == '':
             if self.__notify_send:
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAMM NOT FOUND\n" \
                                     "please check if you have installed pm-utils,\n \
@@ -627,28 +627,28 @@ class MainRun:
                       please check if you have installed pm-utils,\n 
                       or *KIT upower... otherwise your system won'nt be %s at critical battery level''') % self.__minimal_battery_level_command
         else:
-            __temp = ""
+            self.__temp = ""
 
             if self.__minimal_battery_level_command == "poweroff":
-                self.__minimal_battery_level_command = __power_off_command
-                __temp = "shutdown"
+                self.__minimal_battery_level_command = self.__power_off_command
+                self.__temp = "shutdown"
 
             elif self.__minimal_battery_level_command == "hibernate":
-                self.__minimal_battery_level_command = __hibernate_command
-                __temp = "hibernate"
+                self.__minimal_battery_level_command = self.__hibernate_command
+                self.__temp = "hibernate"
 
             elif self.__minimal_battery_level_command == "suspend":
-                self.__minimal_battery_level_command = __suspend_command
-                __temp = "suspend"
+                self.__minimal_battery_level_command = self.__suspend_command
+                self.__temp = "suspend"
 
             if self.__notify_send and not self.__no_start_notifications:
                 notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
-                                     % (__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                     % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                                      
                 os.popen(notify_send_string)
 
             elif not self.__no_start_notifications and not self.__notify_send:
-                print("below minimal battery level system will be: %s" % __temp)
+                print("below minimal battery level system will be: %s" % self.__temp)
 
     # check for battery update times
     def __check_battery_update_times(self):
