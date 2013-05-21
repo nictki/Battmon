@@ -18,6 +18,9 @@
 * optional program to lock user session before hibernating (default `i3lock`)
 
 ## Changelog:
+**20.05.2013**
+* upower is not need anymore, be sure that you can execute pm-suspend/pm-hibernate/shutdown
+
 **07.03.2013**
 * probably EOF
 * add check for python correct version
@@ -60,6 +63,8 @@ If you want to use hibernate, suspend or poweroff, be sure that your `ck-list-se
    	...
    	is-local = TRUE
    	...
+
+and, if you don't use *KIT soft, then be sure, that you can execute pm-suspend, pm-hibernate and shutdown with root rights. 
 
 ## How to run:
 Make battmon executable:

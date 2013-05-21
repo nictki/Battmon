@@ -925,18 +925,18 @@ if __name__ == '__main__':
 
     # set sound volume
     #
-    # i limited allowed values from "1" to "17",
+    # I limited allowed values from "1" to "17",
     # because "4" is enough for me and "10" is really loud
     # to change default values edit:
     # "sound_volume": 4,
     # to
-    # "sound_volume": X
+    # "sound_volume": yours value
     #
-    # if you want to incerase maximal volume sound level,
+    # if you want to increase maximal volume sound level,
     # change:
     # __MAX_SOUND_VOLUME_LEVEL = 17
     # to
-    # __MAX_SOUND_VOLUME_LEVEL = your_value
+    # __MAX_SOUND_VOLUME_LEVEL = yours value
     #
     # set sound volume level
     def set_sound_volume_level(option, opt_str, v, parser):
