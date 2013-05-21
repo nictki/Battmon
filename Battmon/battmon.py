@@ -40,7 +40,7 @@ except ImportError as ierr:
     sys.exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.1.4~svn20052013'
+VERSION = '2.1.4.1~svn20052013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -359,7 +359,7 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "!!! NO BATTERY !!!\n" %s %s''' \
+                notify_send_string = '''notify-send "!!! NO BATTERY !!!" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send and self.__battery_values.battery_time() is not None:
@@ -591,6 +591,12 @@ class MainRun:
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
+        minimal_battery_commands = [ 'shutdown', 'pm-hibernate', 'pm-suspend']
+        
+        __power_off_command = ''
+        __hibernate_command = ''
+        __suspend_command = ''
+        
         if commands.getoutput('ps -A | grep upower') != "":
             __power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
@@ -599,31 +605,50 @@ class MainRun:
             __suspend_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
                                 "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
         else:
-            __power_off_command = "sudo /sbin/shutdown -h now"
-            __hibernate_command = "sudo /usr/sbin/pm-hibernate"
-            __suspend_command = "sudo /usr/sbin/pm-suspend"
-            
-        __temp = ""
+            for c in minimal_battery_commands:
+                for e in EXTRA_PROGRAMS_PATH:
+                    if os.path.isfile(e + c):
+                        if c == 'shutdown':
+                            __power_off_command = "sudo shutdown -h now"
+                        if c == 'pm-hibernate':
+                            __hibernate_command = "sudo /usr/sbin/pm-hibernate"
+                        if c == 'pm-suspend':
+                            __suspend_command = "sudo /usr/sbin/pm-suspend"
+        
+        if __power_off_command == '' and __hibernate_command == '' and __suspend_command == '':
+            if self.__notify_send:
+                notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAMM NOT FOUND\n" \
+                                    "please check if you have installed pm-utils,\n \
+                                    or *KIT upower... otherwise your system won'nt be %s at critical battery level" %s %s''' \
+                                     % (self.__minimal_battery_level_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                os.popen(notify_send_string)
+            elif not self.__notify_send:
+                print('''MINIMAL BATTERY VALUE PROGRAMM NOT FOUND\n
+                      please check if you have installed pm-utils,\n 
+                      or *KIT upower... otherwise your system won'nt be %s at critical battery level''') % self.__minimal_battery_level_command
+        else:
+            __temp = ""
 
-        if self.__minimal_battery_level_command == "poweroff":
-            self.__minimal_battery_level_command = __power_off_command
-            __temp = "shutdown"
+            if self.__minimal_battery_level_command == "poweroff":
+                self.__minimal_battery_level_command = __power_off_command
+                __temp = "shutdown"
 
-        elif self.__minimal_battery_level_command == "hibernate":
-            self.__minimal_battery_level_command = __hibernate_command
-            __temp = "hibernate"
+            elif self.__minimal_battery_level_command == "hibernate":
+                self.__minimal_battery_level_command = __hibernate_command
+                __temp = "hibernate"
 
-        elif self.__minimal_battery_level_command == "suspend":
-            self.__minimal_battery_level_command = __suspend_command
-            __temp = "suspend"
+            elif self.__minimal_battery_level_command == "suspend":
+                self.__minimal_battery_level_command = __suspend_command
+                __temp = "suspend"
 
-        if self.__notify_send and not self.__no_start_notifications:
-            notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
-                                 % (__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-            os.popen(notify_send_string)
+            if self.__notify_send and not self.__no_start_notifications:
+                notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
+                                     % (__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                     
+                os.popen(notify_send_string)
 
-        elif not self.__no_start_notifications and not self.__notify_send:
-            print("below minimal battery level system will be: %s" % __temp)
+            elif not self.__no_start_notifications and not self.__notify_send:
+                print("below minimal battery level system will be: %s" % __temp)
 
     # check for battery update times
     def __check_battery_update_times(self):
@@ -862,7 +887,7 @@ if __name__ == '__main__':
                   default=defaultOptions['debug'],
                   help="print some useful information (default: false)")
 
-    # dry run (test commands)
+    # dry run (test minimal_battery_commands)
     op.add_option("-T", "--test",
                   action="store_true",
                   dest="test",
