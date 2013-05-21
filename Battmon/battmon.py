@@ -40,7 +40,7 @@ except ImportError as ierr:
     sys.exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.1.2~svn07032013'
+VERSION = '2.1.4~svn20052013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
