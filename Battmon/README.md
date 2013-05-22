@@ -18,25 +18,25 @@
 * optional program to lock user session before hibernating (default `i3lock`)
 
 ## Changelog:
-**20.05.2013**
-* 2.1.5 out
+**21.05.2013**
+* 2.1.5
 * add upower check
 
 **07.03.2013**
-* probably EOF
+* 2.1.4
 * add check for python correct version
 * small fixes
 
 **06.03.2013**
-* 2.1.2 out
+* 2.1.2
 * add option to specify time for "no battery" remainder (default: 0/disabled)
 
 **06.03.2013**
-* 2.1 version
+* 2.1
 * add option to specify default minimal battery level value action (default: hibernate)
 
 **06.03.2013**
-* 2.1-rc1 out
+* 2.1-rc1
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
@@ -44,11 +44,11 @@
 * small fixes and improvements
 
 **25.02.2013**
-* 2.0 out
+* 2.0
 * fixes, refactoring, cleanup
 
 **24.02.2013**
-* 2.0-rc4 out
+* 2.0-rc4
 * get rid of pynotify module, use notify-send instead
 * notify-send shows all information, like battery charge time, level etc
 * code cleanup
