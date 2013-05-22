@@ -19,7 +19,8 @@
 
 ## Changelog:
 **20.05.2013**
-* upower is not need anymore, be sure that you can execute pm-suspend/pm-hibernate/shutdown
+* 2.1.5 out
+* add upower check
 
 **07.03.2013**
 * probably EOF
@@ -27,7 +28,7 @@
 * small fixes
 
 **06.03.2013**
-* 2.1.2 final version
+* 2.1.2 out
 * add option to specify time for "no battery" remainder (default: 0/disabled)
 
 **06.03.2013**
@@ -35,7 +36,7 @@
 * add option to specify default minimal battery level value action (default: hibernate)
 
 **06.03.2013**
-* 2.1-rc1 version
+* 2.1-rc1 out
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
@@ -43,11 +44,11 @@
 * small fixes and improvements
 
 **25.02.2013**
-* 2.0 final version
+* 2.0 out
 * fixes, refactoring, cleanup
 
 **24.02.2013**
-* 2.0-rc4
+* 2.0-rc4 out
 * get rid of pynotify module, use notify-send instead
 * notify-send shows all information, like battery charge time, level etc
 * code cleanup
