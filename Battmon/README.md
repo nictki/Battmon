@@ -16,8 +16,13 @@
 * `libnotify` (pop up notifications)
 * optional `sox` (sounds)
 * optional program to lock user session before hibernating (default `i3lock`)
+* pm-utils/upower to hibernate, suspend or shutdown system on critical battery level
 
 ## Changelog:
+**23.05.2013**
+* 2.1.5.1
+* small fixes
+
 **21.05.2013**
 * 2.1.5
 * add upower check
@@ -56,7 +61,7 @@
 * re-add session lock commands
 
 ## Notes:
-If you want to use hibernate, suspend or poweroff, be sure that your `ck-list-sessions output` gives something like this:
+If you want to use hibernate, suspend or shutdown with upower, be sure that your `ck-list-sessions output` gives something like this:
  
 	$: ck-list-sessions
    	...
@@ -65,7 +70,7 @@ If you want to use hibernate, suspend or poweroff, be sure that your `ck-list-se
    	is-local = TRUE
    	...
 
-and, if you don't use *KIT soft, then be sure, that you can execute pm-suspend, pm-hibernate and shutdown with root rights. 
+but, if you don't use *KIT soft, then be sure, that you can execute pm-suspend, pm-hibernate and shutdown with root privileges `sudo foo`. 
 
 ## How to run:
 Make battmon executable:

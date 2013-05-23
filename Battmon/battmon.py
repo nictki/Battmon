@@ -40,7 +40,7 @@ except ImportError as ierr:
     sys.exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.1.4.1~svn20052013'
+VERSION = '2.1.5.1~svn23052013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -476,7 +476,7 @@ class MainRun:
             if self.__sound:
                 os.popen(self.__sound_command)
 
-            notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING\n" %s %s''' \
+            notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING" %s %s''' \
                                  % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
             sys.exit(1)
@@ -609,26 +609,29 @@ class MainRun:
                 for e in EXTRA_PROGRAMS_PATH:
                     if os.path.isfile(e + c):
                         if c == 'shutdown':
-                            self.__power_off_command = "sudo shutdown -h now"
+                            self.__power_off_command = "sudo %s%s -h now" % (e, c)
                         if c == 'pm-hibernate':
-                            self.__hibernate_command = "sudo /usr/sbin/pm-hibernate"
+                            self.__hibernate_command = "sudo %s%s" % (e, c)
                         if c == 'pm-suspend':
-                            self.__suspend_command = "sudo /usr/sbin/pm-suspend"
+                            self.__suspend_command = "sudo %s%s" % (e, c)
         
-        if self.__power_off_command == '' and self.__hibernate_command == '' and self.__suspend_command == '':
+        if self.__hibernate_command == '' and self.__suspend_command == '':
+            # everybody has shutdown command somewhere
+            self.__minimal_battery_level_command = self.__power_off_command
+            
             if self.__notify_send:
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAMM NOT FOUND\n" \
                                     "please check if you have installed pm-utils,\n \
-                                    or *KIT upower... otherwise your system won'nt be %s at critical battery level" %s %s''' \
-                                     % (self.__minimal_battery_level_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                    or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
+                                     % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print('''MINIMAL BATTERY VALUE PROGRAMM NOT FOUND\n
                       please check if you have installed pm-utils,\n 
-                      or *KIT upower... otherwise your system won'nt be %s at critical battery level''') % self.__minimal_battery_level_command
+                      or *KIT upower... otherwise your system will be shutdown at critical battery level''')
         else:
             self.__temp = ""
-
+            
             if self.__minimal_battery_level_command == "poweroff":
                 self.__minimal_battery_level_command = self.__power_off_command
                 self.__temp = "shutdown"
@@ -1109,7 +1112,7 @@ if __name__ == '__main__':
     def set_no_battery_remainder(option, opt_str, r, parser):
         r = int(r)
         if r < 0:
-            raise optparse.OptionValueError("\nNo battery remainder value must be bigger then 0")
+            raise optparse.OptionValueError("\nNo battery remainder value must be greater then 0")
 
         op.values.no_battery_remainder = r
 
