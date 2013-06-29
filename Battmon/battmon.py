@@ -23,24 +23,22 @@ import time
 import optparse
 from ctypes import cdll
 
-try:
-    import subprocess
-
-    #    import subprocess
-    #    print("!!! UNSUPPORTED PYTHON VERSION !!!\n",
-    #            "this program run on python-2.7, you're using python %s.%s.%s\n" % sys.version_info[:3],
-    #            "running this program with your python version may caused that this program won't be behave normal\n")
-
-except ImportError as ierr:
-    subprocess = None
-    print("\nError: %s" % str(ierr))
-    print("\n!!! UNSUPPORTED PYTHON VERSION !!!\n"
-          "this program run on python-3 and above, you're using python-%s.%s.%s\n"
-          % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-    sys.exit(0)
+if sys.version_info[0] == 3:
+    try:
+        import subprocess
+    except ImportError as ierr:
+        print("\nError: %s" % str(ierr))
+        sys.exit(0)
+        
+elif sys.version_info[0] == 2:
+    try:
+        import commands
+    except ImportError as ierr:
+        print("\nError: %s" % str(ierr))
+        sys.exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '3.0-beta1~svn29062013'
+VERSION = '3.0-beta2~svn29062013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -397,7 +395,15 @@ class MainRun:
         self.__sound_command = ''
         self.__notify_send = ''
         self.__currentProgramPath = ''
-
+        
+        # determine if we use subprocess or commands module
+        self.__run_command = ''
+        
+        if sys.modules.__contains__('subprocess'):
+            self.__run_command = subprocess
+        else:    
+            self.__run_command = commands
+        
         # initialize BatteryValues class for basic values of battery
         self.__battery_values = BatteryValues()
 
@@ -471,7 +477,7 @@ class MainRun:
 
     # we want only one instance of this program
     def __check_if_running(self, name):
-        output = subprocess.getoutput('ps -A')
+        output = self.__run_command.getoutput('ps -A')
         if name in output and self.__notify_send:
             if self.__sound:
                 os.popen(self.__sound_command)
@@ -597,7 +603,7 @@ class MainRun:
         self.__hibernate_command = ''
         self.__suspend_command = ''
         
-        if subprocess.getoutput('ps -A | grep upower') != "":
+        if self.__run_command.getoutput('ps -A | grep upower') != "":
             self.__power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
             self.__hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
