@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 """
 This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ import optparse
 from ctypes import cdll
 
 try:
-    import commands
+    import subprocess
 
     #    import subprocess
     #    print("!!! UNSUPPORTED PYTHON VERSION !!!\n",
@@ -32,15 +32,15 @@ try:
     #            "running this program with your python version may caused that this program won't be behave normal\n")
 
 except ImportError as ierr:
-    commands = None
+    subprocess = None
     print("\nError: %s" % str(ierr))
     print("\n!!! UNSUPPORTED PYTHON VERSION !!!\n"
-          "this program run on python-2.7, you're using python-%s.%s.%s\n"
+          "this program run on python-3 and above, you're using python-%s.%s.%s\n"
           % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     sys.exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '2.1.5.1~svn23052013'
+VERSION = '3.0-beta1~svn29062013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -471,7 +471,7 @@ class MainRun:
 
     # we want only one instance of this program
     def __check_if_running(self, name):
-        output = commands.getoutput('ps -A')
+        output = subprocess.getoutput('ps -A')
         if name in output and self.__notify_send:
             if self.__sound:
                 os.popen(self.__sound_command)
@@ -597,7 +597,7 @@ class MainRun:
         self.__hibernate_command = ''
         self.__suspend_command = ''
         
-        if commands.getoutput('ps -A | grep upower') != "":
+        if subprocess.getoutput('ps -A | grep upower') != "":
             self.__power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
             self.__hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \

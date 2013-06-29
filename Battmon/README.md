@@ -12,13 +12,17 @@
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* `python2`
+* `python3`
 * `libnotify` (pop up notifications)
 * optional `sox` (sounds)
 * optional program to lock user session before hibernating (default `i3lock`)
-* pm-utils/upower to hibernate, suspend or shutdown system on critical battery level
+* `pm-utils/upower` to hibernate, suspend or shutdown system on critical battery level
 
 ## Changelog:
+**29.06.2013**
+* 3.0-beta1 out
+* porting to python3
+
 **23.05.2013**
 * 2.1.5.1
 * small fixes
@@ -70,7 +74,7 @@ If you want to use hibernate, suspend or shutdown with upower, be sure that your
    	is-local = TRUE
    	...
 
-but, if you don't use *KIT soft, then be sure, that you can execute pm-suspend, pm-hibernate and shutdown with root privileges `sudo foo`. 
+but, if you don't use *KIT soft, then be sure, that you can execute pm-suspend, pm-hibernate and shutdown with root privileges `sudo "foo"`. 
 
 ## How to run:
 Make battmon executable:
