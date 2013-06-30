@@ -13,16 +13,18 @@
 
 ## Prerequisites:
 * `python`
+* `setproctitle` module to set program name
 * `libnotify` (pop up notifications)
 * optional `sox` (sounds)
 * optional program to lock user session before hibernating (default `i3lock`)
 * `pm-utils/upower` to hibernate, suspend or shutdown system on critical battery level
 
 ## Changelog:
-**29.06.2013**
+**30.06.2013**
 * 3.0-beta2 out
 * porting to python3
 * program runs now with python2 and python3
+* program name is set throught setproctitle module
 
 **23.05.2013**
 * 2.1.5.1

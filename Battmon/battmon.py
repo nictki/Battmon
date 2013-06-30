@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
 """
 This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,14 @@ elif sys.version_info[0] == 2:
         print("\nError: %s" % str(ierr))
         sys.exit(0)
 
-PROGRAM_NAME = "Battmon"
-VERSION = '3.0-beta2~svn29062013'
+try:
+    import setproctitle
+except ImportError as ierr:
+    print("\n* Error: %s" % str(ierr)) 
+    print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
+
+PROGRAM_NAME = 'Battmon'
+VERSION = '3.0-beta3~svn30062013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -472,9 +478,11 @@ class MainRun:
 
     # set name for this program, thus works 'killall Battmon'
     def __set_proc_name(self, name):
-        libc = cdll.LoadLibrary('libc.so.6')
-        libc.prctl(15, name, 0, 0, 0)
-
+        if sys.modules.__contains__('setproctitle'):
+            setproctitle.setproctitle(name)
+        else:
+            libc = cdll.LoadLibrary('libc.so.6')
+            libc.prctl(15, name, 0, 0, 0)
     # we want only one instance of this program
     def __check_if_running(self, name):
         output = self.__run_command.getoutput('ps -A')
