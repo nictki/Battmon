@@ -537,7 +537,7 @@ class MainRun:
                 self.__sound_command = '%s -V1 -q -v%s %s' \
                                        % (self.__sound_player, self.__sound_volume, self.__sound_file)
 
-            elif self.__check_in_path(__sound_fileName):
+            if self.__check_in_path(__sound_fileName):
                 self.__sound_command = '%s -V1 -q -v%s %s' \
                                        % (self.__sound_player, self.__sound_volume, self.__currentProgramPath)
         except IOError as ioerr:
@@ -549,64 +549,61 @@ class MainRun:
                                     please check if it was correctly" %s %s''' \
                                      % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send:
+            if not self.__notify_send:
                 print("DEPENDENCY MISSING:\n No sound files found\n")
 
     # check witch program will lock screen
     def __set_lock_command(self):
-        try:
-            # check if command found in given path
-            if os.path.exists(self.__lock_command):
-                if self.__notify_send and not self.__no_start_notifications:
-                    notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
-                                         % (self.__lock_command, self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                    os.popen(notify_send_string)
+        # check if the given command found in given path
+        if os.path.exists(self.__lock_command):
+            if self.__notify_send and not self.__no_start_notifications:
+                notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
+                                    % (self.__lock_command, self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                os.popen(notify_send_string)
 
-                elif not self.__no_start_notifications:
-                    print("%s will be used to lock screen" % self.__lock_command)
+            elif not self.__no_start_notifications:
+                print("%s will be used to lock screen" % self.__lock_command)
             
-            # check if default lock command is in path
-            elif self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command is "":
-                self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
+        # check if default lock command is in path
+        if self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command is "":
+            self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
 
-                if self.__notify_send and not self.__no_start_notifications:
-                    notify_send_string = '''notify-send "using default program to lock screen\n" "cmd: %s" %s %s''' \
-                                         % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                    os.popen(notify_send_string)
+            if self.__notify_send and not self.__no_start_notifications:
+                notify_send_string = '''notify-send "using default program to lock screen\n" "cmd: %s" %s %s''' \
+                                    % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                os.popen(notify_send_string)
 
-                elif not self.__no_start_notifications and not self.__notify_send:
-                    print("using default program to lock screen")
+            elif not self.__no_start_notifications and not self.__notify_send:
+                print("using default program to lock screen")
             
-            # check fo others screen lockers in path, first found will set as default
-            elif not self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND):
-                for c in EXTRA_SCREEN_LOCK_COMMANDS:
-                    if self.__check_in_path(c):
-                        self.__lock_command = self.__currentProgramPath
-                        
-                        if self.__notify_send and not self.__no_start_notifications:
-                            notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
-                                                % (c, c, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                            print(notify_send_string)
-                            os.popen(notify_send_string)
-
-                        elif not self.__no_start_notifications and not self.__notify_send:
-                            print("%s will be used to lock screen" % c)
-                        break
-                    else:
-                        break
+        # check for others screen lockers in path, first found will set as default
+        if not self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND):
+            for c in EXTRA_SCREEN_LOCK_COMMANDS:
+                if self.__check_in_path(c):                             
+                    if c == 'xscreensaver-command':
+                        self.__lock_command = (self.__currentProgramPath + ' -lock')
                     
-        except IOError as ioerr:
-            print("Lock command file not fount: %s" % str(ioerr))
+                    if c == 'vlock':
+                        self.__lock_command = (self.__currentProgramPath + ' -a')
+                        
+                    if self.__notify_send and not self.__no_start_notifications:
+                        notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
+                                            % (c, c, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                        os.popen(notify_send_string)
+
+                    elif not self.__no_start_notifications and not self.__notify_send:
+                        print("%s will be used to lock screen" % c)
+                    
+                    break
+        
+        if self.__lock_command == '':
             if self.__notify_send:
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
-                                    "please check if you have installed i3lock,\n \
-                                    this is default lock screen program,\n \
-                                    you can specify your favorite screen lock program\n \
-                                    running this program with -l PATH, \
-                                    otherwise your session won't be locked" %s %s''' \
+                notify_send_string = ('''notify-send "DEPENDENCY MISSING\n" \
+                                    "please check if you have installed i3lock, this is default lock screen program, you can specify your favorite screen lock program running this program with -l PATH, otherwise your session won't be locked" %s %s''') \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send:
+                
+            if not self.__notify_send:
                 print("DEPENDENCY MISSING:\n please check if you have installed i3lock, \
                         this is default lock screen program, \
                         you can specify your favorite screen lock program \
