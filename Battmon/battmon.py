@@ -44,7 +44,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.0-beta3~svn30062013'
+VERSION = '3.0-rc1~svn01072013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -142,6 +142,8 @@ class BatteryValues:
             elif not self.is_battery_discharging():
                 remaining_time = ((bat_energy_full - bat_energy_now) * 60 * 60) // bat_power_now
                 return remaining_time
+        else:
+            return -1
 
     # convert remaining time
     def __convert_time(self, battery_time):
@@ -168,19 +170,26 @@ class BatteryValues:
     def battery_time(self):
         return self.__convert_time(self.__get_battery_times())
 
+    # get current battery capacity wenn discharging
+    def battery_discharging_current_capacity(self):
+        battery_full_design =  int(self.__get_value(self.__BAT_PATH + 'energy_full_design'))
+        battery_full = int(self.__get_value(self.__BAT_PATH + 'energy_full'))
+        return(int("%d" % (battery_full/battery_full_design * 100)))
+    
+    # get current battery capacity when charging
+    def battery_charging_current_capacity(self):
+        battery_now = int(self.__get_value(self.__BAT_PATH + 'energy_now'))
+        battery_full = int(self.__get_value(self.__BAT_PATH + 'energy_full'))
+        return(int("%d" % (battery_now/battery_full * 100)))
+
     # check if battery is fully charged
     def is_battery_fully_charged(self):
-        v = self.__get_value(self.__BAT_PATH + 'capacity')
-        if v == 100:
+        status = self.__get_value(self.__BAT_PATH + 'status')
+        if self.battery_charging_current_capacity() == 100:
             return True
         else:
-            return False
-
-    # get current battery capacity
-    def battery_current_capacity(self):
-        v = self.__get_value(self.__BAT_PATH + 'capacity')
-        return int(v)
-
+            return False    
+    
     # check if battery discharging
     def is_battery_discharging(self):
         status = self.__get_value(self.__BAT_PATH + 'status')
@@ -193,7 +202,6 @@ class BatteryValues:
     def is_battery_present(self):
         if self.__is_battery_found:
             status = self.__get_value(self.__BAT_PATH + 'present')
-
             if status.find("1") != -1:
                 return True
         else:
@@ -203,7 +211,6 @@ class BatteryValues:
     def is_ac_present(self):
         if self.__is_ac_found:
             status = self.__get_value(self.__AC_PATH + 'online')
-
             if status.find("1") != -1:
                 return True
             else:
@@ -235,7 +242,7 @@ class BatteryNotifications:
 
             if self.__notify_send:
                 notify_send_string = '''notify-send "DISCHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (self.__battery_values.battery_current_capacity(),
+                                     % (self.__battery_values.battery_discharging_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -258,7 +265,7 @@ class BatteryNotifications:
             if self.__notify_send:
                 notify_send_string = '''notify-send "LOW BATTERY LEVEL\n" \
                                      "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (self.__battery_values.battery_current_capacity(),
+                                     % (self.__battery_values.battery_discharging_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -280,7 +287,7 @@ class BatteryNotifications:
             if self.__notify_send:
                 notify_send_string = '''notify-send "CRITICAL BATTERY LEVEL\n" \
                                      "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (self.__battery_values.battery_current_capacity(),
+                                     % (self.__battery_values.battery_discharging_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -301,7 +308,7 @@ class BatteryNotifications:
                     os.popen(self.__sound_command)
                 notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                     "please plug AC adapter in...\n\n current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (self.__battery_values.battery_current_capacity(),
+                                     % (self.__battery_values.battery_discharging_current_capacity(),
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -342,8 +349,9 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "CHARGING\n" "time left: %s\n" %s %s''' \
-                                     % (self.__battery_values.battery_time(),
+                notify_send_string = '''notify-send "CHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
+                                     % (self.__battery_values.battery_charging_current_capacity(),
+                                        '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send and self.__battery_values.battery_time() is not None:
@@ -415,12 +423,14 @@ class MainRun:
 
         # check if we can send notifications
         self.__check_notify_send()
-
+        
         # check if program already running and set name
         if not self.__more_then_one_copy:
             self.__check_if_running(PROGRAM_NAME)
-            self.__set_proc_name(PROGRAM_NAME)
-
+        
+        # set Battmon process name
+        self.__set_proc_name(PROGRAM_NAME)
+            
         # check for external programs and files
         self.__check_play()
         self.__set_sound_file_and_volume()
@@ -480,13 +490,17 @@ class MainRun:
     def __set_proc_name(self, name):
         if sys.modules.__contains__('setproctitle'):
             setproctitle.setproctitle(name)
+        # I don't why by python3 proces name will set to 'B' instead to 'Battmon'
         else:
             libc = cdll.LoadLibrary('libc.so.6')
             libc.prctl(15, name, 0, 0, 0)
+            
     # we want only one instance of this program
     def __check_if_running(self, name):
         output = self.__run_command.getoutput('ps -A')
-        if name in output and self.__notify_send:
+        
+        # I don't why by python3 proces name will set to 'B' instead to 'Battmon'
+        if (name in output or 'B' in output) and self.__notify_send:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -495,7 +509,7 @@ class MainRun:
             os.popen(notify_send_string)
             sys.exit(1)
 
-        elif name in output:
+        elif name in output or 'B' in output:
             print("BATTMON IS ALREADY RUNNING")
             sys.exit(1)
         else:
@@ -671,9 +685,10 @@ class MainRun:
     def __check_battery_update_times(self):
         while self.__battery_values.battery_time() == "Unknown" or self.__battery_values.battery_time() is None:
             time.sleep(self.__battery_update_timeout)
-            if self.__battery_values.battery_time() == "Unknown" or self.__battery_values.battery_time() is None:
+            if not self.__battery_values.battery_time() == "Unknown" or not self.__battery_values.battery_time() is None:
                 break
-            break
+            else:
+                pass
 
     # start main loop
     def run_main_loop(self):
@@ -683,9 +698,9 @@ class MainRun:
                 # check if battery is discharging to stay in normal battery level
                 if (not self.__battery_values.is_ac_present()
                         and self.__battery_values.is_battery_discharging()):
-
+                    
                     # discharging
-                    if (self.__battery_values.battery_current_capacity() > self.__battery_low_value
+                    if (self.__battery_values.battery_discharging_current_capacity() > self.__battery_low_value
                             and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
@@ -697,12 +712,12 @@ class MainRun:
                         self.__notification.battery_discharging()
 
                         # have enough power and if we should stay in save battery level loop
-                        while (self.__battery_values.battery_current_capacity() > self.__battery_low_value
+                        while (self.__battery_values.battery_discharging_current_capacity() > self.__battery_low_value
                                and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # low capacity level
-                    elif (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
+                    elif (self.__battery_low_value >= self.__battery_values.battery_discharging_current_capacity() >
                             self.__battery_critical_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
@@ -714,12 +729,12 @@ class MainRun:
                         self.__notification.low_capacity_level()
 
                         # battery have enough power and check if we should stay in low battery level loop
-                        while (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
+                        while (self.__battery_low_value >= self.__battery_values.battery_discharging_current_capacity() >
                                 self.__battery_critical_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # critical capacity level
-                    elif (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
+                    elif (self.__battery_critical_value >= self.__battery_values.battery_discharging_current_capacity() >
                             self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
@@ -731,12 +746,12 @@ class MainRun:
                         self.__notification.critical_battery_level()
 
                         # battery have enough power and check if we should stay in critical battery level loop
-                        while (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
+                        while (self.__battery_critical_value >= self.__battery_values.battery_discharging_current_capacity() >
                                 self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # hibernate level
-                    elif (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
+                    elif (self.__battery_values.battery_discharging_current_capacity() <= self.__battery_minimal_value
                           and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
@@ -748,7 +763,7 @@ class MainRun:
                         self.__notification.minimal_battery_level()
 
                         # check once more if system will be hibernate
-                        if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
+                        if (self.__battery_values.battery_discharging_current_capacity() <= self.__battery_minimal_value
                                 and False == self.__battery_values.is_ac_present()):
                             time.sleep(2)
 
@@ -756,12 +771,12 @@ class MainRun:
                                 os.popen(self.__sound_command)
 
                             if not self.__test:
-                                if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
+                                if (self.__battery_values.battery_discharging_current_capacity() <= self.__battery_minimal_value
                                         and not self.__battery_values.is_ac_present()):
 
                                     for i in range(0, 6, +1):
                                         # check if ac was plugged
-                                        if (self.__battery_values.battery_current_capacity()
+                                        if (self.__battery_values.battery_discharging_current_capacity()
                                                 <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
 
@@ -773,20 +788,20 @@ class MainRun:
                                                 break
 
                                     # one more check if ac was plugged
-                                    if (self.__battery_values.battery_current_capacity()
+                                    if (self.__battery_values.battery_discharging_current_capacity()
                                             <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
                                         os.popen(self.__sound_command)
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                                                 "last chance to plug in AC cable...\n\n current capacity: %s%s\n time left: %s" %s %s''' \
-                                                             % (self.__battery_values.battery_current_capacity(), '%',
+                                                             % (self.__battery_values.battery_discharging_current_capacity(), '%',
                                                                 self.__battery_values.battery_time(),
                                                                 '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                                         os.popen(notify_send_string)
                                         time.sleep(6)
 
                                     # LAST CHECK before hibernating
-                                    if (self.__battery_values.battery_current_capacity()
+                                    if (self.__battery_values.battery_discharging_current_capacity()
                                             <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
                                         # lock screen and hibernate
@@ -871,7 +886,6 @@ class MainRun:
 
 
 if __name__ == '__main__':
-
     # parser
     op = optparse.OptionParser(usage="usage: %prog [OPTION...]",
                                version="%prog" + VERSION,
@@ -978,7 +992,7 @@ if __name__ == '__main__':
     # change:
     # __MAX_SOUND_VOLUME_LEVEL = 17
     # to
-    # __MAX_SOUND_VOLUME_LEVEL = yours value
+    # __MAX_SOUND_VOLUME_LEVEL = your value
     #
     # set sound volume level
     def set_sound_volume_level(option, opt_str, v, parser):
@@ -1167,5 +1181,5 @@ if __name__ == '__main__':
                  minimal_battery_level_command=options.minimal_battery_level_command,
                  no_battery_remainder=options.no_battery_remainder,
                  no_start_notifications=options.no_start_notifications)
-
+    
     ml.run_main_loop()

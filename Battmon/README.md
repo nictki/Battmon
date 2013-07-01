@@ -12,16 +12,25 @@
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* `python`
-* `setproctitle` module to set program name
-* `libnotify` (pop up notifications)
+* `python` (python3 and python2 are supported)
+* optional `setproctitle` module to set program name (https://code.google.com/p/py-setproctitle/)
+* optional `libnotify` (pop up notifications)
 * optional `sox` (sounds)
 * optional program to lock user session before hibernating (default `i3lock`)
-* `pm-utils/upower` to hibernate, suspend or shutdown system on critical battery level
+* optional `pm-utils/upower` to hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default)
 
 ## Changelog:
+**1.07.2013**
+* 3.0-rc1
+* improve computing current battery capacity 
+* improve check if battery is full
+* fix behavior when battery status is "Unknown"
+* make setproctitle module optional
+* when both pm-utils and upower are intalled, upower will be use as default
+* update README
+
 **30.06.2013**
-* 3.0-beta2 out
+* 3.0-beta2
 * porting to python3
 * program runs now with python2 and python3
 * program name is set throught setproctitle module
