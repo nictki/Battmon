@@ -26,56 +26,31 @@
 * improve check if battery is full
 * fix behavior when battery status is "Unknown"
 * make setproctitle module optional
-* when both pm-utils and upower are intalled, upower will be use as default
+* when both pm-utils and upower are installed, upower will be use as default
 * workaround for libc.prctl(15, name, 0, 0, 0) under python3
 * fix "run more then one copy" under python2
 * update README
-
-**30.06.2013**
-* 3.0-beta2
 * porting to python3
 * program runs now with python2 and python3
-* program name is set throught setproctitle module
+* program name is set through setproctitle module
 
 **23.05.2013**
 * 2.1.5.1
-* small fixes
-
-**21.05.2013**
-* 2.1.5
 * add upower check
-
-**07.03.2013**
-* 2.1.4
 * add check for python correct version
 * small fixes
-
-**06.03.2013**
-* 2.1.2
 * add option to specify time for "no battery" remainder (default: 0/disabled)
-
-**06.03.2013**
-* 2.1
 * add option to specify default minimal battery level value action (default: hibernate)
 
 **06.03.2013**
-* 2.1-rc1
+* 2.1
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
 * add possibility to set through low, critical and minimal battery value levels
 * small fixes and improvements
-
-**25.02.2013**
-* 2.0
-* fixes, refactoring, cleanup
-
-**24.02.2013**
-* 2.0-rc4
 * get rid of pynotify module, use notify-send instead
-* notify-send shows all information, like battery charge time, level etc
 * code cleanup
-* some improvements
 * re-add session lock commands
 
 ## Notes:
