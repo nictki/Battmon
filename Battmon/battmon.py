@@ -44,7 +44,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.0-rc1~svn01072013'
+VERSION = '3.0-rc2~svn01072013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -450,7 +450,7 @@ class MainRun:
             print("- use sound: %s" % self.__sound)
             print("- sound volume level: %s" % self.__sound_volume)
             print("- sound command %s" % self.__sound_command)
-            print("- notification timeout: %s" % (self.__timeout / 1000))
+            print("- notification timeout: %s" % int(self.__timeout / 1000))
             print("- battery update interval: %s" % self.__battery_update_timeout)
             print("- battery low level value: %s" % self.__battery_low_value)
             print("- battery critical level value: %s" % self.__battery_critical_value)
@@ -494,7 +494,7 @@ class MainRun:
         # i don't know why python3 set process name to 'B' instead to 'Battmon'
         # libc.prctl(15, name, 0, 0, 0) should give 'Battmon' in 'ps -A' output
         # like in python2, but it does'nt 
-        if sys.version_info[0] == 3:
+        if sys.version_info[0] == 3 and sys.modules.__contains__('setproctitle'):
                 name = 'B'
                 
         # check if process is running
