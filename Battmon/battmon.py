@@ -413,9 +413,9 @@ class MainRun:
         self.__check_notify_send()
         
         # check if program already running and set name
-        #if not self.__more_then_one_copy:
-        #    self.__check_if_running(PROGRAM_NAME)
-        
+        if not self.__more_then_one_copy:
+            self.__check_if_running(PROGRAM_NAME)
+             
         # set Battmon process name
         self.__set_proc_name(PROGRAM_NAME)
             
@@ -428,7 +428,7 @@ class MainRun:
         # initialize notification
         self.__notification = BatteryNotifications(self.__notify, self.__notify_send, self.__critical, self.__sound,
                                                    self.__sound_command, self.__battery_values, self.__timeout)
-
+        
         # fork in background
         if self.__daemon and not self.__debug:
             if os.fork() != 0:
@@ -478,17 +478,27 @@ class MainRun:
     def __set_proc_name(self, name):
         if sys.modules.__contains__('setproctitle'):
             setproctitle.setproctitle(name)
-        # I don't why by python3 proces name will set to 'B' instead to 'Battmon'
         else:
             libc = cdll.LoadLibrary('libc.so.6')
             libc.prctl(15, name, 0, 0, 0)
-            
+    
+    
     # we want only one instance of this program
     def __check_if_running(self, name):
         output = self.__run_command.getoutput('ps -A')
         
-        # I don't why by python3 proces name will set to 'B' instead to 'Battmon'
-        if (name in output or 'B' in output) and self.__notify_send:
+        ######################################################
+        # QUICK WORKAROUND IF THERE IS NO SETPTOCFILE MODULE #
+        ######################################################
+        # check if we running python3 and set searching name to 'B'
+        # i don't know why python3 set process name to 'B' instead to 'Battmon'
+        # libc.prctl(15, name, 0, 0, 0) should give 'Battmon' in 'ps -A' output
+        # like in python2, but it does'nt 
+        if sys.version_info[0] == 3:
+                name = 'B'
+                
+        # check if process is running
+        if name in output and self.__notify_send:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -497,7 +507,7 @@ class MainRun:
             os.popen(notify_send_string)
             sys.exit(1)
 
-        elif name in output or 'B' in output:
+        elif name in output in output:
             print("BATTMON IS ALREADY RUNNING")
             sys.exit(1)
         else:

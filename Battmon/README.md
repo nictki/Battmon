@@ -13,20 +13,22 @@
 
 ## Prerequisites:
 * `python` (python3 and python2 are supported)
-* optional `setproctitle` module to set program name (https://code.google.com/p/py-setproctitle/)
-* optional `libnotify` (pop up notifications)
-* optional `sox` (sounds)
-* optional program to lock user session before hibernating (default `i3lock`)
-* optional `pm-utils/upower` to hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default)
+* `setproctitle` optional (but preferred way) module to set program name, thus works `killall 'Battmon'` (https://code.google.com/p/py-setproctitle/)
+* `libnotify` optional for pop up notifications
+* `sox` optional for sounds
+* `i3lock` optional program to lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is default one)
+* `pm-utils/upower` optional to hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default one)
 
 ## Changelog:
 **1.07.2013**
-* 3.0-rc1
+* 3.0-rc2
 * improve computing current battery capacity 
 * improve check if battery is full
 * fix behavior when battery status is "Unknown"
 * make setproctitle module optional
 * when both pm-utils and upower are intalled, upower will be use as default
+* workaround for libc.prctl(15, name, 0, 0, 0) under python3
+* fix "run more then one copy" under python2
 * update README
 
 **30.06.2013**
