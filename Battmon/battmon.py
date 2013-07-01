@@ -119,21 +119,14 @@ class BatteryValues:
             print('Error: ' + str(ioerr))
             return ''
 
-    # convert from string to integer
-    def __convert_values(self, v):
-        if self.__is_battery_found:
-            try:
-                return int(v)
-            except ValueError:
-                return 0
-
     # get battery time in seconds
     def __get_battery_times(self):
-    # battery values
-        bat_energy_now = self.__convert_values(self.__get_value(self.__BAT_PATH + 'energy_now'))
-        bat_energy_full = self.__convert_values(self.__get_value(self.__BAT_PATH + 'energy_full'))
-        bat_power_now = self.__convert_values(self.__get_value(self.__BAT_PATH + 'power_now'))
-
+        # battery values
+        if self.__is_battery_found:
+            bat_energy_now = int(self.__get_value(self.__BAT_PATH + 'energy_now'))
+            bat_energy_full = int(self.__get_value(self.__BAT_PATH + 'energy_full'))
+            bat_power_now = int(self.__get_value(self.__BAT_PATH + 'power_now'))
+            
         if bat_power_now > 0:
             if self.is_battery_discharging():
                 remaining_time = (bat_energy_now * 60 * 60) // bat_power_now
@@ -172,13 +165,12 @@ class BatteryValues:
 
     # get current battery capacity
     def battery_current_capacity(self):
-        battery_now = int(self.__get_value(self.__BAT_PATH + 'energy_now'))
-        battery_full = int(self.__get_value(self.__BAT_PATH + 'energy_full'))
-        return(int("%d" % (battery_now/battery_full * 100)))
+        battery_now = float(self.__get_value(self.__BAT_PATH + 'energy_now'))
+        battery_full = float(self.__get_value(self.__BAT_PATH + 'energy_full'))
+        return(int("%d" % (battery_now/battery_full * 100.0)))
 
     # check if battery is fully charged
     def is_battery_fully_charged(self):
-        status = self.__get_value(self.__BAT_PATH + 'status')
         if self.battery_current_capacity() >= 99:
             return True
         else:
@@ -419,8 +411,8 @@ class MainRun:
         self.__check_notify_send()
         
         # check if program already running and set name
-        if not self.__more_then_one_copy:
-            self.__check_if_running(PROGRAM_NAME)
+        #if not self.__more_then_one_copy:
+        #    self.__check_if_running(PROGRAM_NAME)
         
         # set Battmon process name
         self.__set_proc_name(PROGRAM_NAME)
