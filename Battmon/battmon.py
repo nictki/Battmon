@@ -53,22 +53,24 @@ URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # path's for external things 
+
 EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/local/bin/',
                        '/bin/',
                        '/usr/sbin/',
                        '/usr/libexec/',
                        '/sbin/',
-                       './',
-                       '/usr/share/sounds/',
-                       './sounds']
+                       '/usr/share/sounds/']
+
+# add current directory
+EXTRA_PROGRAMS_PATH.append(os.path.dirname(os.path.realpath(__file__)) + "/sounds/")
 
 # default play command
 DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
 # screen lockers
-#SCREEN_LOCK_COMMANDS = ['i3lock', 'xscreensaver-command', 'slimlock', 'vlock']
+EXTRA_SCREEN_LOCK_COMMANDS = ['xscreensaver-command', 'slimlock', 'vlock']
 
 # default screen lock command
 DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock'
@@ -529,6 +531,7 @@ class MainRun:
     def __set_sound_file_and_volume(self):
         ### default sound file ###
         __sound_fileName = 'info.wav'
+        __sound_file_Path = ''
         try:
             if os.path.exists(self.__sound_file):
                 self.__sound_command = '%s -V1 -q -v%s %s' \
@@ -552,16 +555,17 @@ class MainRun:
     # check witch program will lock screen
     def __set_lock_command(self):
         try:
+            # check if command found in given path
             if os.path.exists(self.__lock_command):
                 if self.__notify_send and not self.__no_start_notifications:
-                    notify_send_string = '''notify-send "%s\n" \
-                                        "will be used to lock screen" %s %s''' \
-                                         % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                    notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
+                                         % (self.__lock_command, self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                     os.popen(notify_send_string)
 
                 elif not self.__no_start_notifications:
                     print("%s will be used to lock screen" % self.__lock_command)
-
+            
+            # check if default lock command is in path
             elif self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command is "":
                 self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
 
@@ -572,19 +576,25 @@ class MainRun:
 
                 elif not self.__no_start_notifications and not self.__notify_send:
                     print("using default program to lock screen")
+            
+            # check fo others screen lockers in path, first found will set as default
+            elif not self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND):
+                for c in EXTRA_SCREEN_LOCK_COMMANDS:
+                    if self.__check_in_path(c):
+                        self.__lock_command = self.__currentProgramPath
+                        
+                        if self.__notify_send and not self.__no_start_notifications:
+                            notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
+                                                % (c, c, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                            print(notify_send_string)
+                            os.popen(notify_send_string)
 
-            elif self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and not os.path.exists(DEFAULT_SCREEN_LOCK_COMMAND):
-                # i3lock
-                self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
-                if self.__notify_send and not self.__no_start_notifications:
-                    notify_send_string = '''notify-send "program not found in given PATH !!!\n" \
-                                        "i3lock will be used as a default program to lock screen" %s %s''' \
-                                         % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                    os.popen(notify_send_string)
-
-                elif not self.__no_start_notifications and not self.__notify_send:
-                    print("i3lock will be used to lock screen")
-
+                        elif not self.__no_start_notifications and not self.__notify_send:
+                            print("%s will be used to lock screen" % c)
+                        break
+                    else:
+                        break
+                    
         except IOError as ioerr:
             print("Lock command file not fount: %s" % str(ioerr))
             if self.__notify_send:
