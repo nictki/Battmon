@@ -46,7 +46,8 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/sbin/',
                        '/usr/libexec/',
                        '/sbin/',
-                       '/usr/share/sounds/']
+                       '/usr/share/sounds/',
+                       '/usr/share/']
 
 # add current Battmon directory
 EXTRA_PROGRAMS_PATH.append(os.path.dirname(os.path.realpath(__file__)) + "/sounds/")
@@ -387,13 +388,6 @@ class MainRun:
 
         # check if we can send notifications
         self.__check_notify_send()
-        
-        # check if program already running and set name
-        if not self.__more_then_one_copy:
-            self.__check_if_running(PROGRAM_NAME)
-             
-        # set Battmon process name
-        self.__set_proc_name(PROGRAM_NAME)
             
         # check for external programs and files
         self.__check_play()
@@ -404,6 +398,13 @@ class MainRun:
         # initialize notification
         self.__notification = BatteryNotifications(self.__notify, self.__notify_send, self.__critical, self.__sound,
                                                    self.__sound_command, self.__battery_values, self.__timeout)
+        
+        # check if program already running and set name
+        if not self.__more_then_one_copy:
+            self.__check_if_running(PROGRAM_NAME)
+             
+        # set Battmon process name
+        self.__set_proc_name(PROGRAM_NAME)
         
         # fork in background
         if self.__daemon and not self.__debug:
@@ -599,8 +600,8 @@ class MainRun:
         self.__power_off_command = ''
         self.__hibernate_command = ''
         self.__suspend_command = ''
-        
-        if str(subprocess.check_output(['ps', '-A', '|', 'grep', 'upower'], stderr=subprocess.STDOUT, shell=True)):
+  
+        if self.__check_if_running('upower'):
             self.__power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
             self.__hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
