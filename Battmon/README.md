@@ -16,12 +16,12 @@
 
 **Optional:** 
 * **setproctitle:** module to set program name, thus works `killall 'Battmon'` under python2 and python3, 
-in my opinion this is preferred way to set process name, but anyway program will be clear it's self  
+in my opinion this is preferred way to set process name, but anyway it's optional  
 (see: https://code.google.com/p/py-setproctitle/)
-* **libnotify** pop up notifications
-* **sox** sounds
-* **i3lock** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is default one)
-* **pm-utils/upower** hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default one)
+* **libnotify:** pop up notifications
+* **sox:** sounds
+* **i3lock:** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is default one)
+* **pm-utils/upower:** hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default one)
 
 ## Changelog:
 **3.07.2013**
