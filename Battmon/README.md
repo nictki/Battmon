@@ -15,7 +15,7 @@
 * **python** (python3 and python2 are supported)
 
 **Optional:** 
-* **setproctitle:** module to set program name, thus works `killall 'Battmon'` (preferred)  
+* **setproctitle:** module to set program name, thus works `killall 'Battmon'` under python2 and python3, thus preferred way to set process name  
 (https://code.google.com/p/py-setproctitle/)
 * **libnotify** pop up notifications
 * **sox** sounds
