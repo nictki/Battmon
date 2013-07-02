@@ -31,7 +31,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.0-rc3~svn02072013'
+VERSION = '3.0-rc4~svn03072013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -387,6 +387,12 @@ class MainRun:
 
         # check if we can send notifications
         self.__check_notify_send()
+            
+        # check for external programs and files
+        self.__check_play()
+        self.__set_sound_file_and_volume()
+        self.__set_lock_command()
+        self.__set_minimal_battery_level_command()
         
         # check if program already running and set name
         if not self.__more_then_one_copy:
@@ -394,13 +400,7 @@ class MainRun:
              
         # set Battmon process name
         self.__set_proc_name(PROGRAM_NAME)
-            
-        # check for external programs and files
-        self.__check_play()
-        self.__set_sound_file_and_volume()
-        self.__set_lock_command()
-        self.__set_minimal_battery_level_command()
-
+        
         # initialize notification
         self.__notification = BatteryNotifications(self.__notify, self.__notify_send, self.__critical, self.__sound,
                                                    self.__sound_command, self.__battery_values, self.__timeout)
@@ -600,7 +600,7 @@ class MainRun:
         self.__hibernate_command = ''
         self.__suspend_command = ''
         
-        if str(subprocess.check_output(['ps', '-A', '|', 'grep', 'upower'], stderr=subprocess.STDOUT, shell=True)):
+        if self.__check_if_running('upower'):
             self.__power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
             self.__hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \

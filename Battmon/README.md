@@ -20,8 +20,9 @@
 * `pm-utils/upower` optional to hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default one)
 
 ## Changelog:
-**2.07.2013**
-* 3.0-rc3
+**3.07.2013**
+* 3.0-rc4
+* fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
 * fix behavior when battery status is "Unknown"
