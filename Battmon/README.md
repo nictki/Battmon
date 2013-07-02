@@ -13,7 +13,7 @@
 
 ## Prerequisites:
 * **python** (python3 and python2 are supported)
-* **optional**
+* optional *
 * **setproctitle** (preferred way) module to set program name, thus works `killall 'Battmon'` (https://code.google.com/p/py-setproctitle/)
 * **libnotify** pop up notifications
 * **sox** sounds
