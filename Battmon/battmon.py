@@ -21,21 +21,8 @@ import os
 import glob
 import time
 import optparse
+import subprocess
 from ctypes import cdll
-
-if sys.version_info[0] == 3:
-    try:
-        import subprocess
-    except ImportError as ierr:
-        print("\nError: %s" % str(ierr))
-        sys.exit(0)
-        
-elif sys.version_info[0] == 2:
-    try:
-        import commands
-    except ImportError as ierr:
-        print("\nError: %s" % str(ierr))
-        sys.exit(0)
 
 try:
     import setproctitle
@@ -44,7 +31,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.0-rc2~svn01072013'
+VERSION = '3.0-rc3~svn02072013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -53,7 +40,6 @@ URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
 # path's for external things 
-
 EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/local/bin/',
                        '/bin/',
@@ -62,19 +48,17 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/sbin/',
                        '/usr/share/sounds/']
 
-# add current directory
+# add current Battmon directory
 EXTRA_PROGRAMS_PATH.append(os.path.dirname(os.path.realpath(__file__)) + "/sounds/")
 
 # default play command
 DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
-# screen lockers
+# optional screen lockers
 EXTRA_SCREEN_LOCK_COMMANDS = ['xscreensaver-command', 'slimlock', 'vlock']
-
 # default screen lock command
 DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock'
-
 
 # battery values class
 class BatteryValues:
@@ -204,7 +188,7 @@ class BatteryValues:
             else:
                 return False
 
-
+# battery notifications class
 class BatteryNotifications:
     def __init__(self, notify, notify_send, critical, sound, sound_command, battery_values, timeout):
         self.__notify = notify
@@ -234,7 +218,7 @@ class BatteryNotifications:
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("DISCHARGING")
 
     # battery low capacity notification
@@ -257,7 +241,7 @@ class BatteryNotifications:
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("LOW BATTERY LEVEL")
 
     # battery critical level notification
@@ -279,7 +263,7 @@ class BatteryNotifications:
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("CRITICAL BATTERY LEVEL")
 
     # hibernate level notification
@@ -291,7 +275,7 @@ class BatteryNotifications:
 
         # notification
         if self.__notify:
-            if self.__notify_send and self.__battery_values.battery_time() is not None:
+            if self.__notify_send:
                 if self.__sound:
                     os.popen(self.__sound_command)
                 notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
@@ -300,7 +284,7 @@ class BatteryNotifications:
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("!!! MINIMAL BATTERY LEVEL !!!")
 
     # battery full notification
@@ -320,7 +304,7 @@ class BatteryNotifications:
                 notify_send_string = '''notify-send "BATTERY FULL" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("BATTERY FULL")
 
     # charging notification
@@ -342,7 +326,7 @@ class BatteryNotifications:
                                         '%', self.__battery_values.battery_time(),
                                         '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("CHARGING")
 
     # no battery notification
@@ -362,10 +346,10 @@ class BatteryNotifications:
                 notify_send_string = '''notify-send "!!! NO BATTERY !!!" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            elif not self.__notify_send and self.__battery_values.battery_time() is not None:
+            elif not self.__notify_send:
                 print("NO BATTERY !!!")
 
-
+# main class
 class MainRun:
     def __init__(self, debug, test, daemon, more_then_one_copy, lock_command,
                  notify, critical, sound_file, sound, sound_volume, timeout, battery_update_timeout,
@@ -397,14 +381,6 @@ class MainRun:
         self.__sound_command = ''
         self.__notify_send = ''
         self.__currentProgramPath = ''
-        
-        # determine if we use subprocess or commands module
-        self.__run_command = ''
-        
-        if sys.modules.__contains__('subprocess'):
-            self.__run_command = subprocess
-        else:    
-            self.__run_command = commands
         
         # initialize BatteryValues class for basic values of battery
         self.__battery_values = BatteryValues()
@@ -482,10 +458,9 @@ class MainRun:
             libc = cdll.LoadLibrary('libc.so.6')
             libc.prctl(15, name, 0, 0, 0)
     
-    
     # we want only one instance of this program
     def __check_if_running(self, name):
-        output = self.__run_command.getoutput('ps -A')
+        output = str(subprocess.check_output(['ps', '-A']))
         
         ######################################################
         # QUICK WORKAROUND IF THERE IS NO SETPTOCFILE MODULE #
@@ -494,19 +469,17 @@ class MainRun:
         # i don't know why python3 set process name to 'B' instead to 'Battmon'
         # libc.prctl(15, name, 0, 0, 0) should give 'Battmon' in 'ps -A' output
         # like in python2, but it does'nt 
-        if sys.version_info[0] == 3 and sys.modules.__contains__('setproctitle'):
+        if sys.version_info[0] == 3 and not sys.modules.__contains__('setproctitle'):
                 name = 'B'
                 
         # check if process is running
         if name in output and self.__notify_send:
             if self.__sound:
                 os.popen(self.__sound_command)
-
             notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING" %s %s''' \
                                  % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
             sys.exit(1)
-
         elif name in output in output:
             print("BATTMON IS ALREADY RUNNING")
             sys.exit(1)
@@ -539,30 +512,29 @@ class MainRun:
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
-        ### default sound file ###
-        __sound_fileName = 'info.wav'
-        __sound_file_Path = ''
-        try:
-            if os.path.exists(self.__sound_file):
-                self.__sound_command = '%s -V1 -q -v%s %s' \
-                                       % (self.__sound_player, self.__sound_volume, self.__sound_file)
+        # default sound file
+        sound_fileName = 'info.wav'
 
-            if self.__check_in_path(__sound_fileName):
-                self.__sound_command = '%s -V1 -q -v%s %s' \
+        if os.path.exists(self.__sound_file):
+            self.__sound_command = '%s -V1 -q -v%s %s' \
+                                    % (self.__sound_player, self.__sound_volume, self.__sound_file)
+
+        if self.__check_in_path(sound_fileName):
+            self.__sound_command = '%s -V1 -q -v%s %s' \
                                        % (self.__sound_player, self.__sound_volume, self.__currentProgramPath)
-        except IOError as ioerr:
-            print("No sound file found: %s" % str(ioerr))
-            if self.__notify_send:
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
-                                    "Check if you have sound files in %s.\n \
-                                    If you've specified your own sound file path,\n  \
-                                    please check if it was correctly" %s %s''' \
-                                     % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                os.popen(notify_send_string)
-            if not self.__notify_send:
-                print("DEPENDENCY MISSING:\n No sound files found\n")
+        
+        if self.__notify_send and not self.__sound_command:
+            notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
+                                "Check if you have sound files in %s.\n \
+                                If you've specified your own sound file path,\n  \
+                                please check if it was correctly" %s %s''' \
+                                % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+            os.popen(notify_send_string)
+                
+        if not self.__notify_send:
+            print("DEPENDENCY MISSING:\n No sound files found\n")
 
-    # check witch program will lock screen
+    # check for lock screen program
     def __set_lock_command(self):
         # check if the given command found in given path
         if os.path.exists(self.__lock_command):
@@ -570,12 +542,12 @@ class MainRun:
                 notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
                                     % (self.__lock_command, self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-
+                
             elif not self.__no_start_notifications:
                 print("%s will be used to lock screen" % self.__lock_command)
             
         # check if default lock command is in path
-        if self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command is "":
+        if self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command =="":
             self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
 
             if self.__notify_send and not self.__no_start_notifications:
@@ -606,7 +578,7 @@ class MainRun:
                     
                     break
         
-        if self.__lock_command == '':
+        if not self.__lock_command:
             if self.__notify_send:
                 notify_send_string = ('''notify-send "DEPENDENCY MISSING\n" \
                                     "please check if you have installed i3lock, this is default lock screen program, you can specify your favorite screen lock program running this program with -l PATH, otherwise your session won't be locked" %s %s''') \
@@ -628,7 +600,7 @@ class MainRun:
         self.__hibernate_command = ''
         self.__suspend_command = ''
         
-        if self.__run_command.getoutput('ps -A | grep upower') != "":
+        if str(subprocess.check_output(['ps', '-A', '|', 'grep', 'upower'], stderr=subprocess.STDOUT, shell=True)):
             self.__power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
             self.__hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
@@ -646,7 +618,7 @@ class MainRun:
                         if c == 'pm-suspend':
                             self.__suspend_command = "sudo %s%s" % (e, c)
         
-        if self.__hibernate_command == '' and self.__suspend_command == '':
+        if not self.__hibernate_command and not self.__suspend_command:
             # everybody has shutdown command somewhere
             self.__minimal_battery_level_command = self.__power_off_command
             
@@ -656,6 +628,7 @@ class MainRun:
                                     or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
+                
             elif not self.__notify_send:
                 print('''MINIMAL BATTERY VALUE PROGRAMM NOT FOUND\n
                       please check if you have installed pm-utils,\n 
@@ -677,8 +650,7 @@ class MainRun:
 
             if self.__notify_send and not self.__no_start_notifications:
                 notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
-                                     % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                                     
+                                     % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)                        
                 os.popen(notify_send_string)
 
             elif not self.__no_start_notifications and not self.__notify_send:
@@ -686,9 +658,10 @@ class MainRun:
 
     # check for battery update times
     def __check_battery_update_times(self):
-        while self.__battery_values.battery_time() == "Unknown" or self.__battery_values.battery_time() is None:
+        while self.__battery_values.battery_time() == 'Unknown':
             time.sleep(self.__battery_update_timeout)
-            if not self.__battery_values.battery_time() == "Unknown" or not self.__battery_values.battery_time() is None:
+            print(self.__battery_values.battery_time())
+            if not self.__battery_values.battery_time() == 'Unknown':
                 break
 
     # start main loop
@@ -765,7 +738,7 @@ class MainRun:
 
                         # check once more if system will be hibernate
                         if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
-                                and False == self.__battery_values.is_ac_present()):
+                                and not self.__battery_values.is_ac_present()):
                             time.sleep(2)
 
                             if self.__sound:
@@ -833,7 +806,8 @@ class MainRun:
                                   % self.run_main_loop.__name__)
 
                         # notification
-                        self.__check_battery_update_times()
+                        # simulate self.__check_battery_update_times() behavior
+                        time.sleep(self.__battery_update_timeout)
                         self.__notification.full_battery()
 
                         # full charged loop

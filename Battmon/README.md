@@ -20,8 +20,8 @@
 * `pm-utils/upower` optional to hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default one)
 
 ## Changelog:
-**1.07.2013**
-* 3.0-rc2
+**2.07.2013**
+* 3.0-rc3
 * improve computing current battery capacity 
 * improve check if battery is full
 * fix behavior when battery status is "Unknown"
@@ -29,10 +29,11 @@
 * when both pm-utils and upower are installed, upower will be use as default
 * workaround for libc.prctl(15, name, 0, 0, 0) under python3
 * fix "run more then one copy" under python2
-* update README
 * porting to python3
 * program runs now with python2 and python3
 * program name is set through setproctitle module
+* some code cleanup
+* update README
 
 **23.05.2013**
 * 2.1.5.1
