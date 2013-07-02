@@ -15,7 +15,8 @@
 * **python** (python3 and python2 are supported)
 
 **Optional:** 
-* **setproctitle** (preferred way) module to set program name, thus works `killall 'Battmon'` (https://code.google.com/p/py-setproctitle/)
+* **setproctitle** (preferred way) module to set program name, thus works `killall 'Battmon'` 
+(https://code.google.com/p/py-setproctitle/)
 * **libnotify** pop up notifications
 * **sox** sounds
 * **i3lock** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is default one)
