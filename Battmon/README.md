@@ -24,7 +24,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **pm-utils/upower:** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
-**3.07.2013**
+**03.07.2013**
 * 3.0-rc4
 * fix upower check
 * improve computing current battery capacity 
@@ -53,14 +53,14 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
-* add possibility to set through low, critical and minimal battery value levels
+* add possibility to set low, critical and minimal battery value levels
 * small fixes and improvements
 * get rid of pynotify module, use notify-send instead
 * code cleanup
 * re-add session lock commands
 
 ## Notes:
-If you want to use hibernate, suspend or shutdown with `upower`, be sure that your `ck-list-sessions` output gives you something like this:
+If you want to use hibernate, suspend or shutdown with upower, be sure that your ck-list-sessions output gives you something like this:
  
 	$: ck-list-sessions
    	...
