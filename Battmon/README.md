@@ -70,7 +70,7 @@ If you want to use hibernate, suspend or shutdown with `upower`, be sure that yo
    	...
 
 **Note:**  
-If you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges (`sudo "foo"`). 
+If you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges. 
 
 ## How to run:
 **A)**  
@@ -92,7 +92,7 @@ If you have any problems with abowe command, try:
 
 	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION> ./battmon.py 
 	
-I've notice that problem under Debian-7.2.
+I've notice that problem under Debian-7.1.
 
 ## Options:
 To list all available options run Battmon with `-h` or `--help` option.
