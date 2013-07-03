@@ -15,17 +15,16 @@
 * **python** (python3 and python2 are supported)
 
 **Optional:** 
-* **setproctitle:** module to set program name, thus works `killall Battmon` under python2 and python3, 
+* **[setproctitle](https://code.google.com/p/py-setproctitle/):** module to set program name, thus works `killall Battmon` under python2 and python3, 
 in my opinion this is preferred way to set process name, but anyway it's optional  
-(for this module see: https://code.google.com/p/py-setproctitle/)
-* **libnotify:** pop up notifications
-* **sox:** sounds
-* **i3lock:** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is set as default)
+* **[libnotify](https://developer.gnome.org/libnotify/):** pop up notifications
+* **[sox](http://sox.sourceforge.net/):** sounds
+* **[i3lock](http://i3wm.org/i3lock/):** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is set as default)
 * **pm-utils/upower:** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
 **03.07.2013**
-* 3.0-rc4
+* 3.0-rc5
 * fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
