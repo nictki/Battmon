@@ -86,13 +86,12 @@ Just run:
 
     python ./battmon.py
 
-Note:  
+**Note:**  
 If you have any problems with abowe command, try:
 
-	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION>
+	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION> ./battmon.py 
 	
-I've notice that problem under Debian7.2, but with '/usr/bin/python3.2 battmon.py` command, no problems, as well with python2 
-
+I've notice that problem under Debian-7.2.
 
 ## Options:
 To list all available options run Battmon with `-h` or `--help`
