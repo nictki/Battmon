@@ -391,15 +391,17 @@ class MainRun:
         # check for external programs and files
         self.__check_play()
         self.__set_sound_file_and_volume()
-        self.__set_lock_command()
-        self.__set_minimal_battery_level_command()
-        
+                
         # check if program already running and set name
         if not self.__more_then_one_copy:
             self.__check_if_running(PROGRAM_NAME)
              
         # set Battmon process name
         self.__set_proc_name(PROGRAM_NAME)
+        
+        # set lock and min battery command
+        self.__set_lock_command()
+        self.__set_minimal_battery_level_command()
         
         # initialize notification
         self.__notification = BatteryNotifications(self.__notify, self.__notify_send, self.__critical, self.__sound,
