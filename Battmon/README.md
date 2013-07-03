@@ -82,6 +82,7 @@ and run like:
 	./battmon.py 
 
 **B)**
+Just run:
 
     python ./battmon.py
 
