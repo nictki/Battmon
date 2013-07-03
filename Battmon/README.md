@@ -20,11 +20,11 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **[libnotify](https://developer.gnome.org/libnotify/):** pop up notifications
 * **[sox](http://sox.sourceforge.net/):** sounds
 * **[i3lock](http://i3wm.org/i3lock/):** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is set as default)
-* **pm-utils/upower:** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
+* **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
 **03.07.2013**
-* 3.0-rc5
+* [3.0-rc5](https://github.com/nictki/Battmon/releases/3.0-rc5)
 * fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
@@ -39,7 +39,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * update README
 
 **23.05.2013**
-* 2.1.5.1
+* [2.1.5.1](https://github.com/nictki/Battmon/releases/2.1.5.1)
 * add upower check
 * add check for python correct version
 * add option to specify time for "no battery" remainder (default: 0/disabled)
@@ -47,7 +47,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * small fixes
 
 **06.03.2013**
-* 2.1
+* [2.1](https://github.com/nictki/Battmon/releases/2.1)
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
