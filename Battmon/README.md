@@ -69,7 +69,7 @@ If you want to use hibernate, suspend or shutdown with `upower`, be sure that yo
    	is-local = TRUE
    	...
 
-**Note:**
+**Note:**  
 If you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges (`sudo "foo"`). 
 
 ## How to run:
