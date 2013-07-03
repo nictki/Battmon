@@ -81,16 +81,23 @@ and run like:
 
 	./battmon.py 
 
-**B)**
+**B)**  
 Just run:
 
     python ./battmon.py
 
+Note:  
+If you have any problems with abowe command, try:
+
+	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION>
+	
+I've notice that problem under Debian7.2, but with '/usr/bin/python3.2 battmon.py` command, no problems, as well with python2 
+
+
+## Options:
 To list all available options run Battmon with `-h` or `--help`
 	
 	python ./battmon.py -h
-
-## Options:
 
     --version               show program's version number and exit
     -h, --help              show this help message and exit
