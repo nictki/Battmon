@@ -15,9 +15,9 @@
 * **python** (python3 and python2 are supported)
 
 **Optional:** 
-* **setproctitle:** module to set program name, thus works `killall 'Battmon'` under python2 and python3, 
+* **setproctitle:** module to set program name, thus works `killall Battmon` under python2 and python3, 
 in my opinion this is preferred way to set process name, but anyway it's optional  
-(see: https://code.google.com/p/py-setproctitle/)
+(for this module see: https://code.google.com/p/py-setproctitle/)
 * **libnotify:** pop up notifications
 * **sox:** sounds
 * **i3lock:** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is set as default)
@@ -34,7 +34,6 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * when both pm-utils and upower are installed, upower will be use as default
 * workaround for libc.prctl(15, name, 0, 0, 0) under python3
 * fix "run more then one copy" under python2
-* porting to python3
 * program runs now with python2 and python3
 * program name is set through setproctitle module
 * some code cleanup
@@ -44,9 +43,9 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * 2.1.5.1
 * add upower check
 * add check for python correct version
-* small fixes
 * add option to specify time for "no battery" remainder (default: 0/disabled)
 * add option to specify default minimal battery level value action (default: hibernate)
+* small fixes
 
 **06.03.2013**
 * 2.1
@@ -54,10 +53,9 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
 * add possibility to set low, critical and minimal battery value levels
-* small fixes and improvements
 * get rid of pynotify module, use notify-send instead
+* small fixes and improvements
 * code cleanup
-* re-add session lock commands
 
 ## Notes:
 If you want to use hibernate, suspend or shutdown with upower, be sure that your ck-list-sessions output gives you something like this:
