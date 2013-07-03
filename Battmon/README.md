@@ -60,7 +60,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * re-add session lock commands
 
 ## Notes:
-If you want to use hibernate, suspend or shutdown with `upower`, be sure that your `ck-list-sessions output` gives something like this:
+If you want to use hibernate, suspend or shutdown with `upower`, be sure that your `ck-list-sessions` output gives you something like this:
  
 	$: ck-list-sessions
    	...
@@ -69,9 +69,10 @@ If you want to use hibernate, suspend or shutdown with `upower`, be sure that yo
    	is-local = TRUE
    	...
 
-but, if you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges (`sudo foo`). 
+but, if you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges (`sudo "foo"`). 
 
 ## How to run:
+**A)**  
 Make battmon executable:
 	
 	chmod +x ./battmon.py
@@ -80,7 +81,7 @@ and run like:
 
 	./battmon.py 
 
-or:
+**B)**
 
     python ./battmon.py
 
