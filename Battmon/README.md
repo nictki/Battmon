@@ -23,23 +23,23 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
-**03.07.2013**
-* [3.0-rc5](https://github.com/nictki/Battmon/releases/3.0-rc5)
+**07.07.2013**
+* **[3.0]**(https://github.com/nictki/Battmon/releases/3.0)
 * fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
 * fix behavior when battery status is "Unknown"
 * make setproctitle module optional
-* when both pm-utils and upower are installed, upower will be use as default
+* when both pm-utils and upower are installed, upower will be used as default
 * workaround for libc.prctl(15, name, 0, 0, 0) under python3
 * fix "run more then one copy" under python2
-* program runs now with python2 and python3
+* python3 is now supported 
 * program name is set through setproctitle module
 * some code cleanup
 * update README
 
 **23.05.2013**
-* [2.1.5.1](https://github.com/nictki/Battmon/releases/2.1.5.1)
+* **[2.1.5.1]**(https://github.com/nictki/Battmon/releases/2.1.5.1)
 * add upower check
 * add check for python correct version
 * add option to specify time for "no battery" remainder (default: 0/disabled)
@@ -47,7 +47,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * small fixes
 
 **06.03.2013**
-* [2.1](https://github.com/nictki/Battmon/releases/2.1)
+* **[2.1]**(https://github.com/nictki/Battmon/releases/2.1)
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
