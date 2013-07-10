@@ -24,7 +24,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 
 ## Changelog:
 **07.07.2013**
-* **[3.0]**(https://github.com/nictki/Battmon/releases/3.0)
+* **[3.0](https://github.com/nictki/Battmon/releases/3.0)**
 * fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
@@ -39,7 +39,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * update README
 
 **23.05.2013**
-* **[2.1.5.1]**(https://github.com/nictki/Battmon/releases/2.1.5.1)
+* **[2.1.5.1](https://github.com/nictki/Battmon/releases/2.1.5.1)**
 * add upower check
 * add check for python correct version
 * add option to specify time for "no battery" remainder (default: 0/disabled)
@@ -47,7 +47,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * small fixes
 
 **06.03.2013**
-* **[2.1]**(https://github.com/nictki/Battmon/releases/2.1)
+* **[2.1](https://github.com/nictki/Battmon/releases/2.1)**
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
