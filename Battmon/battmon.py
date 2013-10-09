@@ -31,7 +31,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.0~svn10072013'
+VERSION = '3.0.1~svn09102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -118,7 +118,7 @@ class BatteryValues:
                 remaining_time = (bat_energy_now * 60 * 60) // bat_power_now
                 return remaining_time
 
-            elif not self.is_battery_discharging():
+            else:
                 remaining_time = ((bat_energy_full - bat_energy_now) * 60 * 60) // bat_power_now
                 return remaining_time
         else:
@@ -661,8 +661,12 @@ class MainRun:
     # check for battery update times
     def __check_battery_update_times(self):
         while self.__battery_values.battery_time() == 'Unknown':
+            if self.__debug:
+                print("DEBUG: battery value is %s, next check in %d" % (str(self.__battery_values.battery_time()), self.__battery_update_timeout))
             time.sleep(self.__battery_update_timeout)
-            if not self.__battery_values.battery_time() == 'Unknown':
+            if self.__battery_values.battery_time() == 'Unknown':
+                if self.__debug:
+                    print("DEBUG: battery value is still %s, continuing anyway" % str(self.__battery_values.battery_time()))
                 break
 
     # start main loop
