@@ -24,7 +24,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 
 ## Changelog:
 ** 09.10.2013**
-* **[3.0.1](https://github.com/nictki/Battmon/releases/3.0)**
+* **[3.0.1](https://github.com/nictki/Battmon/releases/3.0.1)**
 * fix behavior when battery value is 'Unknown'
 
 **10.07.2013**
