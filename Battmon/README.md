@@ -23,8 +23,10 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
-** 09.10.2013**
-* **[3.0.1](https://github.com/nictki/Battmon/releases/3.0.1)**
+**21.10.2013**
+* **[3.1](https://github.com/nictki/Battmon/releases/3.1)**
+* fix behavior when battery is removed or inserted
+* add notification when battery is removed or inserted
 * fix behavior when battery value is 'Unknown'
 
 **10.07.2013**
