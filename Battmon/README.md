@@ -23,6 +23,13 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
+** 22.10.2013 **
+* **[3.2](https://github.com/nictki/Battmon/releases/3.2)**
+* 3.2 release
+* now use argparse intead optparse
+* new argument names for command line
+* bug fixes, refactoring
+
 **21.10.2013**
 * **[3.1](https://github.com/nictki/Battmon/releases/3.1)**
 * fix behavior when battery is removed or inserted
@@ -95,7 +102,7 @@ If you have any problems with abowe command, try:
 
 	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION> ./battmon.py 
 	
-I've notice some problems with `python ./battmon.py` under Debian-7.
+I've notice some problems when using `python ./battmon.py` command under Debian-7.
 
 ## Options:
 To list all available options run Battmon with `-h` or `--help` option.
@@ -144,7 +151,7 @@ To list all available options run Battmon with `-h` or `--help` option.
                              disable notifications will be shown (default: False)
        -cn, --critical-notifications
                              only critical battery notifications (default: False)
-       t <SECONDS>, --timeout <SECONDS>
+       -t <SECONDS>, --timeout <SECONDS>
                              notification timeout (use 0 to disable) (default: 6)
        -db <MINUTES>, --disable-battery-reminder <MINUTES>
                              set no battery remainder in minutes, 0 = no remainders
