@@ -23,7 +23,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
-** 22.10.2013 **
+**22.10.2013 **
 * **[3.2](https://github.com/nictki/Battmon/releases/3.2)**
 * use argparse intead optparse
 * new argument names for command line
