@@ -31,12 +31,12 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.2rc2~svn22102013'
+VERSION = '3.2~svn22102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG=('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
-        ' or change it by parsing your lockscreen command througth -lp argument in command line, when you use this argument remember'
-        ' to surround whole your lockscreen command with quotes.'
+        ' or change it by parsing your screenlock command througth -lp argument in command line, when you use this argument remember'
+        ' to surround whole your screenlock command with quotes.'
         ' Sound file is search by default in the same path where battmon was started,'
         ' you can change this by parsing your path to sound file using -sp argument in command line without quotes.')
 
@@ -382,7 +382,7 @@ class BatteryNotifications:
                 os.popen(self.__sound_command)
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "Battery plugged" %s %s''' \
+                notify_send_string = '''notify-send "BATTERY PLUGGED " %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
@@ -418,7 +418,7 @@ class MainRun:
         self.__test = kwargs.get("test")
         self.__foreground = kwargs.get("foreground")
         self.__more_then_one_instance = kwargs.get("more_then_one_instance")
-        self.__lock_command = kwargs.get("lock_command")
+        self.__screenlock_command = kwargs.get("lock_command")
         self.__disable_notifications = kwargs.get("disable_notifications")
         self.__show_only_critical = kwargs.get("critical")
         self.__sound_file = kwargs.get("sound_file")
@@ -430,7 +430,7 @@ class MainRun:
         self.__battery_critical_value = kwargs.get("battery_critical_value")
         self.__battery_minimal_value = kwargs.get("battery_minimal_value")
         self.__minimal_battery_level_command = kwargs.get("minimal_battery_level_command")
-        self.__disable_battery_remainder = kwargs.get("disable_battery_remainder")
+        self.__set_no_battery_remainder = kwargs.get("set_no_battery_remainder")
         self.__disable_startup_notifications = kwargs.get("disable_startup_notifications")
 
         # external programs
@@ -490,7 +490,7 @@ class MainRun:
             print("- dry run: %s" % self.__test)
             print("- foreground: %s" % self.__foreground)
             print("- run more instances: %s" % self.__more_then_one_instance)
-            print("- screen lock command: %s" % self.__lock_command)
+            print("- screen lock command: %s" % self.__screenlock_command)
             print("- use notifications: %s" % self.__disable_notifications)
             print("- show only critical notifications: %s" % self.__show_only_critical)
             print("- play sounds: %s" % self.__play_sound)
@@ -502,7 +502,7 @@ class MainRun:
             print("- battery critical level value: %s" % self.__battery_critical_value)
             print("- battery hibernate level value: %s" % self.__battery_minimal_value)
             print("- battery minimal level value command: %s" % self.__minimal_battery_level_command)
-            print("- disable battery remainder: %smin" % self.__disable_battery_remainder)
+            print("- no battery remainder: %smin" % self.__set_no_battery_remainder)
             print("- disable startup notifications: %s\n" % self.__disable_startup_notifications)
             print("**********************")
             print("* !!! Debug Mode !!! *")
@@ -586,8 +586,9 @@ class MainRun:
             self.__sound_command = '%s -V1 -q -v%s %s' % (self.__sound_player, self.__sound_volume, self.__sound_file)
         else:
             if self.__notify_send:
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "Check if you have sound files in %s. If you've specified your own sound file path, please check if it was correctly" %s %s''' \
-                                     % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                # missing dependency notification will never diapered
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "Check if you have sound files in '%s'. If you've specified your own sound file path, please check if it was correctly" %s %s''' \
+                                     % (self.__sound_file, '-t ' + str(0), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
 
             if not self.__notify_send:
@@ -597,24 +598,24 @@ class MainRun:
     # check for lock screen program
     def __set_lock_command(self):
         # check if the given command found in given path
-        __lock_command_as_list = self.__lock_command.split()
+        __lock_command_as_list = self.__screenlock_command.split()
         __command = __lock_command_as_list[0]
         __command_args = ' '.join(__lock_command_as_list[1:len(__lock_command_as_list)])
 
         if os.path.exists(__command):
             if self.__notify_send and not self.__disable_startup_notifications:
-                notify_send_string = '''notify-send "using %s to lock screen\n" "with args: %s" %s %s''' \
+                notify_send_string = '''notify-send "Using %s to lock screen\n" "with args: %s" %s %s''' \
                                      % (__command, __command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__disable_startup_notifications:
                 print("%s %s will be used to lock screen" % (__command, __command_args))
 
         # check if default lock command is in path
-        elif self.__check_in_path(self.__lock_command):
-            self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND
+        elif self.__check_in_path(self.__screenlock_command):
+            self.__screenlock_command = DEFAULT_SCREEN_LOCK_COMMAND
             if self.__notify_send and not self.__disable_startup_notifications:
                 notify_send_string = '''notify-send "using default program to lock screen\n" "cmd: %s" %s %s''' \
-                                     % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                     % (self.__screenlock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
 
             elif not self.__disable_startup_notifications and not self.__notify_send:
@@ -622,9 +623,10 @@ class MainRun:
 
         else:
             if self.__notify_send:
-                notify_send_string = ('''notify-send "DEPENDENCY MISSING\n" \
-                                    "please check if you have installed i3lock, this is default lock screen program, you can specify your favorite screen lock program running this program with -l PATH, otherwise your session won't be locked" %s %s''') \
-                                     % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                # missing dependency notification will never diapered
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
+                                    "Check if you have installed 'i3lock', this is default screenlock program, you can specify your favorite screenlock program running battmon with -lp '[PATH] [ARGS]', otherwise your session won't be locked" %s %s''' \
+                                     % ('-t ' + str(0), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
 
             if not self.__notify_send:
@@ -665,8 +667,9 @@ class MainRun:
             self.__minimal_battery_level_command = self.__power_off_command
 
             if self.__notify_send:
+                # missing dependency notification will never diapered
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "please check if you have installed pm-utils, or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
-                                     % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                     % ('-t ' + str(0), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
 
             elif not self.__notify_send:
@@ -689,7 +692,7 @@ class MainRun:
                 self.__temp = "suspend"
 
         if self.__notify_send and not self.__disable_startup_notifications:
-            notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
+            notify_send_string = '''notify-send "System will be: %s\n" "Below minimal battery level" %s %s''' \
                                  % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
 
@@ -826,7 +829,7 @@ class MainRun:
                                         # lock screen and hibernate
                                         os.popen(self.__sound_command)
                                         time.sleep(1)
-                                        os.popen(self.__lock_command)
+                                        os.popen(self.__screenlock_command)
                                         os.popen(self.__minimal_battery_level_command)
                             # test block
                             elif self.__test:
@@ -909,12 +912,12 @@ class MainRun:
                 # no battery remainder loop counter
                 self.__no_battery_counter = 1
                 # no battery remainder in seconds
-                if not self.__disable_battery_remainder == 0:
-                    self.__remainder_time_in_sek = self.__disable_battery_remainder * 60
+                if not self.__set_no_battery_remainder == 0:
+                    self.__remainder_time_in_sek = self.__set_no_battery_remainder * 60
 
                 # loop to deal with situation when we don't have battery
                 while not self.__battery_values.is_battery_present():
-                    if not self.__disable_battery_remainder == 0:
+                    if not self.__set_no_battery_remainder == 0:
                         time.sleep(1)
                         self.__no_battery_counter += 1
                         # check if battery was plugged
@@ -970,7 +973,7 @@ if __name__ == '__main__':
                       "battery_critical_value": 14,
                       "battery_minimal_value": 7,
                       "minimal_battery_level_command": 'hibernate',
-                      "disable_battery_remainder": 0,
+                      "set_no_battery_remainder": 0,
                       "disable_startup_notifications": False}
 
     ap.add_argument("-v", "--version",
@@ -982,7 +985,7 @@ if __name__ == '__main__':
                     action="store_true",
                     dest="debug",
                     default=defaultOptions['debug'],
-                    help="print debug information, implies -fg, option")
+                    help="print debug information, implies -f, option")
 
     # dry run
     ap.add_argument("-dr", "--dry-run",
@@ -1013,21 +1016,21 @@ if __name__ == '__main__':
                             #nargs="*",
                             metavar='''"<PATH> <ARGS>"''',
                             default=defaultOptions['lock_command'],
-                            help="give path to lockscreen command with arguments if any, surround with quotes")
+                            help="path to screenlock command with arguments if any, need to be surrounded with quotes")
 
     # show notifications
     notification_group.add_argument("-n", "--disable-notifications",
                                     action="store_true",
                                     dest="disable_notifications",
                                     default=defaultOptions['disable_notifications'],
-                                    help="disable notifications will be shown")
+                                    help="disable notifications")
 
     # show only critical notifications
     notification_group.add_argument("-cn", "--critical-notifications",
                                     action="store_true",
                                     dest="critical",
                                     default=defaultOptions['critical'],
-                                    help="only critical battery notifications")
+                                    help="show only critical battery notifications")
 
     # set sound file path
     file_group.add_argument("-sp", "--sound-file-path",
@@ -1075,13 +1078,13 @@ if __name__ == '__main__':
                              type=set_sound_volume_level,
                              metavar="<1-%d>" % MAX_SOUND_VOLUME_LEVEL,
                              default=defaultOptions['sound_volume'],
-                             help="notifications sound volume level")
+                             help="sound volume level")
 
     # check if notify timeout is correct >= 0
     def set_timeout(timeout):
         timeout = int(timeout)
         if timeout < 0:
-            raise argparse.ArgumentError("\nERROR: Notification timeout should be 0 or a positive number !!!")
+            raise argparse.ArgumentError("\nERROR: Notification timeout should be 0 or positive number !!!")
         return timeout
 
     # timeout
@@ -1096,7 +1099,7 @@ if __name__ == '__main__':
     def set_battery_update_interval(update_value):
         update_value = int(update_value)
         if update_value <= 0:
-            raise argparse.ArgumentError("\nERROR: Battery update interval should be a positive number !!!")
+            raise argparse.ArgumentError("\nERROR: Battery update interval should be positive number !!!")
         return update_value
 
     # battery update interval
@@ -1105,7 +1108,7 @@ if __name__ == '__main__':
                                type=set_battery_update_interval,
                                metavar="<SECONDS>",
                                default=defaultOptions['battery_update_timeout'],
-                               help="battery update timeout")
+                               help="battery values update interval")
 
     # battery low level value
     battery_group.add_argument("-ll", "--low-level-value",
@@ -1139,28 +1142,28 @@ if __name__ == '__main__':
                                metavar="<ARG>",
                                choices=['hibernate', 'suspend', 'poweroff'],
                                default=defaultOptions['minimal_battery_level_command'],
-                               help='''minimal battery level actions are: 'hibernate', 'suspend' and 'poweroff' ''')
+                               help='''set minimal battery value action, possible actions are: 'hibernate', 'suspend' and 'poweroff' ''')
 
     # set no battery notification
     def set_no_battery_remainder(remainder):
-        #remainder = int(remainder)
+        remainder = int(remainder)
         if remainder < 0:
             raise argparse.ArgumentError("\nERROR: No battery remainder value must be greater or equal 0")
         return remainder
 
-    notification_group.add_argument("-db", "--disable-battery-reminder",
-                               dest="disable_battery_remainder",
+    notification_group.add_argument("-br", "--set_no_battery_remainder",
+                               dest="set_no_battery_remainder",
                                type=set_no_battery_remainder,
                                metavar="<MINUTES>",
-                               default=defaultOptions['disable_battery_remainder'],
-                               help="set no battery remainder in minutes, 0 = no remainders")
+                               default=defaultOptions['set_no_battery_remainder'],
+                               help="set no battery remainder in minutes, 0 disables")
 
     # don't show startup notifications
     notification_group.add_argument("-dn", "--disable-startup-notifications",
                                     action="store_true",
                                     dest="disable_startup_notifications",
                                     default=defaultOptions['disable_startup_notifications'],
-                                    help="don't show startup notifications, like lockscreen command or minimal battery level action")
+                                    help="don't show startup notifications, like screenlock command or minimal battery level action")
 
     args = ap.parse_args()
     #print(args)
