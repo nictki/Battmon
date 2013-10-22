@@ -109,6 +109,7 @@ To list all available options run Battmon with `-h` or `--help` option.
 
     optional arguments:
     -h, --help            show this help message and exit
+    -V, --version         show program's version number and exit
     -D, --debug           print debug information, implies -fg option [default:
                         false]
     -dr, --dry-run        dry run [default: false]

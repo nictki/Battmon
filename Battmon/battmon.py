@@ -980,6 +980,10 @@ if __name__ == '__main__':
                       "no_battery_remainder": 0,
                       "no_startup_notifications": False}
 
+    ap.add_argument("-V", "--version",
+                    action="version",
+                    version=VERSION)
+
     # debug options
     ap.add_argument("-D", "--debug",
                     action="store_true",
@@ -1214,10 +1218,6 @@ if __name__ == '__main__':
                     dest="no_startup_notifications",
                     default=defaultOptions['no_startup_notifications'],
                     help="no startup notifications [default: False]")
-
-    ap.add_argument("-V", "--version",
-                    action="version",
-                    version=VERSION)
 
     args = ap.parse_args()
     ml = MainRun(**vars(args))
