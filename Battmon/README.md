@@ -1,10 +1,10 @@
 # Battmon
 
 ## Description:
-**Battmon** is simple battery monitoring program written in python especially for tiling window managers like `xmonad`, `dwm` or `awesome`.
+**Battmon** is simple battery monitoring program written in python especially for tiling window managers like xmonad, dwm or awesome.
 
 ## Features:
-* very light (for really basic functionality you need only `python` installed)
+* very light (for really basic functionality you need only python installed)
 * works in background
 * configurable
 * no tray icon
@@ -12,50 +12,58 @@
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* `python` (python3 and python2 are supported)
-* `setproctitle` optional (but preferred way) module to set program name, thus works `killall 'Battmon'` (https://code.google.com/p/py-setproctitle/)
-* `libnotify` optional for pop up notifications
-* `sox` optional for sounds
-* `i3lock` optional program to lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is default one)
-* `pm-utils/upower` optional to hibernate, suspend or shutdown system on critical battery level (when both installed, upower is default one)
+* **[python](http://python.org/download/)** (python3 and python2 are supported)
+
+**Optional:** 
+* **[setproctitle](https://code.google.com/p/py-setproctitle/):** module to set program name, thus works `killall Battmon` under python2 and python3, 
+in my opinion this is preferred way to set process name, but anyway it's optional  
+* **[libnotify](https://developer.gnome.org/libnotify/):** pop up notifications
+* **[sox](http://sox.sourceforge.net/):** sounds
+* **[i3lock](http://i3wm.org/i3lock/):** lock user session before hibernating/suspending (xscreensaver, slimlock and vlock are supported as well, i3lock is set as default)
+* **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
-**2.07.2013**
-* 3.0-rc3
+**21.10.2013**
+* **[3.1](https://github.com/nictki/Battmon/releases/3.1)**
+* fix behavior when battery is removed or inserted
+* add notification when battery is removed or inserted
+* fix behavior when battery value is 'Unknown'
+
+**10.07.2013**
+* **[3.0](https://github.com/nictki/Battmon/releases/3.0)**
+* fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
 * fix behavior when battery status is "Unknown"
 * make setproctitle module optional
-* when both pm-utils and upower are installed, upower will be use as default
+* when both pm-utils and upower are installed, upower will be used as default
 * workaround for libc.prctl(15, name, 0, 0, 0) under python3
 * fix "run more then one copy" under python2
-* porting to python3
-* program runs now with python2 and python3
+* python3 is now supported 
 * program name is set through setproctitle module
 * some code cleanup
 * update README
 
 **23.05.2013**
-* 2.1.5.1
+* **[2.1.5.1](https://github.com/nictki/Battmon/releases/2.1.5.1)**
 * add upower check
 * add check for python correct version
-* small fixes
 * add option to specify time for "no battery" remainder (default: 0/disabled)
 * add option to specify default minimal battery level value action (default: hibernate)
+* small fixes
 
 **06.03.2013**
-* 2.1
+* **[2.1](https://github.com/nictki/Battmon/releases/2.1)**
 * add option to set sound volume and to specify sound file
 * add option to specify screen lock program (default i3lock)
 * add possibility to set battery values update time interval
-* add possibility to set through low, critical and minimal battery value levels
-* small fixes and improvements
+* add possibility to set low, critical and minimal battery value levels
 * get rid of pynotify module, use notify-send instead
+* small fixes and improvements
 * code cleanup
-* re-add session lock commands
 
 ## Notes:
-If you want to use hibernate, suspend or shutdown with `upower`, be sure that your `ck-list-sessions output` gives something like this:
+If you want to use hibernate, suspend or shutdown with upower, be sure that your ck-list-sessions output gives you something like this:
  
 	$: ck-list-sessions
    	...
@@ -64,9 +72,11 @@ If you want to use hibernate, suspend or shutdown with `upower`, be sure that yo
    	is-local = TRUE
    	...
 
-but, if you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges (`sudo foo`). 
+**Note:**  
+If you don't use *KIT soft, then be sure, that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges. 
 
 ## How to run:
+**A)**  
 Make battmon executable:
 	
 	chmod +x ./battmon.py
@@ -75,15 +85,22 @@ and run like:
 
 	./battmon.py 
 
-or:
+**B)**  
+or just run:
 
     python ./battmon.py
 
-To list all available options run Battmon with `-h` or `--help`
+**Note:**  
+If you have any problems with abowe command, try:
+
+	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION> ./battmon.py 
 	
-	python ./battmon.py -h
+I've notice some problems with `python ./battmon.py` under Debian-7.
 
 ## Options:
+To list all available options run Battmon with `-h` or `--help` option.
+	
+	python ./battmon.py -h
 
     --version               show program's version number and exit
     -h, --help              show this help message and exit
