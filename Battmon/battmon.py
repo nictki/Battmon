@@ -32,7 +32,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.2alpha1~svn22102013'
+VERSION = '3.2alpha2~svn22102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -206,8 +206,8 @@ class BatteryValues:
 
 # battery notifications class
 class BatteryNotifications:
-    def __init__(self, notify, notify_send, critical, sound, sound_command, battery_values, timeout):
-        self.__notify = notify
+    def __init__(self, disable_notifications, notify_send, critical, sound, sound_command, battery_values, timeout):
+        self.__disable_notifications = disable_notifications
         self.__notify_send = notify_send
         self.__critical = critical
         self.__sound = sound
@@ -218,13 +218,13 @@ class BatteryNotifications:
     # battery discharging notification
     def battery_discharging(self):
         # if use sound
-        if (self.__sound and ((not self.__notify and not self.__critical)
-                              or (self.__notify and self.__critical)
-                              or (not self.__notify and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications and not self.__critical)
+                              or (not self.__disable_notifications and self.__critical)
+                              or (self.__disable_notifications and self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify and not self.__critical:
+        if not self.__disable_notifications and not self.__critical:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -240,13 +240,13 @@ class BatteryNotifications:
     # battery low capacity notification
     def low_capacity_level(self):
         # if use sound
-        if (self.__sound and ((not self.__notify and not self.__critical)
-                              or (self.__notify and self.__critical)
-                              or (not self.__notify and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications and not self.__critical)
+                              or (not self.__disable_notifications and self.__critical)
+                              or (self.__disable_notifications and self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify and not self.__critical:
+        if not self.__disable_notifications and not self.__critical:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -263,12 +263,12 @@ class BatteryNotifications:
     # battery critical level notification
     def critical_battery_level(self):
         # if use sound
-        if (self.__sound and ((not self.__notify or not self.__critical)
-                              and (not self.__notify or self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify:
+        if not self.__disable_notifications:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -285,12 +285,12 @@ class BatteryNotifications:
     # hibernate level notification
     def minimal_battery_level(self):
         # if use sound
-        if (self.__sound and ((not self.__notify or not self.__critical)
-                              and (not self.__notify or self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify:
+        if not self.__disable_notifications:
             if self.__notify_send:
                 if self.__sound:
                     os.popen(self.__sound_command)
@@ -306,13 +306,13 @@ class BatteryNotifications:
     # battery full notification
     def full_battery(self):
         # if use sound
-        if (self.__sound and ((not self.__notify and not self.__critical)
-                              or (self.__notify and self.__critical)
-                              or (not self.__notify and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications and not self.__critical)
+                              or (not self.__disable_notifications and self.__critical)
+                              or (self.__disable_notifications and self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify and not self.__critical:
+        if not self.__disable_notifications and not self.__critical:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -326,13 +326,13 @@ class BatteryNotifications:
     # charging notification
     def battery_charging(self):
         # if use sound
-        if (self.__sound and ((not self.__notify and not self.__critical)
-                              or (self.__notify and self.__critical)
-                              or (not self.__notify and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications and not self.__critical)
+                              or (not self.__disable_notifications and self.__critical)
+                              or (self.__disable_notifications and self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify and not self.__critical:
+        if not self.__disable_notifications and not self.__critical:
             if self.__sound:
                 os.popen(self.__sound_command)
 
@@ -348,12 +348,12 @@ class BatteryNotifications:
     # battery removed notification
     def battery_removed(self):
         # if use sound
-        if (self.__sound and ((not self.__notify or not self.__critical)
-                              and (not self.__notify or self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify:
+        if not self.__disable_notifications:
             time.sleep(1)
             if self.__sound:
                 os.popen(self.__sound_command)
@@ -368,12 +368,12 @@ class BatteryNotifications:
     # battery plugged notification
     def battery_plugged(self):
         # if use sound
-        if (self.__sound and ((not self.__notify or not self.__critical)
-                              and (not self.__notify or self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify:
+        if not self.__disable_notifications:
             time.sleep(1)
             if self.__sound:
                 os.popen(self.__sound_command)
@@ -388,12 +388,12 @@ class BatteryNotifications:
     # no battery notification
     def no_battery(self):
         # if use sound
-        if (self.__sound and ((not self.__notify or not self.__critical)
-                              and (not self.__notify or self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
 
         # notification
-        if self.__notify:
+        if not self.__disable_notifications:
             time.sleep(1)
             if self.__sound:
                 os.popen(self.__sound_command)
@@ -416,7 +416,7 @@ class MainRun:
         self.__foreground = kwargs.get("foreground")
         self.__more_then_one_copy = kwargs.get("more_then_one_copy")
         self.__lock_command = kwargs.get("lock_command")
-        self.__notifications = kwargs.get("notifications")
+        self.__disable_notifications = kwargs.get("disable_notifications")
         self.__critical = kwargs.get("critical")
         self.__sound_file = kwargs.get("sound_file")
         self.__sound = kwargs.get("sound")
@@ -458,14 +458,14 @@ class MainRun:
             self.__no_startup_notifications = False
             self.__foreground = True
             self.__critical = False
-            self.__notifications = True
+            self.__disable_notifications = False
 
         # set lock and min battery command
         self.__set_lock_command()
         self.__set_minimal_battery_level_command()
 
         # initialize notification
-        self.__notification = BatteryNotifications(self.__notifications, self.__notify_send, self.__critical,
+        self.__notification = BatteryNotifications(self.__disable_notifications, self.__notify_send, self.__critical,
                                                    self.__sound,
                                                    self.__sound_command, self.__battery_values, self.__timeout)
 
@@ -485,7 +485,7 @@ class MainRun:
         print("- foreground: %s" % self.__foreground)
         print("- run more instances: %s" % self.__more_then_one_copy)
         print("- screen lock command: %s" % self.__lock_command)
-        print("- use notifications: %s" % self.__notifications)
+        print("- use notifications: %s" % self.__disable_notifications)
         print("- show only critical notifications: %s" % self.__critical)
         print("- use sound: %s" % self.__sound)
         print("- sound volume level: %s" % self.__sound_volume)
@@ -966,18 +966,23 @@ class MainRun:
 
 if __name__ == '__main__':
     # parser
-    ap = argparse.ArgumentParser(usage="usage: %(prog)s [OPTION...]", description=DESCRIPTION)
-    battery_values = ap.add_subparsers(title="battery values arguments:")
+    ap = argparse.ArgumentParser(usage="usage: %(prog)s [OPTION...]", description=DESCRIPTION,
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    file_group = ap.add_argument_group("files path arguments")
+    battery_group = ap.add_argument_group("battery arguments")
+    sound_group = ap.add_argument_group("sound arguments")
+    notification_group = ap.add_argument_group("notification arguments")
 
     # default options
     defaultOptions = {"debug": False,
                       "test": False,
                       "foreground": False,
                       "more_then_one_copy": False,
-                      "lock_command": "",
-                      "notifications": True,
+                      "lock_command": "/usr/bin/i3lock -c 000000",
+                      "disable_notifications": False,
                       "critical": False,
-                      "sound_file": "",
+                      "sound_file": "./sounds",
                       "sound": True,
                       "sound_volume": 3,
                       "timeout": 6,
@@ -998,68 +1003,68 @@ if __name__ == '__main__':
                     action="store_true",
                     dest="debug",
                     default=defaultOptions['debug'],
-                    help="print debug information, implies -fg, option [default: false]")
+                    help="print debug information, implies -fg, option")
 
     # dry run
     ap.add_argument("-dr", "--dry-run",
                     action="store_true",
                     dest="test",
                     default=defaultOptions['test'],
-                    help="dry run [default: false]")
+                    help="dry run")
 
     # daemon
     ap.add_argument("-fg", "--foreground",
                     action="store_true",
                     dest="foreground",
                     default=defaultOptions['foreground'],
-                    help="run in foreground [default: false]")
+                    help="run in foreground]")
 
     # allows to run only one instance of this program
     ap.add_argument("-rm", "--run-more-copies",
                     action="store_true",
                     dest="more_then_one_copy",
                     default=defaultOptions['more_then_one_copy'],
-                    help="run more then one instance [default: false]")
+                    help="run more then one instance")
 
     # lock command setter
-    ap.add_argument("-lc", "--lock-command-path",
+    file_group.add_argument("-lc", "--lock-command-path",
                     action="store",
                     dest="lock_command",
-                    #type=str,
-                    nargs="*",
+                    type=str,
+                    #nargs="*",
                     metavar='''"<PATH> <ARGS>"''',
                     default=defaultOptions['lock_command'],
                     help="give path to lockscreen command with arguments if any, surround with quotes")
 
     # show notifications
-    ap.add_argument("-nn", "--no-notifications",
-                    action="store_false",
-                    dest="notifications",
-                    default=defaultOptions['notifications'],
-                    help="no notifications will be shown, expect  [default: false]")
+    notification_group.add_argument("-dn", "--no-notifications",
+                    action="store_true",
+                    dest="disable_notifications",
+                    default=defaultOptions['disable_notifications'],
+                    help="disable notifications will be shown")
 
     # show only critical notifications
-    ap.add_argument("-cn", "--critical-notifications",
-                    action="store_true",
-                    dest="critical",
-                    default=defaultOptions['critical'],
-                    help="only critical battery notifications [default: false]")
+    notification_group.add_argument("-cn", "--critical-notifications",
+                                           action="store_true",
+                                           dest="critical",
+                                           default=defaultOptions['critical'],
+                                           help="only critical battery notifications")
 
     # set sound file path
-    ap.add_argument("-sf", "--sound-file-path",
-                    action="store",
-                    dest="sound_file",
-                    type=str,
-                    metavar="<PATH>",
-                    default=defaultOptions['sound_file'],
-                    help="path to sound file")
+    file_group.add_argument("-sf", "--sound-file-path",
+                                    action="store",
+                                    dest="sound_file",
+                                    type=str,
+                                    metavar="<PATH>",
+                                    default=defaultOptions['sound_file'],
+                                    help="path to sound file")
 
     # don't play sound
-    ap.add_argument("-ns", "--no-sound",
-                    action="store_false",
-                    dest="sound",
-                    default=defaultOptions['sound'],
-                    help="no sounds [default: True]")
+    sound_group.add_argument("-ns", "--no-sound",
+                                    action="store_false",
+                                    dest="sound",
+                                    default=defaultOptions['sound'],
+                                    help="no sounds")
 
     # set sound volume
     #
@@ -1086,12 +1091,12 @@ if __name__ == '__main__':
         return volume_value
 
     # sound level volume
-    ap.add_argument("-sl", "--set-sound-loudness",
-                    dest="sound_volume",
-                    type=set_sound_volume_level,
-                    metavar="<1-%d>" % MAX_SOUND_VOLUME_LEVEL,
-                    default=defaultOptions['sound_volume'],
-                    help="notifications sound volume level [default: 4]")
+    sound_group.add_argument("-sl", "--set-sound-loudness",
+                                    dest="sound_volume",
+                                    type=set_sound_volume_level,
+                                    metavar="<1-%d>" % MAX_SOUND_VOLUME_LEVEL,
+                                    default=defaultOptions['sound_volume'],
+                                    help="notifications sound volume level")
 
     # check if notify timeout is correct >= 0
     def set_timeout(timeout):
@@ -1101,12 +1106,12 @@ if __name__ == '__main__':
         return timeout
 
     # timeout
-    ap.add_argument("-t", "--timeout",
-                    dest="timeout",
-                    type=set_timeout,
-                    metavar="<SECONDS>",
-                    default=defaultOptions['timeout'],
-                    help="notification timeout (use 0 to disable) [default: 6]")
+    notification_group.add_argument("-t", "--timeout",
+                                           dest="timeout",
+                                           type=set_timeout,
+                                           metavar="<SECONDS>",
+                                           default=defaultOptions['timeout'],
+                                           help="notification timeout (use 0 to disable)")
 
     # check if battery update interval is correct >= 0
     def set_battery_update_interval(update_value):
@@ -1116,45 +1121,45 @@ if __name__ == '__main__':
         return update_value
 
     # battery update interval
-    ap.add_argument("-bu", "--battery-update-interval",
-                    dest="battery_update_timeout",
-                    type=set_battery_update_interval,
-                    metavar="<SECONDS>",
-                    default=defaultOptions['battery_update_timeout'],
-                    help="battery update timeout [default: 7]")
+    battery_group.add_argument("-bu", "--battery-update-interval",
+                                      dest="battery_update_timeout",
+                                      type=set_battery_update_interval,
+                                      metavar="<SECONDS>",
+                                      default=defaultOptions['battery_update_timeout'],
+                                      help="battery update timeout")
 
     # battery low level value
-    ap.add_argument("-ll", "--low-level-value",
-                    dest="battery_low_value",
-                    type=int,
-                    metavar="<1-100>",
-                    default=defaultOptions['battery_low_value'],
-                    help="battery low value [default: 17]")
+    battery_group.add_argument("-ll", "--low-level-value",
+                                      dest="battery_low_value",
+                                      type=int,
+                                      metavar="<1-100>",
+                                      default=defaultOptions['battery_low_value'],
+                                      help="battery low value")
 
     # battery critical value
-    ap.add_argument("-cl", "--critical-level-value",
-                    dest="battery_critical_value",
-                    type=int,
-                    metavar="<1-100>",
-                    default=defaultOptions['battery_critical_value'],
-                    help="battery critical value (default: 7)")
+    battery_group.add_argument("-cl", "--critical-level-value",
+                                      dest="battery_critical_value",
+                                      type=int,
+                                      metavar="<1-100>",
+                                      default=defaultOptions['battery_critical_value'],
+                                      help="battery critical value")
 
     # battery minimal value
-    ap.add_argument("-ml", "--minimal-level-value",
-                    dest="battery_minimal_value",
-                    type=int,
-                    metavar="<1-100>",
-                    default=defaultOptions['battery_minimal_value'],
-                    help="battery minimal value [default: 4]")
+    battery_group.add_argument("-ml", "--minimal-level-value",
+                                      dest="battery_minimal_value",
+                                      type=int,
+                                      metavar="<1-100>",
+                                      default=defaultOptions['battery_minimal_value'],
+                                      help="battery minimal value")
 
     # set minimal battery level command
-    ap.add_argument("-mc", "--minimal-level-command",
-                    action="store",
-                    dest="minimal_battery_level_command",
-                    type=str,
-                    metavar="<ARG>",
-                    default=defaultOptions['minimal_battery_level_command'],
-                    help='''minimal battery level actions are:2 'hibernate', 'suspend' and 'poweroff' [default: hibernate]''')
+    battery_group.add_argument("-mc", "--minimal-level-command",
+                                      action="store",
+                                      dest="minimal_battery_level_command",
+                                      type=str,
+                                      metavar="<ARG>",
+                                      default=defaultOptions['minimal_battery_level_command'],
+                                      help='''minimal battery level actions are:2 'hibernate', 'suspend' and 'poweroff' ''')
 
     # set no battery notification
     def set_no_battery_remainder(remainder):
@@ -1163,19 +1168,19 @@ if __name__ == '__main__':
             raise argparse.ArgumentError("\nERROR: No battery remainder value must be greater or equal 0")
         return remainder
 
-    ap.add_argument("-nb", "--no-battery-reminder",
-                    dest="no_battery_remainder",
-                    type=set_no_battery_remainder,
-                    metavar="<MINUTES>",
-                    default=defaultOptions['no_battery_remainder'],
-                    help="set no battery remainder in minutes, 0 = no remainders [default: 0]")
+    battery_group.add_argument("-nb", "--no-battery-reminder",
+                                      dest="no_battery_remainder",
+                                      type=set_no_battery_remainder,
+                                      metavar="<MINUTES>",
+                                      default=defaultOptions['no_battery_remainder'],
+                                      help="set no battery remainder in minutes, 0 = no remainders")
 
     # don't show startup notifications
-    ap.add_argument("-nS", "--no-start-notifications",
-                    action="store_true",
-                    dest="no_startup_notifications",
-                    default=defaultOptions['no_startup_notifications'],
-                    help="show startup notifications, like lockscreen command or minimal battery level action [default: False]")
+    notification_group.add_argument("-nS", "--no-start-notifications",
+                                           action="store_true",
+                                           dest="no_startup_notifications",
+                                           default=defaultOptions['no_startup_notifications'],
+                                           help="show startup notifications, like lockscreen command or minimal battery level action")
 
     args = ap.parse_args()
     #print(args)

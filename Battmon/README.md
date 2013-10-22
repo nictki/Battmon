@@ -108,43 +108,51 @@ To list all available options run Battmon with `-h` or `--help` option.
     window managerslike awesome, dwm, xmonad.
 
     optional arguments:
-    -h, --help            show this help message and exit
-    -V, --version         show program's version number and exit
-    -D, --debug           print debug information, implies -fg option [default:
-                        false]
-    -dr, --dry-run        dry run [default: false]
-    -fg, --foreground     daemon mode [default: false]
-    -rm, --run-more-copies
-                        run more then one instance [default: false]
-    -lc ["<PATH> <ARGS>" ["<PATH> <ARGS>" ...]], --lock-command-path ["<PATH> <ARGS>" ["<PATH> <ARGS>" ...]]
-                        give path to lockscreen command with arguments if any,
-                        surround with quotes
-    -nn, --no-notifications
-                        no notifications [default: false]
-    -cn, --critical-notifications
-                        only critical battery notifications [default: false]
-    -sf <PATH>, --sound-file-path <PATH>
-                        path to sound file
-    -ms, --no-sound     no sounds [default: false]
-    -sl <1-17>, --set-sound-loudness <1-17>
-                        notifications sound volume level [default: 4]
-    -t <SECONDS>, --timeout <SECONDS>
-                        notification timeout (use 0 to disable) [default: 6]
-    -bu <SECONDS>, --battery-update-interval <SECONDS>
-                        battery update interval [default: 7]
-    -ll <1-100>, --low-level-value <1-100>
-                        battery low value [default: 17]
-    -cl <1-100>, --critical-level-value <1-100>
-                        battery critical value (default: 7)
-    -ml <1-100>, --minimal-level-value <1-100>
-                        battery minimal value [default: 4]
-    -mc <ARG>, --minimal-level-command <ARG>
-                        minimal battery level actions are:2 'hibernate',
-                        'suspend' and 'poweroff' [default: hibernate]
-    -nb <MINUTES>, --no-battery-reminder <MINUTES>
-                        set no battery remainder in minutes, 0 = no remainders
-                        [default: 0]
-    -ns, --no-startup-notifications
-                        no startup notifications [default: True]
+        -h, --help            show this help message and exit
+        -V, --version         show program's version number and exit
+        -D, --debug           print debug information, implies -fg, option (default:
+                                False)
+        -dr, --dry-run        dry run (default: False)
+        -fg, --foreground     run in foreground] (default: False)
+        -rm, --run-more-copies
+                              run more then one instance (default: False)
 
+    files path arguments:
+        -lc "<PATH> <ARGS>", --lock-command-path "<PATH> <ARGS>"
+                            give path to lockscreen command with arguments if any,
+                            surround with quotes (default: /usr/bin/i3lock -c
+                            000000)
+        -sf <PATH>, --sound-file-path <PATH>
+                            path to sound file (default: ./sounds)
 
+    battery arguments:
+        -bu <SECONDS>, --battery-update-interval <SECONDS>
+                                battery update timeout (default: 6)
+        -ll <1-100>, --low-level-value <1-100>
+                                battery low value (default: 23)
+        -cl <1-100>, --critical-level-value <1-100>
+                                battery critical value (default: 14)
+        -ml <1-100>, --minimal-level-value <1-100>
+                                battery minimal value (default: 7)
+        -mc <ARG>, --minimal-level-command <ARG>
+                                minimal battery level actions are:2 'hibernate',
+                                'suspend' and 'poweroff' (default: hibernate)
+        -nb <MINUTES>, --no-battery-reminder <MINUTES>
+                                set no battery remainder in minutes, 0 = no remainders
+                                (default: 0)
+
+    sound arguments:
+        -ns, --no-sound          no sounds (default: True)
+        -sl <1-17>, --set-sound-loudness <1-17>
+                                 notifications sound volume level (default: 3)
+
+    notification arguments:
+        -dn, --no-notifications
+                                disable notifications will be shown (default: False)
+        -cn, --critical-notifications
+                                only critical battery notifications (default: False)
+        -t <SECONDS>, --timeout <SECONDS>
+                                notification timeout (use 0 to disable) (default: 6)
+        -nS, --no-start-notifications
+                                show startup notifications, like lockscreen command or
+                                minimal battery level action (default: False)
