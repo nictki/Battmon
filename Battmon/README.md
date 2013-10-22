@@ -25,8 +25,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 ## Changelog:
 ** 22.10.2013 **
 * **[3.2](https://github.com/nictki/Battmon/releases/3.2)**
-* 3.2 release
-* now use argparse intead optparse
+* use argparse intead optparse
 * new argument names for command line
 * bug fixes, refactoring
 
@@ -98,11 +97,9 @@ or just run:
     python ./battmon.py
 
 **Note:**  
-If you have any problems with abowe command, try:
+If you have any problems with above command, try:
 
-	<PATH TO YOUR PYTHON VERSION>/python<YOUR PYTHON VERSION> ./battmon.py 
-	
-I've notice some problems when using `python ./battmon.py` command under Debian-7.
+	python<YOUR PYTHON VERSION> ./battmon.py
 
 ## Options:
 To list all available options run Battmon with `-h` or `--help` option.
