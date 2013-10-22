@@ -23,6 +23,7 @@ import time
 import argparse
 import subprocess
 from ctypes import cdll
+from _emerge import actions
 
 try:
     import setproctitle
@@ -31,7 +32,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.1~svn20102013'
+VERSION = '3.2alpha1~svn22102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -1213,6 +1214,10 @@ if __name__ == '__main__':
                     dest="no_startup_notifications",
                     default=defaultOptions['no_startup_notifications'],
                     help="no startup notifications [default: False]")
+
+    ap.add_argument("-V", "--version",
+                    action="version",
+                    version=VERSION)
 
     args = ap.parse_args()
     ml = MainRun(**vars(args))
