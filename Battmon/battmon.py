@@ -465,6 +465,9 @@ class MainRun:
             self.__show_only_critical = False
             self.__disable_notifications = False
 
+        if self.__disable_notifications:
+            self.__disable_startup_notifications = True
+
         # set lock and min battery command
         self.__set_lock_command()
         self.__set_minimal_battery_level_command()
@@ -478,9 +481,6 @@ class MainRun:
         if not self.__foreground:
             if os.fork() != 0:
                 sys.exit(0)
-
-        print("sound")
-        print(self.__sound_file)
 
         # print start values in debug mode
         if self.__debug:
@@ -864,7 +864,8 @@ class MainRun:
                             if not self.__battery_values.is_battery_present():
                                 self.__notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: battery removed !!!")
+                                    print("DEBUG: battery removed !!! (%s() in MainRun class)"
+                                          % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
                             else:
@@ -891,7 +892,8 @@ class MainRun:
                             if not self.__battery_values.is_battery_present():
                                 self.__notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: battery removed !!!")
+                                    print("DEBUG: battery removed !!! (%s() in MainRun class)"
+                                          % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
                             else:
@@ -921,7 +923,8 @@ class MainRun:
                         if self.__battery_values.is_battery_present():
                             self.__notification.battery_plugged()
                             if self.__debug:
-                                print("DEBUG: battery plugged")
+                                print("DEBUG: battery plugged (%s() in MainRun class)"
+                                      % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break
                             # send no battery notifications and reset no_battery_counter
@@ -935,7 +938,8 @@ class MainRun:
                         if self.__battery_values.is_battery_present():
                             self.__notification.battery_plugged()
                             if self.__debug:
-                                print("DEBUG: battery plugged")
+                                print("DEBUG: battery plugged (%s() in MainRun class)"
+                                      % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break
 
