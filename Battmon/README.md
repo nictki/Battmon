@@ -102,37 +102,48 @@ To list all available options run Battmon with `-h` or `--help` option.
 	
 	python ./battmon.py -h
 
-    --version               show program's version number and exit
-    -h, --help              show this help message and exit
-    -D, --debug             print some useful information (default: false)
-    -T, --test              dry run (default: false)
-    -d, --demonize          daemon mode (default: false)
-    -m, --run-more-copies   run more then one instance (default: false)
-    -l PATH <ARGS>, --lock-command-path=PATH <ARGS>
-                            path to screen locker
-    -n, --no-notifications  no notifications (default: false)
-    -c, --critical-notifications
-                            only critical battery notifications (default: false)
-    -f PATH, --sound-file-path=PATH
-                            path to sound file
-    -s, --no-sound          no sounds (default: false)
-    -a (1-17), --set-sound-loudness=(1-17)
-                            notifications sound volume level (default: 4)
-    -t seconds, --timeout=seconds
-                            notification timeout (use 0 to disable) (default: 6)
-    -b seconds, --battery-update-interval=seconds
-                            battery update interval (default: 7)
-    -O (1-100), --low-level-value=(1-100)
-                            battery low value (default: 17)
-    -R (1-100), --critical-level-value=(1-100)
-                            battery critical value (default: 7)
-    -I (1-100), --minimal-level-value=(1-100)
-                            battery minimal value (default: 4)
-    -e <ARG>, --minimal-level-command=<ARG>
-                            minimal battery level actions are:
-                            'hibernate', 'suspend' and 'poweroff' (default: hibernate)
-    -r minutes, --no-battery-reminder=minutes
-                            no battery remainder, 0 = no remainders (default: 0)
-    -q, --no-start-notifications
-                            no startup notifications (default: False)
+    usage: usage: battmon.py [OPTION...]
+
+    Simple battery monitoring program written in python especially for tiling
+    window managerslike awesome, dwm, xmonad.
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    -D, --debug           print debug information, implies -fg option [default:
+                        false]
+    -dr, --dry-run        dry run [default: false]
+    -fg, --foreground     daemon mode [default: false]
+    -rm, --run-more-copies
+                        run more then one instance [default: false]
+    -lc ["<PATH> <ARGS>" ["<PATH> <ARGS>" ...]], --lock-command-path ["<PATH> <ARGS>" ["<PATH> <ARGS>" ...]]
+                        give path to lockscreen command with arguments if any,
+                        surround with quotes
+    -nn, --no-notifications
+                        no notifications [default: false]
+    -cn, --critical-notifications
+                        only critical battery notifications [default: false]
+    -sf <PATH>, --sound-file-path <PATH>
+                        path to sound file
+    -ns, --no-sound       no sounds [default: false]
+    -sl <1-17>, --set-sound-loudness <1-17>
+                        notifications sound volume level [default: 4]
+    -t <SECONDS>, --timeout <SECONDS>
+                        notification timeout (use 0 to disable) [default: 6]
+    -bu <SECONDS>, --battery-update-interval <SECONDS>
+                        battery update interval [default: 7]
+    -ll <1-100>, --low-level-value <1-100>
+                        battery low value [default: 17]
+    -cl <1-100>, --critical-level-value <1-100>
+                        battery critical value (default: 7)
+    -ml <1-100>, --minimal-level-value <1-100>
+                        battery minimal value [default: 4]
+    -mc <ARG>, --minimal-level-command <ARG>
+                        minimal battery level actions are:2 'hibernate',
+                        'suspend' and 'poweroff' [default: hibernate]
+    -nb <MINUTES>, --no-battery-reminder <MINUTES>
+                        set no battery remainder in minutes, 0 = no remainders
+                        [default: 0]
+    -nN, --no-start-notifications
+                        no startup notifications [default: False]
+
 
