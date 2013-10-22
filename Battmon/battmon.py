@@ -34,11 +34,11 @@ PROGRAM_NAME = 'Battmon'
 VERSION = '3.2rc2~svn22102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
-EPILOG=('You want change screenlock command default value, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable in `battmon.py`'
-        ' or parsing your lockscreen command througth `-lp` argument in command line, when you use this argument remember'
-        ' to surround it with quotes.'
-        ' Default sound file will be search in the same path were battmon was started,'
-        ' you can overwrite this by parsing your sound file path using `-sp` argument from command line, no quotes required')
+EPILOG=('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
+        ' or change it by parsing your lockscreen command througth -lp argument in command line, when you use this argument remember'
+        ' to surround whole your lockscreen command with quotes.'
+        ' Sound file is search by default in the same path where battmon was started,'
+        ' you can change this by parsing your path to sound file using -sp argument in command line without quotes.')
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
