@@ -101,6 +101,13 @@ If you have any problems with above command, try:
 
 	python<YOUR PYTHON VERSION> ./battmon.py
 
+You want change screenlock command default value, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable in `battmon.py`
+or parsing your lockscreen command througth `-lp` argument in command line, when you use this argument remember
+to surround it with quotes.
+
+Default sound file will be search in the same path were battmon was started,
+you can overwrite this by parsing your sound file path using `-sp` argument from command line, no quotes required
+
 ## Options:
 To list all available options run Battmon with `-h` or `--help` option.
 	
@@ -157,3 +164,10 @@ To list all available options run Battmon with `-h` or `--help` option.
                              don't show startup notifications, like lockscreen
                              command or minimal battery level action (default:
                              False)
+
+    You can change screenlock command default value, by editing
+    DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py, parsing your command
+    througth -lp argument from command line, when you use this argument remember
+    to surround with quotes. Sound file will be search in the same path were
+    battmon was started, you can overwrite this by parsing your sound file path
+    using -sp argument from command line, no quotes required

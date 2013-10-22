@@ -33,14 +33,12 @@ except ImportError as ierr:
 PROGRAM_NAME = 'Battmon'
 VERSION = '3.2rc2~svn22102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
-               'like awesome, dwm, xmonad.'
-               'You can change screenlock command default value, by editing DEFAULT_SCREEN_LOCK_COMMAND'
-               'variable in battmon.py,'
-               ' parsing your command througth -lp argument from command line, '
-               'when you use this argument remember to surround with quotes.'
-               'Sound file will be search in the same path were battmon was started, '
-               'you can overwrite this by parsing your sound file path'
-               ' using -sp argument from command line, no quotes required')
+               'like awesome, dwm, xmonad.')
+EPILOG=('You want change screenlock command default value, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable in `battmon.py`'
+        ' or parsing your lockscreen command througth `-lp` argument in command line, when you use this argument remember'
+        ' to surround it with quotes.'
+        ' Default sound file will be search in the same path were battmon was started,'
+        ' you can overwrite this by parsing your sound file path using `-sp` argument from command line, no quotes required')
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
@@ -947,7 +945,8 @@ class MainRun:
 if __name__ == '__main__':
     # parser
     ap = argparse.ArgumentParser(usage="usage: %(prog)s [OPTION...]", description=DESCRIPTION,
-                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter, )
+                                 formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                                 epilog=EPILOG)
 
     file_group = ap.add_argument_group("files path arguments")
     battery_group = ap.add_argument_group("battery arguments")
