@@ -102,57 +102,54 @@ To list all available options run Battmon with `-h` or `--help` option.
 	
 	python ./battmon.py -h
 
-    usage: usage: battmon.py [OPTION...]
-
-    Simple battery monitoring program written in python especially for tiling
-    window managerslike awesome, dwm, xmonad.
-
     optional arguments:
-        -h, --help            show this help message and exit
-        -V, --version         show program's version number and exit
-        -D, --debug           print debug information, implies -fg, option (default:
-                                False)
-        -dr, --dry-run        dry run (default: False)
-        -fg, --foreground     run in foreground] (default: False)
-        -rm, --run-more-copies
-                              run more then one instance (default: False)
+       -h, --help            show this help message and exit
+       -v, --version         show program's version number and exit
+       -d, --debug           print debug information, implies -fg, option (default:
+                        False)
+       -dr, --dry-run        dry run (default: False)
+       -f, --foreground      run in foreground] (default: False)
+       -i, --run-more-instances
+                             run more then one instance (default: False)
 
     files path arguments:
-        -lc "<PATH> <ARGS>", --lock-command-path "<PATH> <ARGS>"
-                            give path to lockscreen command with arguments if any,
-                            surround with quotes (default: /usr/bin/i3lock -c
-                            000000)
-        -sf <PATH>, --sound-file-path <PATH>
-                            path to sound file (default: ./sounds)
+       -lp "<PATH> <ARGS>", --lock-command-path "<PATH> <ARGS>"
+                             give path to lockscreen command with arguments if any,
+                             surround with quotes (default: /usr/bin/i3lock -c
+                             000000)
+       -sp <PATH>, --sound-file-path <PATH>
+                             path to sound file (default: /home/radek/Projects/Pych
+                             armProjects/Battmon/Battmon/sounds/info.wav)
 
     battery arguments:
-        -bu <SECONDS>, --battery-update-interval <SECONDS>
-                                battery update timeout (default: 6)
-        -ll <1-100>, --low-level-value <1-100>
-                                battery low value (default: 23)
-        -cl <1-100>, --critical-level-value <1-100>
-                                battery critical value (default: 14)
-        -ml <1-100>, --minimal-level-value <1-100>
-                                battery minimal value (default: 7)
-        -mc <ARG>, --minimal-level-command <ARG>
-                                minimal battery level actions are:2 'hibernate',
-                                'suspend' and 'poweroff' (default: hibernate)
-        -nb <MINUTES>, --no-battery-reminder <MINUTES>
-                                set no battery remainder in minutes, 0 = no remainders
-                                (default: 0)
+       -bu <SECONDS>, --battery-update-interval <SECONDS>
+                             battery update timeout (default: 6)
+       -ll <1-100>, --low-level-value <1-100>
+                             battery low value (default: 23)
+       -cl <1-100>, --critical-level-value <1-100>
+                             battery critical value (default: 14)
+       -ml <1-100>, --minimal-level-value <1-100>
+                             battery minimal value (default: 7)
+       -mc <ARG>, --minimal-level-command <ARG>
+                             minimal battery level actions are: 'hibernate',
+                             'suspend' and 'poweroff' (default: hibernate)
 
     sound arguments:
-        -ns, --no-sound          no sounds (default: True)
-        -sl <1-17>, --set-sound-loudness <1-17>
-                                 notifications sound volume level (default: 3)
+       -ns, --no-sound       disable sounds (default: True)
+       -sl <1-17>, --set-sound-loudness <1-17>
+                             notifications sound volume level (default: 3)
 
     notification arguments:
-        -dn, --no-notifications
-                                disable notifications will be shown (default: False)
-        -cn, --critical-notifications
-                                only critical battery notifications (default: False)
-        -t <SECONDS>, --timeout <SECONDS>
-                                notification timeout (use 0 to disable) (default: 6)
-        -nS, --no-start-notifications
-                                show startup notifications, like lockscreen command or
-                                minimal battery level action (default: False)
+       -n, --disable-notifications
+                             disable notifications will be shown (default: False)
+       -cn, --critical-notifications
+                             only critical battery notifications (default: False)
+       t <SECONDS>, --timeout <SECONDS>
+                             notification timeout (use 0 to disable) (default: 6)
+       -db <MINUTES>, --disable-battery-reminder <MINUTES>
+                             set no battery remainder in minutes, 0 = no remainders
+                             (default: 0)
+       -dn, --disable-startup-notifications
+                             don't show startup notifications, like lockscreen
+                             command or minimal battery level action (default:
+                             False)
