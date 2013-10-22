@@ -32,7 +32,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.2alpha2~svn22102013'
+VERSION = '3.2rc1~svn22102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers'
                'like awesome, dwm, xmonad.')
 AUTHOR = 'nictki'
@@ -50,16 +50,14 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/share/sounds/']
 
 # add current Battmon directory
-EXTRA_PROGRAMS_PATH.append(os.path.dirname(os.path.realpath(__file__)) + "/sounds/")
+DEFAULT_SOUND_FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/sounds/info.wav"
 
 # default play command
 DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
-# optional screen lockers
-EXTRA_SCREEN_LOCK_COMMANDS = ['xscreensaver-command', 'slimlock', 'vlock']
 # default screen lock command
-DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock'
+DEFAULT_SCREEN_LOCK_COMMAND = '/usr/bin/i3lock -c 000000'
 
 
 # battery values class
@@ -474,6 +472,9 @@ class MainRun:
             if os.fork() != 0:
                 sys.exit(0)
 
+        print("sound")
+        print(self.__sound_file)
+
         # print start values in debug mode
         #if self.__debug:
         print("\n**********************")
@@ -576,44 +577,36 @@ class MainRun:
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
-        # default sound file
-        sound_file_name = 'info.wav'
-
         if os.path.exists(self.__sound_file):
-            self.__sound_command = '%s -V1 -q -v%s %s' \
-                                   % (self.__sound_player, self.__sound_volume, self.__sound_file)
+            self.__sound_command = '%s -V1 -q -v%s %s' % (self.__sound_player, self.__sound_volume, self.__sound_file)
+        else:
+            if self.__notify_send:
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "Check if you have sound files in %s. If you've specified your own sound file path, please check if it was correctly" %s %s''' \
+                                     % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                os.popen(notify_send_string)
 
-        if self.__check_in_path(sound_file_name):
-            self.__sound_command = '%s -V1 -q -v%s %s' \
-                                   % (self.__sound_player, self.__sound_volume, self.__currentProgramPath)
+            if not self.__notify_send:
+                print("DEPENDENCY MISSING:\n Check if you have sound files in %s. \n"
+                      "If you've specified your own sound file path, please check if it was correctly %s %s" % self.__sound_file)
 
-        if self.__notify_send and not self.__sound_command:
-            notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
-                                "Check if you have sound files in %s.\n \
-                                If you've specified your own sound file path,\n  \
-                                please check if it was correctly" %s %s''' \
-                                 % (self.__sound_file, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-            os.popen(notify_send_string)
-
-        if not self.__notify_send:
-            print("DEPENDENCY MISSING:\n No sound files found\n")
-
-    #print(str(self.__notify_send and not self.__no_startup_notifications))
     # check for lock screen program
     def __set_lock_command(self):
         # check if the given command found in given path
-        if os.path.exists(self.__lock_command):
+        __lock_command_as_list = self.__lock_command.split()
+        __command = __lock_command_as_list[0]
+        __command_args = ' '.join(__lock_command_as_list[1:len(__lock_command_as_list)])
+
+        if os.path.exists(__command):
             if self.__notify_send and not self.__no_startup_notifications:
-                notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
-                                     % (
-                    self.__lock_command, self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                notify_send_string = '''notify-send "using %s to lock screen\n" "with args: %s" %s %s''' \
+                                     % (__command, __command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__no_startup_notifications:
-                print("%s will be used to lock screen" % self.__lock_command)
+                print("%s %s will be used to lock screen" % (__command, __command_args))
 
         # check if default lock command is in path
-        if self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command == "":
-            self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
+        elif self.__check_in_path(self.__lock_command):
+            self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND
             if self.__notify_send and not self.__no_startup_notifications:
                 notify_send_string = '''notify-send "using default program to lock screen\n" "cmd: %s" %s %s''' \
                                      % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -622,32 +615,10 @@ class MainRun:
             elif not self.__no_startup_notifications and not self.__notify_send:
                 print("using default program to lock screen")
 
-        # check for others screen lockers in path, first found will set as default
-        if not self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND):
-            for c in EXTRA_SCREEN_LOCK_COMMANDS:
-                if self.__check_in_path(c):
-                    if c == 'xscreensaver-command':
-                        self.__lock_command = (self.__currentProgramPath + ' -lock')
-
-                    if c == 'vlock':
-                        self.__lock_command = (self.__currentProgramPath + ' -a')
-
-                    if self.__notify_send and not self.__no_startup_notifications:
-                        notify_send_string = '''notify-send "using %s to lock screen\n" "cmd: %s" %s %s''' \
-                                             % (c, c, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                        os.popen(notify_send_string)
-
-                    elif not self.__no_startup_notifications and not self.__notify_send:
-                        print("%s will be used to lock screen" % c)
-
-                    break
-
-        if not self.__lock_command:
+        else:
             if self.__notify_send:
                 notify_send_string = ('''notify-send "DEPENDENCY MISSING\n" \
-                                    "please check if you have installed i3lock, this is default lock screen program, \
-                                    you can specify your favorite screen lock program running this program with -l PATH, \
-                                    otherwise your session won't be locked" %s %s''') \
+                                    "please check if you have installed i3lock, this is default lock screen program, you can specify your favorite screen lock program running this program with -l PATH, otherwise your session won't be locked" %s %s''') \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
 
@@ -689,9 +660,7 @@ class MainRun:
             self.__minimal_battery_level_command = self.__power_off_command
 
             if self.__notify_send:
-                notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" \
-                                    "please check if you have installed pm-utils,\n \
-                                    or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
+                notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "please check if you have installed pm-utils, or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
                                      % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
 
@@ -979,10 +948,10 @@ if __name__ == '__main__':
                       "test": False,
                       "foreground": False,
                       "more_then_one_copy": False,
-                      "lock_command": "/usr/bin/i3lock -c 000000",
+                      "lock_command": DEFAULT_SCREEN_LOCK_COMMAND,
                       "disable_notifications": False,
                       "critical": False,
-                      "sound_file": "./sounds",
+                      "sound_file": DEFAULT_SOUND_FILE_PATH,
                       "sound": True,
                       "sound_volume": 3,
                       "timeout": 6,
@@ -1158,8 +1127,9 @@ if __name__ == '__main__':
                                       dest="minimal_battery_level_command",
                                       type=str,
                                       metavar="<ARG>",
+                                      choices=['hibernate', 'suspend', 'poweroff'],
                                       default=defaultOptions['minimal_battery_level_command'],
-                                      help='''minimal battery level actions are:2 'hibernate', 'suspend' and 'poweroff' ''')
+                                      help='''minimal battery level actions are: 'hibernate', 'suspend' and 'poweroff' ''')
 
     # set no battery notification
     def set_no_battery_remainder(remainder):
