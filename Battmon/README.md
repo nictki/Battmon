@@ -125,7 +125,7 @@ To list all available options run Battmon with `-h` or `--help` option.
                         only critical battery notifications [default: false]
     -sf <PATH>, --sound-file-path <PATH>
                         path to sound file
-    -ns, --no-sound       no sounds [default: false]
+    -ms, --no-sound     no sounds [default: false]
     -sl <1-17>, --set-sound-loudness <1-17>
                         notifications sound volume level [default: 4]
     -t <SECONDS>, --timeout <SECONDS>
@@ -144,7 +144,7 @@ To list all available options run Battmon with `-h` or `--help` option.
     -nb <MINUTES>, --no-battery-reminder <MINUTES>
                         set no battery remainder in minutes, 0 = no remainders
                         [default: 0]
-    -nN, --no-start-notifications
-                        no startup notifications [default: False]
+    -ns, --no-startup-notifications
+                        no startup notifications [default: True]
 
 

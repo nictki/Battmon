@@ -413,10 +413,10 @@ class MainRun:
         # parameters
         self.__debug = kwargs.get("debug")
         self.__test = kwargs.get("test")
-        self.__daemon = kwargs.get("daemon")
+        self.__foreground = kwargs.get("foreground")
         self.__more_then_one_copy = kwargs.get("more_then_one_copy")
         self.__lock_command = kwargs.get("lock_command")
-        self.__notify = kwargs.get("notify")
+        self.__notifications = kwargs.get("notifications")
         self.__critical = kwargs.get("critical")
         self.__sound_file = kwargs.get("sound_file")
         self.__sound = kwargs.get("sound")
@@ -428,7 +428,7 @@ class MainRun:
         self.__battery_minimal_value = kwargs.get("battery_minimal_value")
         self.__minimal_battery_level_command = kwargs.get("minimal_battery_level_command")
         self.__no_battery_remainder = kwargs.get("no_battery_remainder")
-        self.__no_startup_notifications = kwargs.get("no_start_notifications")
+        self.__no_startup_notifications = kwargs.get("no_startup_notifications")
 
         # external programs
         self.__sound_player = ''
@@ -453,46 +453,54 @@ class MainRun:
         # set Battmon process name
         self.__set_proc_name(PROGRAM_NAME)
 
+        # set default arguments for debug
+        if self.__debug:
+            self.__no_startup_notifications = False
+            self.__foreground = True
+            self.__critical = False
+            self.__notifications = True
+
         # set lock and min battery command
         self.__set_lock_command()
         self.__set_minimal_battery_level_command()
 
         # initialize notification
-        self.__notification = BatteryNotifications(self.__notify, self.__notify_send, self.__critical, self.__sound,
+        self.__notification = BatteryNotifications(self.__notifications, self.__notify_send, self.__critical,
+                                                   self.__sound,
                                                    self.__sound_command, self.__battery_values, self.__timeout)
 
         # fork in background
-        if self.__daemon and not self.__debug:
+        if not self.__foreground:
             if os.fork() != 0:
-                sys.exit()
+                sys.exit(0)
 
         # print start values in debug mode
-        if self.__debug:
-            print("\n**********************")
-            print("* !!! Debug Mode !!! *")
-            print("**********************\n")
-            print("- python version: %s.%s.%s\n" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-            print("- debug: %s" % self.__debug)
-            print("- dry run: %s" % self.__test)
-            print("- foreground: %s" % self.__daemon)
-            print("- run more instances: %s" % self.__more_then_one_copy)
-            print("- screen lock command: %s" % self.__lock_command)
-            print("- use notify: %s" % self.__notify)
-            print("- be critical: %s" % self.__critical)
-            print("- use sound: %s" % self.__sound)
-            print("- sound volume level: %s" % self.__sound_volume)
-            print("- sound command %s" % self.__sound_command)
-            print("- notification timeout: %s" % int(self.__timeout / 1000))
-            print("- battery update interval: %s" % self.__battery_update_timeout)
-            print("- battery low level value: %s" % self.__battery_low_value)
-            print("- battery critical level value: %s" % self.__battery_critical_value)
-            print("- battery hibernate level value: %s" % self.__battery_minimal_value)
-            print("- battery minimal level value command: %s" % self.__minimal_battery_level_command)
-            print("- no battery remainder: %smin" % self.__no_battery_remainder)
-            print("- no start remainder: %s\n" % self.__no_startup_notifications)
-            print("**********************")
-            print("* !!! Debug Mode !!! *")
-            print("**********************\n")
+        #if self.__debug:
+        print("\n**********************")
+        print("* !!! Debug Mode !!! *")
+        print("**********************\n")
+        print("- python version: %s.%s.%s\n" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+        print("- debug: %s" % self.__debug)
+        print("- dry run: %s" % self.__test)
+        print("- foreground: %s" % self.__foreground)
+        print("- run more instances: %s" % self.__more_then_one_copy)
+        print("- screen lock command: %s" % self.__lock_command)
+        print("- use notifications: %s" % self.__notifications)
+        print("- show only critical notifications: %s" % self.__critical)
+        print("- use sound: %s" % self.__sound)
+        print("- sound volume level: %s" % self.__sound_volume)
+        print("- sound command %s" % self.__sound_command)
+        print("- notification timeout: %ssek" % int(self.__timeout / 1000))
+        print("- battery update timeout: %ssek" % self.__battery_update_timeout)
+        print("- battery low level value: %s" % self.__battery_low_value)
+        print("- battery critical level value: %s" % self.__battery_critical_value)
+        print("- battery hibernate level value: %s" % self.__battery_minimal_value)
+        print("- battery minimal level value command: %s" % self.__minimal_battery_level_command)
+        print("- no battery remainder: %smin" % self.__no_battery_remainder)
+        print("- no startup notifications: %s\n" % self.__no_startup_notifications)
+        print("**********************")
+        print("* !!! Debug Mode !!! *")
+        print("**********************\n")
 
     # check if in path
     def __check_in_path(self, programName, path=EXTRA_PROGRAMS_PATH):
@@ -590,6 +598,7 @@ class MainRun:
         if not self.__notify_send:
             print("DEPENDENCY MISSING:\n No sound files found\n")
 
+    #print(str(self.__notify_send and not self.__no_startup_notifications))
     # check for lock screen program
     def __set_lock_command(self):
         # check if the given command found in given path
@@ -605,7 +614,6 @@ class MainRun:
         # check if default lock command is in path
         if self.__check_in_path(DEFAULT_SCREEN_LOCK_COMMAND) and self.__lock_command == "":
             self.__lock_command = DEFAULT_SCREEN_LOCK_COMMAND + " -c 000000"
-
             if self.__notify_send and not self.__no_startup_notifications:
                 notify_send_string = '''notify-send "using default program to lock screen\n" "cmd: %s" %s %s''' \
                                      % (self.__lock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
@@ -706,13 +714,13 @@ class MainRun:
                 self.__minimal_battery_level_command = self.__suspend_command
                 self.__temp = "suspend"
 
-            if self.__notify_send and not self.__no_startup_notifications:
-                notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
-                                     % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                os.popen(notify_send_string)
+        if self.__notify_send and not self.__no_startup_notifications:
+            notify_send_string = '''notify-send "below minimal battery level\n" "system will be: %s" %s %s''' \
+                                 % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+            os.popen(notify_send_string)
 
-            elif not self.__no_startup_notifications and not self.__notify_send:
-                print("below minimal battery level system will be: %s" % self.__temp)
+        elif not self.__no_startup_notifications and not self.__notify_send:
+            print("below minimal battery level system will be: %s" % self.__temp)
 
     # check for battery update times
     def __check_battery_update_times(self):
@@ -959,20 +967,21 @@ class MainRun:
 if __name__ == '__main__':
     # parser
     ap = argparse.ArgumentParser(usage="usage: %(prog)s [OPTION...]", description=DESCRIPTION)
+    battery_values = ap.add_subparsers(title="battery values arguments:")
 
     # default options
     defaultOptions = {"debug": False,
                       "test": False,
-                      "daemon": True,
+                      "foreground": False,
                       "more_then_one_copy": False,
                       "lock_command": "",
-                      "notify": True,
+                      "notifications": True,
                       "critical": False,
                       "sound_file": "",
                       "sound": True,
                       "sound_volume": 3,
                       "timeout": 6,
-                      "batteryUpdateInterval": 6,
+                      "battery_update_timeout": 6,
                       "battery_low_value": 23,
                       "battery_critical_value": 14,
                       "battery_minimal_value": 7,
@@ -989,7 +998,7 @@ if __name__ == '__main__':
                     action="store_true",
                     dest="debug",
                     default=defaultOptions['debug'],
-                    help="print debug information, implies -fg option [default: false]")
+                    help="print debug information, implies -fg, option [default: false]")
 
     # dry run
     ap.add_argument("-dr", "--dry-run",
@@ -1000,10 +1009,10 @@ if __name__ == '__main__':
 
     # daemon
     ap.add_argument("-fg", "--foreground",
-                    action="store_false",
-                    dest="daemon",
-                    default=defaultOptions['daemon'],
-                    help="daemon mode [default: false]")
+                    action="store_true",
+                    dest="foreground",
+                    default=defaultOptions['foreground'],
+                    help="run in foreground [default: false]")
 
     # allows to run only one instance of this program
     ap.add_argument("-rm", "--run-more-copies",
@@ -1025,9 +1034,9 @@ if __name__ == '__main__':
     # show notifications
     ap.add_argument("-nn", "--no-notifications",
                     action="store_false",
-                    dest="notify",
-                    default=defaultOptions['notify'],
-                    help="no notifications [default: false]")
+                    dest="notifications",
+                    default=defaultOptions['notifications'],
+                    help="no notifications will be shown, expect  [default: false]")
 
     # show only critical notifications
     ap.add_argument("-cn", "--critical-notifications",
@@ -1050,7 +1059,7 @@ if __name__ == '__main__':
                     action="store_false",
                     dest="sound",
                     default=defaultOptions['sound'],
-                    help="no sounds [default: false]")
+                    help="no sounds [default: True]")
 
     # set sound volume
     #
@@ -1069,7 +1078,7 @@ if __name__ == '__main__':
     #
     # set sound volume level
     def set_sound_volume_level(volume_value):
-        #volume_value = int(volume_value)
+        volume_value = int(volume_value)
         if volume_value < 1:
             raise argparse.ArgumentError("\nSound level must be greater then 1 !!!")
         if volume_value > MAX_SOUND_VOLUME_LEVEL:
@@ -1086,7 +1095,7 @@ if __name__ == '__main__':
 
     # check if notify timeout is correct >= 0
     def set_timeout(timeout):
-        #timeout = int(timeout)
+        timeout = int(timeout)
         if timeout < 0:
             raise argparse.ArgumentError("\nERROR: Notification timeout should be 0 or a positive number !!!")
         return timeout
@@ -1101,95 +1110,44 @@ if __name__ == '__main__':
 
     # check if battery update interval is correct >= 0
     def set_battery_update_interval(update_value):
-        #update_value = int(update_value)
+        update_value = int(update_value)
         if update_value <= 0:
             raise argparse.ArgumentError("\nERROR: Battery update interval should be a positive number !!!")
         return update_value
 
     # battery update interval
     ap.add_argument("-bu", "--battery-update-interval",
-                    dest="batteryUpdateInterval",
+                    dest="battery_update_timeout",
                     type=set_battery_update_interval,
                     metavar="<SECONDS>",
-                    default=defaultOptions['batteryUpdateInterval'],
-                    help="battery update interval [default: 7]")
-
-    # battery low value setter
-    def set_battery_low_value(low_value):
-        #low_value = int(low_value)
-        if low_value > 100 or low_value <= 0:
-            raise argparse.ArgumentError("\nERROR: Low battery level must be a positive number between 1 and 100")
-
-        if low_value <= ap.values.battery_critical_value:
-            raise argparse.ArgumentError(
-                "\nERROR: Low battery level must be greater than %s (critical battery value)"
-                % ap.values.battery_critical_value)
-
-        if low_value <= ap.values.battery_minimal_value:
-            raise argparse.ArgumentError(
-                "\nERROR: Low battery level must be greater than %s (hibernate battery value)"
-                % ap.values.battery_minimal_value)
-        return low_value
+                    default=defaultOptions['battery_update_timeout'],
+                    help="battery update timeout [default: 7]")
 
     # battery low level value
     ap.add_argument("-ll", "--low-level-value",
                     dest="battery_low_value",
-                    type=set_battery_low_value,
+                    type=int,
                     metavar="<1-100>",
                     default=defaultOptions['battery_low_value'],
                     help="battery low value [default: 17]")
 
-    # battery critical value setter
-    def set_battery_critical_value(critical_value):
-        #critical_value = int(critical_value)
-        if critical_value > 100 or critical_value <= 0:
-            raise argparse.ArgumentError(
-                "\nERROR: Critical battery level must be a positive number between 1 and 100")
-
-        if critical_value >= ap.values.battery_low_value:
-            raise argparse.ArgumentError(
-                "\nERROR: Critical battery level must be smaller than %s (low battery value)"
-                % ap.values.battery_low_value)
-        if critical_value <= ap.values.battery_minimal_value:
-            raise argparse.ArgumentError(
-                "\nERROR: Critical battery level must be greater than %s (hibernate battery value)"
-                % ap.values.battery_minimal_value)
-        return critical_value
-
     # battery critical value
     ap.add_argument("-cl", "--critical-level-value",
                     dest="battery_critical_value",
-                    type=set_battery_critical_value,
+                    type=int,
                     metavar="<1-100>",
                     default=defaultOptions['battery_critical_value'],
                     help="battery critical value (default: 7)")
 
-    # battery hibernate value setter
-    def set_battery_minimal_value(minimal_value):
-        #minimal_value = int(minimal_value)
-        if minimal_value > 100 or minimal_value <= 0:
-            raise argparse.ArgumentError(
-                "\nERROR: Hibernate battery level must be a positive number between 1 and 100")
-
-        if minimal_value >= ap.values.battery_low_value:
-            raise argparse.ArgumentError(
-                "\nERROR: Hibernate battery level must be smaller than %s (low battery value)"
-                % ap.values.battery_low_value)
-        if minimal_value >= ap.values.battery_critical_value:
-            raise argparse.ArgumentError(
-                "\nERROR: Hibernate battery level must be smaller than %s (critical battery value)"
-                % ap.values.battery_critical_value)
-        return minimal_value
-
-    # battery hibernate value
+    # battery minimal value
     ap.add_argument("-ml", "--minimal-level-value",
                     dest="battery_minimal_value",
-                    type=set_battery_minimal_value,
+                    type=int,
                     metavar="<1-100>",
                     default=defaultOptions['battery_minimal_value'],
                     help="battery minimal value [default: 4]")
 
-    # set hibernate battery level command
+    # set minimal battery level command
     ap.add_argument("-mc", "--minimal-level-command",
                     action="store",
                     dest="minimal_battery_level_command",
@@ -1213,12 +1171,59 @@ if __name__ == '__main__':
                     help="set no battery remainder in minutes, 0 = no remainders [default: 0]")
 
     # don't show startup notifications
-    ap.add_argument("-nN", "--no-start-notifications",
+    ap.add_argument("-nS", "--no-start-notifications",
                     action="store_true",
                     dest="no_startup_notifications",
                     default=defaultOptions['no_startup_notifications'],
-                    help="no startup notifications [default: False]")
+                    help="show startup notifications, like lockscreen command or minimal battery level action [default: False]")
 
     args = ap.parse_args()
+    #print(args)
+
+    # battery low value setter
+    def set_battery_low_value(low_value):
+        low_value = int(low_value)
+        if low_value > 100 or low_value <= 0:
+            ap.error("\nLow battery level must be a positive number between 1 and 100")
+        if low_value <= args.battery_critical_value:
+            ap.error("\nLow battery level %s must be greater than %s (critical battery value)"
+                     % (args.battery_low_value, args.battery_critical_value))
+        if low_value <= args.battery_minimal_value:
+            ap.error(
+                "\nLow battery level must %s be greater than %s (minimal battery value)"
+                % (args.battery_low_value, args.battery_minimal_value))
+
+    # battery critical value setter
+    def set_battery_critical_value(critical_value):
+        critical_value = int(critical_value)
+        if critical_value > 100 or critical_value <= 0:
+            ap.error(
+                "\nCritical battery level must be a positive number between 1 and 100")
+        if critical_value >= args.battery_low_value:
+            ap.error(
+                "\nCritical battery level %s must be smaller than %s (low battery value)"
+                % (args.battery_critical_value, args.battery_low_value))
+        if critical_value <= args.battery_minimal_value:
+            ap.error("\nCritical battery level %s must be greater than %s (minimal battery value)"
+                     % (args.battery_low_value, args.battery_minimal_value))
+
+    # battery minimal value setter
+    def set_battery_minimal_value(minimal_value):
+        minimal_value = int(minimal_value)
+        if minimal_value > 100 or minimal_value <= 0:
+            ap.error(
+                "\nMinimal battery level must be a positive number between 1 and 100")
+        if minimal_value >= args.battery_low_value:
+            ap.error("\nEMinimal battery level %s must be smaller than %s (low battery value)"
+                     % (args.battery_minimal_value, args.battery_low_value))
+        if minimal_value >= args.battery_critical_value:
+            ap.error("\nMinimal battery level %s must be smaller than %s (critical battery value)"
+                     % (args.battery_minimal_value, args.battery_critical_value))
+
+    # check battery values
+    set_battery_low_value(args.battery_low_value)
+    set_battery_critical_value(args.battery_critical_value)
+    set_battery_minimal_value(args.battery_minimal_value)
+
     ml = MainRun(**vars(args))
     ml.run_main_loop()
