@@ -1048,21 +1048,6 @@ if __name__ == '__main__':
                              default=defaultOptions['play_sound'],
                              help="disable sounds")
 
-    # set sound volume
-    #
-    # I limited allowed values from "1" to "17",
-    # because "4" is enough for me and "10" is really loud
-    # to change default values edit:
-    # "sound_volume": 4,
-    # to
-    # "sound_volume": yours value
-    #
-    # if you want to increase maximal volume sound level,
-    # change:
-    # __MAX_SOUND_VOLUME_LEVEL = 17
-    # to
-    # __MAX_SOUND_VOLUME_LEVEL = your value
-    #
     # set sound volume level
     def set_sound_volume_level(volume_value):
         volume_value = int(volume_value)
