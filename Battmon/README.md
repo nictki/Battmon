@@ -25,7 +25,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 ## Changelog:
 **22.10.2013**
 * **[3.2](https://github.com/nictki/Battmon/releases/3.2)**
-* use argparse intead optparse
+* use argparse instead optparse
 * new argument names for command line
 * bug fixes, refactoring
 
@@ -101,7 +101,7 @@ If you have any problems with above command, try:
 
 	python<YOUR PYTHON VERSION> ./battmon.py
 
-
+**Note:**
 If you want change default screenlock command, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable in `battmon.py`
 or change it by parsing your screenlock command througth `-lp` argument in command line, when you use this argument remember
 to surround whole your screenlock command with quotes.

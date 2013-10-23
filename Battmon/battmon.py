@@ -538,7 +538,7 @@ class MainRun:
         # check if we running python3 and set searching name to 'B'
         # i don't know why python3 set process name to 'B' instead to 'Battmon'
         # libc.prctl(15, name, 0, 0, 0) should give 'Battmon' in 'ps -A' output
-        # like in python2, but it does'nt
+        # like in python2, but it doesn't
         if sys.version_info[0] == 3 and not sys.modules.__contains__('setproctitle'):
             name = 'B'
 
@@ -604,7 +604,7 @@ class MainRun:
 
         if os.path.exists(__command):
             if self.__notify_send and not self.__disable_startup_notifications:
-                notify_send_string = '''notify-send "Using %s to lock screen\n" "with args: %s" %s %s''' \
+                notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
                                      % (__command, __command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__disable_startup_notifications:
@@ -692,7 +692,7 @@ class MainRun:
                 self.__temp = "suspend"
 
         if self.__notify_send and not self.__disable_startup_notifications:
-            notify_send_string = '''notify-send "System will be: %s\n" "Below minimal battery level" %s %s''' \
+            notify_send_string = '''notify-send "System will be: %s\n" "below minimal battery level" %s %s''' \
                                  % (self.__temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
 
@@ -946,11 +946,12 @@ class MainRun:
 
 
 if __name__ == '__main__':
-    # parser
+    # main parser
     ap = argparse.ArgumentParser(usage="usage: %(prog)s [OPTION...]", description=DESCRIPTION,
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                  epilog=EPILOG)
 
+    # group parsers
     file_group = ap.add_argument_group("files path arguments")
     battery_group = ap.add_argument_group("battery arguments")
     sound_group = ap.add_argument_group("sound arguments")
