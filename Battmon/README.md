@@ -130,8 +130,8 @@ To list all available options run Battmon with `-h` or `--help` option.
                               path to screenlock command with arguments if any, need
                               to be surrounded with quotes (default: /usr/bin/i3lock
                               -c 000000)
-    -sp <PATH>, --sound-file-path <PATH>
-                              path to sound file (default: <BATTMON_PATH>)
+        -sp <PATH>, --sound-file-path <PATH>
+                              path to sound file (default: <BATTMON_PATH/sounds/info.wav>)
 
     battery arguments:
         -bu <SECONDS>, --battery-update-interval <SECONDS>
