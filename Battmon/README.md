@@ -50,24 +50,6 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * some code cleanup
 * update README
 
-**23.05.2013**
-* **[2.1.5.1](https://github.com/nictki/Battmon/releases/2.1.5.1)**
-* add upower check
-* add check for python correct version
-* add option to specify time for "no battery" remainder (default: 0/disabled)
-* add option to specify default minimal battery level value action (default: hibernate)
-* small fixes
-
-**06.03.2013**
-* **[2.1](https://github.com/nictki/Battmon/releases/2.1)**
-* add option to set sound volume and to specify sound file
-* add option to specify screen lock program (default i3lock)
-* add possibility to set battery values update time interval
-* add possibility to set low, critical and minimal battery value levels
-* get rid of pynotify module, use notify-send instead
-* small fixes and improvements
-* code cleanup
-
 ## Notes:
 If you want to use hibernate, suspend or shutdown with upower, be sure that your ck-list-sessions output gives you something like this:
  
