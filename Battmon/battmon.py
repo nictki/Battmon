@@ -544,7 +544,7 @@ class MainRun:
 
         # check if process is running
         if name in output:
-            if name == PROGRAM_NAME:
+            if name == 'B' or name == PROGRAM_NAME:
                 if self.__play_sound:
                     os.popen(self.__sound_command)
                 if self.__notify_send:

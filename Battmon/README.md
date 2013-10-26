@@ -12,7 +12,7 @@
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* **[python](http://python.org/download/)** (python3 and python2 are supported)
+* **[python](http://python.org/download/)** (python3 and python2.7+ are supported)
 
 **Optional:** 
 * **[setproctitle](https://code.google.com/p/py-setproctitle/):** module to set program name, thus works `killall Battmon` under python2 and python3, 
@@ -23,6 +23,10 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level (when both installed, upower will be used as default)
 
 ## Changelog:
+**26.10.2013**
+* **[3.2.1](https://github.com/nictki/Battmon/releases/3.2.1)
+* fix behavior __check_if_running() function
+
 **22.10.2013**
 * **[3.2](https://github.com/nictki/Battmon/releases/3.2)**
 * use argparse instead optparse
