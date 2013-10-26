@@ -543,18 +543,22 @@ class MainRun:
             name = 'B'
 
         # check if process is running
-        if name in output and self.__notify_send:
-            if self.__play_sound:
-                os.popen(self.__sound_command)
-            notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING" %s %s''' \
-                                 % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-            os.popen(notify_send_string)
-            sys.exit(1)
-        elif name in output in output:
-            print("BATTMON IS ALREADY RUNNING")
-            sys.exit(1)
+        if name in output:
+            if name == PROGRAM_NAME:
+                if self.__play_sound:
+                    os.popen(self.__sound_command)
+                if self.__notify_send:
+                    notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING" %s %s''' \
+                                         % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                    os.popen(notify_send_string)
+                    sys.exit(1)
+                else:
+                    print("BATTMON IS ALREADY RUNNING")
+                    sys.exit(1)
+            else:
+                return True
         else:
-            pass
+            return False
 
     # check for notify-send
     def __check_notify_send(self):
@@ -1152,7 +1156,6 @@ if __name__ == '__main__':
                                     help="don't show startup notifications, like screenlock command or minimal battery level action")
 
     args = ap.parse_args()
-    #print(args)
 
     # battery low value setter
     def set_battery_low_value(low_value):
@@ -1194,7 +1197,7 @@ if __name__ == '__main__':
             ap.error("\nMinimal battery level %s must be smaller than %s (critical battery value)"
                      % (args.battery_minimal_value, args.battery_critical_value))
 
-    # check battery values
+    # check battery arguments
     set_battery_low_value(args.battery_low_value)
     set_battery_critical_value(args.battery_critical_value)
     set_battery_minimal_value(args.battery_minimal_value)
