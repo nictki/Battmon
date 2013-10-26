@@ -24,7 +24,7 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 
 ## Changelog:
 **26.10.2013**
-* **[3.2.1](https://github.com/nictki/Battmon/releases/3.2.1)
+* **[3.2.1](https://github.com/nictki/Battmon/releases/3.2.1)**
 * fix behavior __check_if_running() function
 
 **22.10.2013**

@@ -31,7 +31,7 @@ except ImportError as ierr:
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '3.2~svn22102013'
+VERSION = '3.2.1~svn26102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG=('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -528,7 +528,7 @@ class MainRun:
             libc = cdll.LoadLibrary('libc.so.6')
             libc.prctl(15, name, 0, 0, 0)
 
-    # we want only one instance of this program
+    # check if given program is already running
     def __check_if_running(self, name):
         output = str(subprocess.check_output(['ps', '-A']))
 
