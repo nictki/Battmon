@@ -1,8 +1,7 @@
-Battmon
-=======
-
+## Battmon
 Battmon is simple battery monitoring program written in python for Linux systems, to have especially in mind tiling window managers like xmonad, dwm or awesome.
-## Features:
+
+#### Features:
 * very light (for really basic functionality you need only python installed)
 * works in background
 * sound notifications
@@ -13,8 +12,8 @@ Battmon is simple battery monitoring program written in python for Linux systems
 * pop-up notifications
 * more options can be given through the command line (see battmon --help for details)
 
-## Prerequisites:
-* **[python](http://python.org/download/)**: for really basic functionality (python3 and python2.7+ are supported)
+#### Prerequisites:
+* **[python](http://python.org/download/)**: for **really basic functionality** (python-3+ and python-2.7+ are supported)
 
 **Optional:** 
 * **[setproctitle](https://code.google.com/p/py-setproctitle/):** module to set program name, thus works `killall Battmon` under python2 and python3, 
