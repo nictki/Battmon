@@ -29,22 +29,15 @@ in my opinion this is preferred way to set process name, but anyway it's optiona
 * refactoring
 * small bug fixes
 * fix small logic errors
-* fix behavior __check_if_running() function
-
-**22.10.2013**
-* **[3.2](https://github.com/nictki/Battmon/releases/3.2)**
+* fix behavior in __check_if_running() function
 * use argparse instead optparse
-* new argument names for command line
-* bug fixes, refactoring
-
-**21.10.2013**
-* **[3.1](https://github.com/nictki/Battmon/releases/3.1)**
+* new arguments names for command line
 * fix behavior when battery is removed or inserted
 * add notification when battery is removed or inserted
 * fix behavior when battery value is 'Unknown'
 
 **10.07.2013**
-* **[3.0](https://github.com/nictki/Battmon/releases/3.0)**
+* **[3.0.1](https://github.com/nictki/Battmon/releases/3.0.1)**
 * fix upower check
 * improve computing current battery capacity 
 * improve check if battery is full
