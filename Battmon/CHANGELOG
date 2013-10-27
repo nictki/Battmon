@@ -9,7 +9,7 @@
 
 * Version 3.2.1 - 26.10.2013 - https://github.com/nictki/Battmon/releases/tag/3.2.1
 ------------------------------------------------------------------------------------
-- fix behavior __check_if_running() function
+- fix behavior in __check_if_running() function
 
 * Version 3.2 - 22.10.2013
 ---------------------------
