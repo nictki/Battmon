@@ -12,8 +12,7 @@ Battmon is simple battery monitoring program written in python for Linux systems
 * set custom battery level values 
 * choose if you want hibernate, suspend or shutdown on minimal battery level
 * pop-up notifications
-* ... 
- (more options can be given through the command line)
+* ... and more options can be given through the command line (run ./battmon.py -h/--help)
 
 #### Prerequisites:
 * **[python](http://python.org/download/)**: for **really basic functionality** (python-3+ and python-2.7+ are supported)
