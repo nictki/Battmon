@@ -11,7 +11,7 @@ Battmon is simple battery monitoring program written in python especially for ti
 * options can be given through the command line (see battmon --help for details)
 
 ## Prerequisites:
-* **[python](http://python.org/download/)** (python3 and python2.7+ are supported)
+* **[python](http://python.org/download/)**: for really basic functionality (python3 and python2.7+ are supported)
 
 **Optional:** 
 * **[setproctitle](https://code.google.com/p/py-setproctitle/):** module to set program name, thus works `killall Battmon` under python2 and python3, 
