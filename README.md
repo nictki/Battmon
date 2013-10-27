@@ -2,15 +2,18 @@
 Battmon is simple battery monitoring program written in python for Linux systems, to have especially in mind tiling window managers like xmonad, dwm or awesome.
 
 #### Features:
-* very light (for really basic functionality you need only python installed)
+* very light (for really basic functionality you need only python installed 
 * works in background
+* compute all battery or AC values through '/sys/class/power_supply' 
+(acpi not needed)
 * sound notifications
 * custom sound file
 * specify your favorite screenlock command
-* set bettery level values 
-* choose if you want hibernate/suspend/shutdown on minimal battery level
+* set custom battery level values 
+* choose if you want hibernate, suspend or shutdown on minimal battery level
 * pop-up notifications
-* more options can be given through the command line (see battmon --help for details)
+* ... 
+ (more options can be given through the command line)
 
 #### Prerequisites:
 * **[python](http://python.org/download/)**: for **really basic functionality** (python-3+ and python-2.7+ are supported)
