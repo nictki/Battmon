@@ -62,7 +62,8 @@ Notes:
   screenlock command with quotes.
 
 - Sound file is search by default in the same path where battmon was started,
-  you can change this by parsing your path to your sound file using `-sp` argument without quotes.
+  you can change this by parsing your path to your sound file using `-sp` argument
+  without quotes.
 
 - If you don't use *KIT soft, then be sure,
   that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges.
