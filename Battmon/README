@@ -19,8 +19,9 @@ Features:
 Prerequisites:
 ---------------
 - python for basic functionality (python3 and python2.7+ are supported)
-- setproctitle: module to set program name, thus works killall Battmon under python2 and python3,
-  in my opinion this is preferred way to set process name, but anyway it's optional
+- setproctitle: module to set program name,
+  thus works killall Battmon under python2 and python3,
+  (in my opinion this is preferred way to set process name, but anyway it's optional)
 - libnotify: for pop up notifications
 - sox: for playing sounds
 - i3lock: to lock user session before hibernating/suspending
@@ -35,7 +36,8 @@ Usage:
 
 - or just run:
     python ./battmon.py
-  (If you have any problems with above command, try: 'python<YOUR PYTHON VERSION> ./battmon.py'
+  ff you have any problems with above command, try:
+    'python<YOUR PYTHON VERSION> ./battmon.py'
 
 - To see all available options run Battmon with `-h` or `--help` option.
     python ./battmon.py -h
@@ -55,11 +57,11 @@ Notes:
   that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges.
 
 - If you want change default screenlock command, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable in `battmon.py`
-  or change it by parsing your screenlock command througth `-lp` argument in command line, when you use this argument remember
-  to surround whole your screenlock command with quotes.
+  or change it by parsing your screenlock command througth `-lp` argument in command line,
+  when you use this argument remember to surround whole your screenlock command with quotes.
 
 - Sound file is search by default in the same path where battmon was started,
-  you can change this by parsing your path to your sound file using `-sp` argument in command line without quotes.
+  you can change this by parsing your path to your sound file using `-sp` argument without quotes.
 
 - If you don't use *KIT soft, then be sure,
   that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges.
