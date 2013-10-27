@@ -46,13 +46,13 @@ Notes:
 -------
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
-
 	$: ck-list-sessions
    	...
    	active = TRUE
    	...
    	is-local = TRUE
    	...
+
 - If you don't use *KIT soft, then be sure,
   that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges.
 
