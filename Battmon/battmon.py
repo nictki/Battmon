@@ -27,6 +27,7 @@ from ctypes import cdll
 try:
     import setproctitle
 except ImportError as ierr:
+    import setproctitle
     print("\n* Error: %s" % str(ierr))
     print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
 
@@ -407,7 +408,7 @@ class MainRun(object):
         self.__sound_player = ''
         self.__sound_command = ''
 
-        # short minimal battery command: "suspend", "hibernate" or "poweroff"
+        # minimal battery command in short for notifying . eg 'HIBERNATE'
         self.__short_minimal_battery_command = ''
 
         # initialize BatteryValues class instance
@@ -612,6 +613,7 @@ class MainRun(object):
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
+        global temp
         minimal_battery_commands = ['shutdown', 'pm-hibernate', 'pm-suspend']
 
         power_off_command = ''
@@ -641,7 +643,7 @@ class MainRun(object):
             self.__minimal_battery_level_command = power_off_command
 
             if self.__found_notify_send_command:
-                # missing dependency notification will desappear after 30 seconds
+                # missing dependency notification will disappear after 30 seconds
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "please check if you have installed pm-utils, or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
                                      % ('-t ' + str(30), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -662,14 +664,16 @@ class MainRun(object):
                 self.__minimal_battery_level_command = suspend_command
                 temp = "suspend"
 
+            # set minimal battery command in short for notifying . eg 'HIBERNATE'
             self.__short_minimal_battery_command = temp.upper()
 
         if self.__found_notify_send_command and not self.__disable_startup_notifications:
             notify_send_string = '''notify-send "System will be: %s\n" "below minimal battery level" %s %s''' \
-                                 % (temp.upper(), '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                 % (self.__short_minimal_battery_command, '-t ' + str(self.__timeout),
+                                    '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
         elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
-            print("below minimal battery level system will be: %s" % temp)
+            print("below minimal battery level system will be: %s" % self.__short_minimal_battery_command)
 
     # check for battery update times
     def __check_battery_update_times(self):
