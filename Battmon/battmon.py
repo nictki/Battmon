@@ -21,20 +21,18 @@ import os
 import glob
 import time
 import subprocess
-import platform
 from ctypes import c_char_p, cdll
 
-# check fo minimal python version
-if platform.python_version() < str(2.7):
-    print("Unsupported python version")
+try:
+    import argparse
+except ImportError:
+    print("!!! Unsupported python version !!!")
     print("Supported python version are: 2.7 and above")
+    print("Your python version is: %s.%s.%s" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
     exit(0)
 
-# then import argparse
-import argparse
-
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.2.2~svn28102013'
+VERSION = '0.4.2.3~svn28102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
