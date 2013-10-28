@@ -14,7 +14,7 @@ Battmon is simple battery monitoring program written in python for Linux systems
 * ... and more options can be given through the command line (run ./battmon.py -h/--help)
 
 #### Prerequisites:
-* **[python](http://python.org/download/)**: for **really basic functionality** (python-3 and python-2.7+ are supported)
+* **[python](http://python.org/download/)**: for **really basic functionality** (python3 and python2.7+ are supported)
 
 **Optional prerequisites:** 
 * ~~**[setproctitle](https://code.google.com/p/py-setproctitle/):** module to set program name, thus works `killall Battmon` under python2 and python3   
