@@ -620,11 +620,11 @@ class MainRun(object):
 
         if self.__check_if_running('upower'):
             power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
-                                  "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
+                                "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
             hibernate_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
-                                  "/org/freedesktop/UPower org.freedesktop.UPower.Hibernate"
+                                "/org/freedesktop/UPower org.freedesktop.UPower.Hibernate"
             suspend_command = "dbus-send --system --print-reply --dest=org.freedesktop.UPower " \
-                                "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
+                              "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
         else:
             for c in minimal_battery_commands:
                 for e in EXTRA_PROGRAMS_PATH:
@@ -680,7 +680,8 @@ class MainRun(object):
             time.sleep(self.__battery_update_timeout)
             if self.__battery_values.battery_time() == 'Unknown':
                 if self.__debug:
-                    print("DEBUG: battery value is still %s, continuing anyway" % str(self.__battery_values.battery_time()))
+                    print("DEBUG: battery value is still %s, continuing anyway"
+                          % str(self.__battery_values.battery_time()))
                 break
 
     # start main loop
@@ -887,13 +888,10 @@ class MainRun(object):
 
                 # no battery remainder loop counter
                 no_battery_counter = 1
-                # no battery remainder in seconds
-                if not self.__set_no_battery_remainder == 0:
-                    remainder_time_in_sek = self.__set_no_battery_remainder * 60
-
                 # loop to deal with situation when we don't have battery
                 while not self.__battery_values.is_battery_present():
-                    if not self.__set_no_battery_remainder == 0:
+                    if self.__set_no_battery_remainder > 0:
+                        remainder_time_in_sek = self.__set_no_battery_remainder * 60
                         time.sleep(1)
                         no_battery_counter += 1
                         # check if battery was plugged
@@ -905,9 +903,10 @@ class MainRun(object):
                             time.sleep(self.__timeout / 1000)
                             break
                             # send no battery notifications and reset no_battery_counter
-                        if not self.__battery_values.is_battery_present() and no_battery_counter == remainder_time_in_sek:
-                            self.notification.no_battery()
-                            no_battery_counter = 1
+                        if not self.__battery_values.is_battery_present() \
+                           and no_battery_counter == remainder_time_in_sek:
+                                self.notification.no_battery()
+                                no_battery_counter = 1
                     else:
                         # no action wait
                         time.sleep(1)
@@ -1028,9 +1027,9 @@ if __name__ == '__main__':
     def set_sound_volume_level(volume_value):
         volume_value = int(volume_value)
         if volume_value < 1:
-            raise argparse.ArgumentError("\nSound level must be greater then 1 !!!")
+            raise argparse.ArgumentError(volume_value, "Sound level must be greater then 1")
         if volume_value > MAX_SOUND_VOLUME_LEVEL:
-            raise argparse.ArgumentError("\nSound level can't be greater then %s !!!" % MAX_SOUND_VOLUME_LEVEL)
+            raise argparse.ArgumentError(volume_value, "Sound level can't be greater then %s" % MAX_SOUND_VOLUME_LEVEL)
         return volume_value
 
     # sound level volume
@@ -1045,7 +1044,7 @@ if __name__ == '__main__':
     def set_timeout(timeout):
         timeout = int(timeout)
         if timeout < 0:
-            raise argparse.ArgumentError("\nERROR: Notification timeout should be 0 or positive number !!!")
+            raise argparse.ArgumentError(timeout, "Notification timeout should be 0 or positive number")
         return timeout
 
     # timeout
@@ -1060,7 +1059,7 @@ if __name__ == '__main__':
     def set_battery_update_interval(update_value):
         update_value = int(update_value)
         if update_value <= 0:
-            raise argparse.ArgumentError("\nERROR: Battery update interval should be positive number !!!")
+            raise argparse.ArgumentError(update_value, "Battery update interval should be positive number")
         return update_value
 
     # battery update interval
@@ -1110,7 +1109,7 @@ if __name__ == '__main__':
     def set_no_battery_remainder(remainder):
         remainder = int(remainder)
         if remainder < 0:
-            raise argparse.ArgumentError("\nERROR: No battery remainder value must be greater or equal 0")
+            raise argparse.ArgumentError(remainder, "No battery remainder value must be greater or equal 0")
         return remainder
 
     notification_group.add_argument("-br", "--set_no_battery_remainder",
@@ -1139,20 +1138,17 @@ if __name__ == '__main__':
             ap.error("\nLow battery level %s must be greater than %s (critical battery value)"
                      % (args.battery_low_value, args.battery_critical_value))
         if low_value <= args.battery_minimal_value:
-            ap.error(
-                "\nLow battery level must %s be greater than %s (minimal battery value)"
-                % (args.battery_low_value, args.battery_minimal_value))
+            ap.error("\nLow battery level must %s be greater than %s (minimal battery value)"
+                     % (args.battery_low_value, args.battery_minimal_value))
 
     # battery critical value setter
     def check_battery_critical_value(critical_value):
         critical_value = int(critical_value)
         if critical_value > 100 or critical_value <= 0:
-            ap.error(
-                "\nCritical battery level must be a positive number between 1 and 100")
+            ap.error("\nCritical battery level must be a positive number between 1 and 100")
         if critical_value >= args.battery_low_value:
-            ap.error(
-                "\nCritical battery level %s must be smaller than %s (low battery value)"
-                % (args.battery_critical_value, args.battery_low_value))
+            ap.error("\nCritical battery level %s must be smaller than %s (low battery value)"
+                     % (args.battery_critical_value, args.battery_low_value))
         if critical_value <= args.battery_minimal_value:
             ap.error("\nCritical battery level %s must be greater than %s (minimal battery value)"
                      % (args.battery_low_value, args.battery_minimal_value))
@@ -1161,8 +1157,7 @@ if __name__ == '__main__':
     def check_battery_minimal_value(minimal_value):
         minimal_value = int(minimal_value)
         if minimal_value > 100 or minimal_value <= 0:
-            ap.error(
-                "\nMinimal battery level must be a positive number between 1 and 100")
+            ap.error("\nMinimal battery level must be a positive number between 1 and 100")
         if minimal_value >= args.battery_low_value:
             ap.error("\nEMinimal battery level %s must be smaller than %s (low battery value)"
                      % (args.battery_minimal_value, args.battery_low_value))
