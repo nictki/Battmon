@@ -24,7 +24,7 @@ import argparse
 import subprocess
 from ctypes import c_char_p, cdll
 
-if (sys.version_info[0], sys.version_info[1]) == 2.6:
+if (sys.version_info[0], sys.version_info[1]) < 2.7:
     print("Unsupported python version")
     print("Supported python version are:")
     print("2.7 and above")
