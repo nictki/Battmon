@@ -593,6 +593,7 @@ class MainRun(object):
             elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
                 print("using default program to lock screen")
         else:
+            self.__screenlock_command = "Not found"
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
                 message_string = ("Check if you have installed 'i3lock',\n"
