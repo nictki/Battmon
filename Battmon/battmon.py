@@ -24,13 +24,8 @@ import argparse
 import subprocess
 from ctypes import c_char_p, cdll
 
-try:
-    import setproctitle
-except ImportError as ierr:
-    print("\n* Error: %s" % str(ierr))
-
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.2~svn28102013'
+VERSION = '0.4.2.2~svn28102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -495,16 +490,13 @@ class MainRun(object):
 
     # set name for this program, thus works 'killall Battmon'
     def __set_proc_name(self, name):
-        if sys.modules.__contains__('setproctitle'):
-            setproctitle.setproctitle(name)
+        # dirty hack to set 'Battmon' process name under python3
+        if sys.version_info[0] == 3:
+            libc = cdll.LoadLibrary('libc.so.6')
+            libc.prctl(15, c_char_p(b'Battmon'), 0, 0, 0)
         else:
-            # dirty hack to set 'Battmon' process name under python3
-            if sys.version_info[0] == 3:
-                libc = cdll.LoadLibrary('libc.so.6')
-                libc.prctl(15, c_char_p(b'Battmon'), 0, 0, 0)
-            else:
-                libc = ctypes.cdll.LoadLibrary('libc.so.6')
-                libc.prctl(15, name, 0, 0, 0)
+            libc = cdll.LoadLibrary('libc.so.6')
+            libc.prctl(15, name, 0, 0, 0)
 
     # check if given program is already running
     def __check_if_battmon_already_running(self):
@@ -794,9 +786,9 @@ class MainRun(object):
                                                           " system will be %s in 10 seconds\n"
                                                           " current capacity: %s%s\n"
                                                           " time left: %s") \
-                                                         % (self.__short_minimal_battery_command,
-                                                            self.__battery_values.battery_current_capacity(), '%',
-                                                            self.__battery_values.battery_time())
+                                                          % (self.__short_minimal_battery_command,
+                                                             self.__battery_values.battery_current_capacity(), '%',
+                                                             self.__battery_values.battery_time())
 
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                                                 "%s" %s %s''' \
@@ -1123,6 +1115,7 @@ if __name__ == '__main__':
             raise argparse.ArgumentError(remainder, "no battery remainder value must be greater or equal 0")
         return remainder
 
+    # set 'no battery' notification timeout, default 0
     notification_group.add_argument("-br", "--set_no_battery_remainder",
                                     dest="set_no_battery_remainder",
                                     type=set_no_battery_remainder,
@@ -1182,5 +1175,6 @@ if __name__ == '__main__':
     check_battery_critical_value(args.battery_critical_value)
     check_battery_minimal_value(args.battery_minimal_value)
 
+    # let's go
     ml = MainRun(**vars(args))
     ml.run_main_loop()

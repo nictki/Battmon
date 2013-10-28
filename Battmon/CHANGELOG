@@ -1,6 +1,7 @@
-* Version 0.4.2.1 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.2.1
-----------------------------------------------------------------------------------
+* Version 0.4.2.2 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.2.2
+--------------------------------------------------------------------------------------
 - fix setting process name under python3, thus setproctitle module is not really needed
+- removed setproctitle module dependency
 
 * Version 0.4.2 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.2
 ----------------------------------------------------------------------------------
