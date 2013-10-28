@@ -562,7 +562,7 @@ class MainRun(object):
                                   " If you've specified your own sound file path, please check if it was correctly")\
                                   % self.__sound_file
                 notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30), '-a ' + PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(30 * 100), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             if not self.__found_notify_send_command:
                 print("DEPENDENCY MISSING:\n Check if you have sound files in %s. \n"
@@ -601,7 +601,7 @@ class MainRun(object):
                                   " program running battmon with -lp '[PATH] [ARGS]',"
                                   " otherwise your session won't be locked")
                 notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30), '-a ' + PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             if not self.__found_notify_send_command:
                 print("DEPENDENCY MISSING:\n please check if you have installed i3lock, \
@@ -645,7 +645,7 @@ class MainRun(object):
                 message_string = ("please check if you have installed pm-utils, or *KIT upower...\n"
                                   "otherwise your system will be SHUTDOWN at critical battery level")
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30), '-a ' + PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__found_notify_send_command:
                 print('''MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n
