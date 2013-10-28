@@ -24,10 +24,10 @@ import argparse
 import subprocess
 from ctypes import c_char_p, cdll
 
-if (sys.version_info[0], sys.version_info[1]) < 2.7:
+if str((sys.version_info[0] + sys.version_info[1])) < "2.7":
+    print((sys.version_info[0], sys.version_info[1]))
     print("Unsupported python version")
-    print("Supported python version are:")
-    print("2.7 and above")
+    print("Supported python version are: 2.7 and above")
     exit(0)
 
 PROGRAM_NAME = "Battmon"
