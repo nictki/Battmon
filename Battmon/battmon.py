@@ -36,8 +36,8 @@ VERSION = '0.4.2-rc1~svn27102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
-          ' or change it by parsing your screenlock command througth -lp argument in command line, '
-          'when you use this argument remember to surround whole your screenlock command with quotes.'
+          ' or change it by parsing your screenlock command througth -lp argument in command line,'
+          ' when you use this argument remember to surround whole your screenlock command with quotes.'
           ' Sound file is search by default in the same path where battmon was started,'
           ' you can change this by parsing your path to sound file using -sp argument in command line without quotes.')
 
@@ -280,10 +280,11 @@ class BatteryNotifications(object):
             if self.__notify_send:
                 if self.__sound:
                     os.popen(self.__sound_command)
-                notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
-                                    "plug AC adapter in...\n otherwise system will be %s in 10 seconds\n current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (minimal_battery_command, capacity, '%',
-                                        battery_time, '-t ' + notification_timeout, '-a ' + PROGRAM_NAME)
+                message_string = "system will be %s in %s\n current capacity: %s%s\n time left: %s" \
+                                  % (minimal_battery_command, int(notification_timeout / 1000), capacity, '%', battery_time)
+
+                notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" "%s" %s %s''' \
+                                     % (message_string, '-t ' + str(notification_timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("!!! MINIMAL BATTERY LEVEL !!!")
@@ -567,12 +568,16 @@ class MainRun(object):
         else:
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "Check if you have sound files in '%s'. If you've specified your own sound file path, please check if it was correctly" %s %s''' \
-                                     % (self.__sound_file, '-t ' + str(30), '-a ' + PROGRAM_NAME)
+                message_string = ("Check if you have sound files in '%s'.\n"
+                                  " If you've specified your own sound file path, please check if it was correctly")\
+                                  % self.__sound_file
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
+                                     % (message_string, '-t ' + str(30), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             if not self.__found_notify_send_command:
                 print("DEPENDENCY MISSING:\n Check if you have sound files in %s. \n"
-                      "If you've specified your own sound file path, please check if it was correctly %s %s" % self.__sound_file)
+                      "If you've specified your own sound file path, please check if it was correctly %s %s"
+                      % self.__sound_file)
 
     # check for lock screen program
     def __set_lock_command(self):
@@ -600,9 +605,13 @@ class MainRun(object):
         else:
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
-                                    "Check if you have installed 'i3lock', this is default screenlock program, you can specify your favorite screenlock program running battmon with -lp '[PATH] [ARGS]', otherwise your session won't be locked" %s %s''' \
-                                     % ('-t ' + str(30), '-a ' + PROGRAM_NAME)
+                message_string = ("Check if you have installed 'i3lock',\n"
+                                  " this is default screenlock program,"
+                                  " you can specify your favorite screenlock"
+                                  " program running battmon with -lp '[PATH] [ARGS]',"
+                                  " otherwise your session won't be locked")
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
+                                     % (message_string, '-t ' + str(30), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             if not self.__found_notify_send_command:
                 print("DEPENDENCY MISSING:\n please check if you have installed i3lock, \
@@ -644,13 +653,15 @@ class MainRun(object):
 
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
-                notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "please check if you have installed pm-utils, or *KIT upower... otherwise your system will be shutdown at critical battery level" %s %s''' \
-                                     % ('-t ' + str(30), '-a ' + PROGRAM_NAME)
+                message_string = ("please check if you have installed pm-utils, or *KIT upower...\n"
+                                  "otherwise your system will be SHUTDOWN at critical battery level")
+                notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "%s" %s %s''' \
+                                     % (message_string, '-t ' + str(30), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__found_notify_send_command:
                 print('''MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n
                       please check if you have installed pm-utils,\n 
-                      or *KIT upower... otherwise your system will be shutdown at critical battery level''')
+                      or *KIT upower... otherwise your system will be SHUTDOWN at critical battery level''')
         else:
             temp = ''
 
@@ -763,7 +774,7 @@ class MainRun(object):
                         self.notification.minimal_battery_level(self.__battery_values.battery_current_capacity(),
                                                                 self.__battery_values.battery_time(),
                                                                 self.__short_minimal_battery_command,
-                                                                str(10 * 1000))
+                                                                (10 * 1000))
 
                         # check once more if system will be hibernate
                         if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
@@ -789,12 +800,18 @@ class MainRun(object):
                                             and not self.__battery_values.is_ac_present()):
                                         time.sleep(2)
                                         os.popen(self.__sound_command)
+                                        message_string = ("last chance to plug in AC cable...\n"
+                                                          " system will be %s in 10 seconds\n"
+                                                          " current capacity: %s%s\n"
+                                                          " time left: %s") \
+                                                          % (self.__short_minimal_battery_command,
+                                                             self.__battery_values.battery_current_capacity(), '%',
+                                                             self.__battery_values.battery_time())
+
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
-                                                                "last chance to plug in AC cable...\n system will be %s in 10 seconds\n current capacity: %s%s\n time left: %s" %s %s''' \
-                                                             % (self.__short_minimal_battery_command,
-                                                                self.__battery_values.battery_current_capacity(), '%',
-                                                                self.__battery_values.battery_time(),
-                                                                '-t ' + str(10 * 1000), '-a ' + PROGRAM_NAME)
+                                                                "%s" %s %s''' \
+                                                             % (message_string, '-t ' + str(10 * 1000),
+                                                                '-a ' + PROGRAM_NAME)
                                         os.popen(notify_send_string)
                                         time.sleep(10)
                                     # LAST CHECK before hibernating
@@ -1113,7 +1130,7 @@ if __name__ == '__main__':
     def set_no_battery_remainder(remainder):
         remainder = int(remainder)
         if remainder < 0:
-            raise argparse.ArgumentError(remainder, "No battery remainder value must be greater or equal 0")
+            raise argparse.ArgumentError(remainder, "no battery remainder value must be greater or equal 0")
         return remainder
 
     notification_group.add_argument("-br", "--set_no_battery_remainder",
