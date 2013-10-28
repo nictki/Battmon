@@ -762,11 +762,11 @@ class MainRun(object):
                         # check once more if system will be hibernate
                         if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
                                 and not self.__battery_values.is_ac_present()):
-
+                            # the real thing
                             if not self.__test:
                                 if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
                                         and not self.__battery_values.is_ac_present()):
-
+                                    # first warning, beep 5 times every two seconds, and display monit
                                     for i in range(0, 10, +2):
                                         # check if ac was plugged
                                         if (self.__battery_values.battery_current_capacity()
@@ -774,7 +774,9 @@ class MainRun(object):
                                                 and not self.__battery_values.is_ac_present()):
                                                     time.sleep(2)
                                                     os.popen(self.__sound_command)
-
+                                        # ac plugged bye
+                                        else:
+                                            break
                                     # one more check if ac was plugged
                                     if (self.__battery_values.battery_current_capacity()
                                             <= self.__battery_minimal_value
@@ -800,6 +802,8 @@ class MainRun(object):
                                         time.sleep(1)
                                         os.popen(self.__screenlock_command)
                                         os.popen(self.__minimal_battery_level_command)
+                                    else:
+                                        break
                             # test block
                             elif self.__test:
                                 for i in range(0, 6, +1):
