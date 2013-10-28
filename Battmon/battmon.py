@@ -803,10 +803,10 @@ class MainRun(object):
                                         message_string = ("last chance to plug in AC cable...\n"
                                                           " system will be %s in 10 seconds\n"
                                                           " current capacity: %s%s\n"
-                                                          " time left: %s")\
-                                                          % (self.__short_minimal_battery_command,
-                                                             self.__battery_values.battery_current_capacity(), '%',
-                                                             self.__battery_values.battery_time())
+                                                          " time left: %s") \
+                                                         % (self.__short_minimal_battery_command,
+                                                            self.__battery_values.battery_current_capacity(), '%',
+                                                            self.__battery_values.battery_time())
 
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                                                 "%s" %s %s''' \
@@ -1148,6 +1148,7 @@ if __name__ == '__main__':
                                     help="don't show startup notifications, like screenlock \
                                           command or minimal battery level action")
 
+    # parse help
     args = ap.parse_args()
 
     # battery low value setter

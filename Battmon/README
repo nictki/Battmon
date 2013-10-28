@@ -70,6 +70,5 @@ Notes:
 
 Issues:
 --------
-
 - If setproctitle can't be imported, the name of the Battmon process under python3
   will be 'B', under python2 will normally set to 'Battmon'
