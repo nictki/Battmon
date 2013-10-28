@@ -35,8 +35,8 @@ VERSION = '0.4.1~svn27102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
-          ' or change it by parsing your screenlock command througth -lp argument in command line, when you use this argument remember'
-          ' to surround whole your screenlock command with quotes.'
+          ' or change it by parsing your screenlock command througth -lp argument in command line, '
+          'when you use this argument remember to surround whole your screenlock command with quotes.'
           ' Sound file is search by default in the same path where battmon was started,'
           ' you can change this by parsing your path to sound file using -sp argument in command line without quotes.')
 
@@ -456,6 +456,7 @@ class MainRun(object):
             print("\n**********************")
             print("* !!! Debug Mode !!! *")
             print("**********************\n")
+            print("- Battmon version: %s" % VERSION)
             print("- python version: %s.%s.%s\n" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
             print("- debug: %s" % self.__debug)
             print("- dry run: %s" % self.__test)
@@ -1102,7 +1103,8 @@ if __name__ == '__main__':
                                metavar="<ARG>",
                                choices=['hibernate', 'suspend', 'poweroff'],
                                default=defaultOptions['minimal_battery_level_command'],
-                               help='''set minimal battery value action, possible actions are: 'hibernate', 'suspend' and 'poweroff' ''')
+                               help='''set minimal battery value action, possible actions are: \
+                                    'hibernate', 'suspend' and 'poweroff' ''')
 
     # set no battery notification
     def set_no_battery_remainder(remainder):
@@ -1123,7 +1125,8 @@ if __name__ == '__main__':
                                     action="store_true",
                                     dest="disable_startup_notifications",
                                     default=defaultOptions['disable_startup_notifications'],
-                                    help="don't show startup notifications, like screenlock command or minimal battery level action")
+                                    help="don't show startup notifications, like screenlock \
+                                          command or minimal battery level action")
 
     args = ap.parse_args()
 
