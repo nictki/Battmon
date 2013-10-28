@@ -269,7 +269,7 @@ class BatteryNotifications(object):
                 print("CRITICAL BATTERY LEVEL")
 
     # hibernate level notification
-    def minimal_battery_level(self, capacity, battery_time, minimal_battery_command, time):
+    def minimal_battery_level(self, capacity, battery_time, minimal_battery_command, notification_timeout):
         # if use sound only
         if (self.__sound and ((self.__disable_notifications or not self.__critical)
                               and (self.__disable_notifications or self.__critical))):
@@ -282,7 +282,7 @@ class BatteryNotifications(object):
                 notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                     "plug AC adapter in...\n otherwise system will be %s in 10 seconds\n current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (minimal_battery_command, capacity, '%',
-                                        battery_time, '-t ' + time, '-a ' + PROGRAM_NAME)
+                                        battery_time, '-t ' + notification_timeout, '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("!!! MINIMAL BATTERY LEVEL !!!")
@@ -772,12 +772,8 @@ class MainRun(object):
                                         if (self.__battery_values.battery_current_capacity()
                                                 <= self.__battery_minimal_value
                                                 and not self.__battery_values.is_ac_present()):
-                                            if self.__play_sound:
-                                                time.sleep(2)
-                                                os.popen(self.__sound_command)
-                                            elif not self.__play_sound:
-                                                time.sleep(10)
-                                                break
+                                                    time.sleep(2)
+                                                    os.popen(self.__sound_command)
 
                                     # one more check if ac was plugged
                                     if (self.__battery_values.battery_current_capacity()
