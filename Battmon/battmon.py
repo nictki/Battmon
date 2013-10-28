@@ -281,7 +281,8 @@ class BatteryNotifications(object):
                 if self.__sound:
                     os.popen(self.__sound_command)
                 message_string = "system will be %s in %s\n current capacity: %s%s\n time left: %s" \
-                                  % (minimal_battery_command, int(notification_timeout / 1000), capacity, '%', battery_time)
+                                 % (minimal_battery_command, int(notification_timeout / 1000),
+                                    capacity, '%', battery_time)
 
                 notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" "%s" %s %s''' \
                                      % (message_string, '-t ' + str(notification_timeout), '-a ' + PROGRAM_NAME)
@@ -726,8 +727,8 @@ class MainRun(object):
                             time.sleep(1)
 
                     # low capacity level
-                    elif (self.__battery_low_value >= self.__battery_values.battery_current_capacity() > self.__battery_critical_value
-                          and not self.__battery_values.is_ac_present()):
+                    elif (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
+                          self.__battery_critical_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
                             print("DEBUG: low level battery check (%s() in MainRun class)"
@@ -739,13 +740,13 @@ class MainRun(object):
                                                              self.__battery_values.battery_time())
 
                         # battery have enough power and check if we should stay in low battery level loop
-                        while (self.__battery_low_value >= self.__battery_values.battery_current_capacity() > self.__battery_critical_value
-                               and not self.__battery_values.is_ac_present()):
+                        while (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
+                               self.__battery_critical_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # critical capacity level
-                    elif (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() > self.__battery_minimal_value
-                          and not self.__battery_values.is_ac_present()):
+                    elif (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
+                          self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
 
                         if self.__debug:
                             print("DEBUG: critical battery level check (%s() in MainRun class)"
@@ -757,8 +758,8 @@ class MainRun(object):
                                                                  self.__battery_values.battery_time())
 
                         # battery have enough power and check if we should stay in critical battery level loop
-                        while (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() > self.__battery_minimal_value
-                               and not self.__battery_values.is_ac_present()):
+                        while (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
+                               self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # hibernate level
@@ -803,7 +804,7 @@ class MainRun(object):
                                         message_string = ("last chance to plug in AC cable...\n"
                                                           " system will be %s in 10 seconds\n"
                                                           " current capacity: %s%s\n"
-                                                          " time left: %s") \
+                                                          " time left: %s")\
                                                           % (self.__short_minimal_battery_command,
                                                              self.__battery_values.battery_current_capacity(), '%',
                                                              self.__battery_values.battery_time())
