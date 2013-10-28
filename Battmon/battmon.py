@@ -32,7 +32,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.2.3~svn28102013'
+VERSION = '0.4.3~svn28102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -596,9 +596,9 @@ class MainRun(object):
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
                 message_string = ("Check if you have installed 'i3lock',\n"
-                                  " this is default screenlock program,"
-                                  " you can specify your favorite screenlock"
-                                  " program running battmon with -lp '[PATH] [ARGS]',"
+                                  " this is default screenlock program,\n"
+                                  " you can specify your favorite screenlock\n"
+                                  " program running battmon with -lp '[PATH] [ARGS]',\n"
                                   " otherwise your session won't be locked")
                 notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
                                      % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
