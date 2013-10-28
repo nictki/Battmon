@@ -22,16 +22,14 @@ import glob
 import time
 import argparse
 import subprocess
-from ctypes import cdll
+from ctypes import c_char_p, cdll
 
 try:
     import setproctitle
 except ImportError as ierr:
     print("\n* Error: %s" % str(ierr))
-    print("* Battmon process name will be:\n* 'B' under python3\n"
-          "* Battmon under python2\n* I really don't know why...")
 
-PROGRAM_NAME = 'Battmon'
+PROGRAM_NAME = "Battmon"
 VERSION = '0.4.2~svn28102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
@@ -471,8 +469,8 @@ class MainRun(object):
             print("- play sounds: %s" % self.__play_sound)
             print("- sound volume level: %s" % self.__sound_volume)
             print("- sound command %s" % self.__sound_command)
-            print("- notification timeout: %ssek" % int(self.__timeout / 1000))
-            print("- battery update timeout: %ssek" % self.__battery_update_timeout)
+            print("- notification timeout: %s sec" % int(self.__timeout / 1000))
+            print("- battery update timeout: %s sec" % self.__battery_update_timeout)
             print("- battery low level value: %s" % self.__battery_low_value)
             print("- battery critical level value: %s" % self.__battery_critical_value)
             print("- battery hibernate level value: %s" % self.__battery_minimal_value)
@@ -500,25 +498,17 @@ class MainRun(object):
         if sys.modules.__contains__('setproctitle'):
             setproctitle.setproctitle(name)
         else:
-            libc = cdll.LoadLibrary('libc.so.6')
-            libc.prctl(15, name, 0, 0, 0)
+            # dirty hack to set 'Battmon' process name under python3
+            if sys.version_info[0] == 3:
+                libc = cdll.LoadLibrary('libc.so.6')
+                libc.prctl(15, c_char_p(b'Battmon'), 0, 0, 0)
+            else:
+                libc = ctypes.cdll.LoadLibrary('libc.so.6')
+                libc.prctl(15, name, 0, 0, 0)
 
     # check if given program is already running
     def __check_if_battmon_already_running(self):
-        ######################################################
-        # QUICK WORKAROUND IF THERE IS NO SETPTOCFILE MODULE #
-        ######################################################
-        # check if we running python3 and set searching name to 'B'
-        # i don't know why python3 set process name to 'B' instead to 'Battmon'
-        # libc.prctl(15, name, 0, 0, 0) should give 'Battmon' in 'ps -A' output
-        # like in python2, but it doesn't
-        if sys.version_info[0] == 3 and not sys.modules.__contains__('setproctitle'):
-            name = 'B'
-            is_running = self.__check_if_running(name)
-        else:
-            is_running = self.__check_if_running(PROGRAM_NAME)
-
-        if is_running:
+        if self.__check_if_running(PROGRAM_NAME):
             if self.__play_sound:
                 os.popen(self.__sound_command)
             if self.__found_notify_send_command:
@@ -690,8 +680,8 @@ class MainRun(object):
     def __check_battery_update_times(self):
         while self.__battery_values.battery_time() == 'Unknown':
             if self.__debug:
-                print("DEBUG: battery value is %s, next check in %d" % (str(self.__battery_values.battery_time()),
-                                                                        self.__battery_update_timeout))
+                print("DEBUG: battery value is %s, next check in %d sec"
+                      % (str(self.__battery_values.battery_time()), self.__battery_update_timeout))
             time.sleep(self.__battery_update_timeout)
             if self.__battery_values.battery_time() == 'Unknown':
                 if self.__debug:
