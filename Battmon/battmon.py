@@ -20,7 +20,6 @@ import sys
 import os
 import glob
 import time
-import argparse
 import subprocess
 import platform
 from ctypes import c_char_p, cdll
@@ -30,6 +29,9 @@ if platform.python_version() < str(2.7):
     print("Unsupported python version")
     print("Supported python version are: 2.7 and above")
     exit(0)
+
+# then import argparse
+import argparse
 
 PROGRAM_NAME = "Battmon"
 VERSION = '0.4.2.2~svn28102013'
