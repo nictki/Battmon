@@ -27,12 +27,12 @@ from ctypes import cdll
 try:
     import setproctitle
 except ImportError as ierr:
-    import setproctitle
     print("\n* Error: %s" % str(ierr))
-    print('''* Process name:\n* "B" under python3\n* "Battmon" under python2\n* I really don't know why...''')
+    print("* Battmon process name will be:\n* 'B' under python3\n"
+          "* Battmon under python2\n* I really don't know why...")
 
 PROGRAM_NAME = 'Battmon'
-VERSION = '0.4.2~svn27102013'
+VERSION = '0.4.2~svn28102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'

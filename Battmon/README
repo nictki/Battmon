@@ -67,3 +67,9 @@ Notes:
 
 - If you don't use *KIT soft, then be sure,
   that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges.
+
+Issues:
+--------
+
+- If setproctitle can't be imported, the name of the Battmon process under python3
+  will be 'B', under python2 will normally set to 'Battmon'
