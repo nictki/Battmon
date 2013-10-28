@@ -4,6 +4,7 @@
 - removed setproctitle module dependency
 - fix unsupported python version check
 - and small fixes
+- final version
 
 * Version 0.4.2 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.2
 ----------------------------------------------------------------------------------

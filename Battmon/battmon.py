@@ -540,34 +540,39 @@ class MainRun(object):
     def __check_play(self):
         if self.__check_in_path(DEFAULT_PLAYER_COMMAND):
             self.__sound_player = self.__current_program_path
+            return True
         # if not found sox in path, send notification about it
         elif self.__found_notify_send_command:
             self.__play_sound = False
             notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
                                 "You have to install sox to play sounds" %s %s''' \
-                                 % ('-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                 % ('-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
             os.popen(notify_send_string)
         elif not self.__found_notify_send_command:
             self.__play_sound = False
             print("DEPENDENCY MISSING:\n You have to install sox to play sounds.\n")
+        else:
+            return False
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
-        if os.path.exists(self.__sound_file):
+        if os.path.exists(self.__sound_file) and self.__check_play():
             self.__sound_command = '%s -V1 -q -v%s %s' % (self.__sound_player, self.__sound_volume, self.__sound_file)
         else:
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
-                message_string = ("Check if you have sound files in '%s'.\n"
-                                  " If you've specified your own sound file path, please check if it was correctly")\
+                message_string = ("Check if you have sound files in:  \n %s\n"
+                                  " If you've specified your own sound file path, "
+                                  " please check if it was correctly") \
                                   % self.__sound_file
                 notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30 * 100), '-a ' + PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
             if not self.__found_notify_send_command:
                 print("DEPENDENCY MISSING:\n Check if you have sound files in %s. \n"
                       "If you've specified your own sound file path, please check if it was correctly %s %s"
                       % self.__sound_file)
+            self.__sound_command = "Not found"
 
     # check for lock screen program
     def __set_lock_command(self):
