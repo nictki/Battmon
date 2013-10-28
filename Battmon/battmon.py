@@ -22,10 +22,11 @@ import glob
 import time
 import argparse
 import subprocess
+import platform
 from ctypes import c_char_p, cdll
 
-if str((sys.version_info[0] + sys.version_info[1])) < "2.7":
-    print((sys.version_info[0], sys.version_info[1]))
+# check fo minimal python version
+if platform.python_version() < str(2.7):
     print("Unsupported python version")
     print("Supported python version are: 2.7 and above")
     exit(0)
