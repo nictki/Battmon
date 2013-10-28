@@ -24,6 +24,12 @@ import argparse
 import subprocess
 from ctypes import c_char_p, cdll
 
+if (sys.version_info[0], sys.version_info[1]) == 2.6:
+    print("Unsupported python version")
+    print("Supported python version are:")
+    print("2.7 and above")
+    exit(0)
+
 PROGRAM_NAME = "Battmon"
 VERSION = '0.4.2.2~svn28102013'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
