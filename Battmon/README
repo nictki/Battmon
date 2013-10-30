@@ -18,7 +18,9 @@ Features:
 
 Prerequisites:
 ---------------
-- python for basic functionality (python3 and python2.7+ are supported)
+- only python for basic functionality
+  (>=3.2 and >=2.7 are supported,
+  if you have another python version, install argparse from https://pypi.python.org/pypi/argparse)
 - libnotify: for pop up notifications
 - sox: for playing sounds
 - i3lock: to lock user session before hibernating/suspending
