@@ -33,7 +33,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.4~svn26112013'
+VERSION = '0.4.5~svn31102014'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -47,7 +47,7 @@ AUTHOR_EMAIL = 'nictki@gmail.com'
 URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
-# path's for external things 
+# path's for external things
 EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/local/bin/',
                        '/bin/',
@@ -64,8 +64,9 @@ DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
 # default screen lock command
-DEFAULT_SCREEN_LOCK_COMMAND = '/usr/bin/i3lock -c 000000'
-
+# DEFAULT_SCREEN_LOCK_COMMAND = '/usr/bin/i3lock -c 000000'
+DEFAULT_SCREEN_LOCK_COMMANDS = ['/usr/bin/xtrlock -b', '/usr/bin/i3lock -c 000000', '/usr/bin/xscreensaver-command  -lock']
+DEFAULT_SCREEN_LOCK_COMMAND = ''
 
 # battery values class
 class BatteryValues(object):
@@ -572,45 +573,39 @@ class MainRun(object):
 
     # check for lock screen program
     def __set_lock_command(self):
-        # check if the given command found in given path
-        lock_command_as_list = self.__screenlock_command.split()
-        command = lock_command_as_list[0]
-        command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
+        for c in DEFAULT_SCREEN_LOCK_COMMANDS:
+            # check if the given command found in given path
+            lock_command_as_list = c.split()
+            command = lock_command_as_list[0]
+            command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
 
-        if os.path.exists(command):
-            if self.__found_notify_send_command and not self.__disable_startup_notifications:
-                notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
-                                     % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                os.popen(notify_send_string)
-            elif not self.__disable_startup_notifications:
-                print("%s %s will be used to lock screen" % (command, command_args))
-        # check if default lock command is in path
-        elif self.__check_in_path(self.__screenlock_command):
-            self.__screenlock_command = DEFAULT_SCREEN_LOCK_COMMAND
-            if self.__found_notify_send_command and not self.__disable_startup_notifications:
-                notify_send_string = '''notify-send "using default program to lock screen\n" "cmd: %s" %s %s''' \
-                                     % (self.__screenlock_command, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                os.popen(notify_send_string)
-            elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
-                print("using default program to lock screen")
-        else:
-            self.__screenlock_command = "Not found"
-            if self.__found_notify_send_command:
-                # missing dependency notification will disappear after 30 seconds
-                message_string = ("Check if you have installed 'i3lock',\n"
-                                  " this is default screenlock program,\n"
-                                  " you can specify your favorite screenlock\n"
-                                  " program running battmon with -lp '[PATH] [ARGS]',\n"
-                                  " otherwise your session won't be locked")
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
-                os.popen(notify_send_string)
-            if not self.__found_notify_send_command:
-                print("DEPENDENCY MISSING:\n please check if you have installed i3lock, \
-                        this is default lock screen program, \
-                        you can specify your favorite screen lock program \
-                        running this program with -l PATH, \
-                        otherwise your session won't be locked")
+            if os.path.exists(command):
+                self.__screenlock_command = command + command_args
+                if self.__found_notify_send_command and not self.__disable_startup_notifications:
+                    notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
+                                         % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                    os.popen(notify_send_string)
+                elif not self.__disable_startup_notifications:
+                    print("%s %s will be used to lock screen" % (command, command_args))
+
+                elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
+                    print("using default program to lock screen")
+                break
+            if self.__screenlock_command == '':
+                if self.__found_notify_send_command:
+                    # missing dependency notification will disappear after 30 seconds
+                    message_string = ("Check if you have installed any screenlock program,\n"
+                                      " you can specify your favorite screenlock\n"
+                                      " program running battmon with -lp '[PATH] [ARGS]',\n"
+                                      " otherwise your session won't be locked")
+                    notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
+                                         % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
+                    os.popen(notify_send_string)
+                if not self.__found_notify_send_command:
+                    print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
+                            you can specify your favorite screen lock program \
+                            running this program with -l PATH, \
+                            otherwise your session won't be locked")
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
@@ -637,10 +632,16 @@ class MainRun(object):
                             hibernate_command = "sudo %s%s" % (e, c)
                         if c == 'pm-suspend':
                             suspend_command = "sudo %s%s" % (e, c)
+                    else:
+                        hibernate_command = "sudo echo disk > /sys/power/state"
+                        suspend_command = "sudo echo mem > /sys/power/state"
 
-        if not hibernate_command and not suspend_command:
+        if not (hibernate_command or suspend_command):
             # everybody has shutdown command somewhere
             self.__minimal_battery_level_command = power_off_command
+
+            # hibernate_command = "/root/.scripts/echo_hibernate.sh"
+            # suspend_command = "/root/.scripts/echo_suspend.sh"
 
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
@@ -700,7 +701,7 @@ class MainRun(object):
 
                     # discharging and battery level is greater then battery_low_value
                     if (self.__battery_values.battery_current_capacity() > self.__battery_low_value
-                            and not self.__battery_values.is_ac_present()):
+                        and not self.__battery_values.is_ac_present()):
                         if self.__debug:
                             print("DEBUG: discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -715,7 +716,7 @@ class MainRun(object):
 
                     # low capacity level
                     elif (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
-                          self.__battery_critical_value and not self.__battery_values.is_ac_present()):
+                              self.__battery_critical_value and not self.__battery_values.is_ac_present()):
                         if self.__debug:
                             print("DEBUG: low level battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -725,12 +726,12 @@ class MainRun(object):
                                                              self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in low battery level loop
                         while (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
-                               self.__battery_critical_value and not self.__battery_values.is_ac_present()):
+                                   self.__battery_critical_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # critical capacity level
                     elif (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
-                          self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
+                              self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
                         if self.__debug:
                             print("DEBUG: critical battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -740,7 +741,7 @@ class MainRun(object):
                                                                  self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in critical battery level loop
                         while (self.__battery_critical_value >= self.__battery_values.battery_current_capacity() >
-                               self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
+                                   self.__battery_minimal_value and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
 
                     # hibernate level
@@ -757,33 +758,34 @@ class MainRun(object):
                                                                 (10 * 1000))
                         # check once more if system will be hibernate
                         if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
-                                and not self.__battery_values.is_ac_present()):
+                            and not self.__battery_values.is_ac_present()):
                             # the real thing
                             if not self.__test:
                                 if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
-                                        and not self.__battery_values.is_ac_present()):
-                                    # first warning, beep 5 times every two seconds, and display monit
+                                    and not self.__battery_values.is_ac_present()):
+                                    # first warning, beep 5 times every two seconds, and display popup
                                     for i in range(0, 10, +2):
                                         # check if ac was plugged
                                         if (self.__battery_values.battery_current_capacity()
                                                 <= self.__battery_minimal_value
-                                                and not self.__battery_values.is_ac_present()):
-                                                    time.sleep(2)
-                                                    os.popen(self.__sound_command)
+                                            and not self.__battery_values.is_ac_present()):
+                                            time.sleep(2)
+                                            os.popen(self.__sound_command)
                                         # ac plugged bye
                                         else:
                                             break
                                     # one more check if ac was plugged
                                     if (self.__battery_values.battery_current_capacity()
                                             <= self.__battery_minimal_value
-                                            and not self.__battery_values.is_ac_present()):
+                                        and not self.__battery_values.is_ac_present()):
                                         time.sleep(2)
                                         os.popen(self.__sound_command)
                                         message_string = ("last chance to plug in AC cable...\n"
                                                           " system will be %s in 10 seconds\n"
                                                           " current capacity: %s%s\n"
                                                           " time left: %s") % (self.__short_minimal_battery_command,
-                                                                               self.__battery_values.battery_current_capacity(), '%',
+                                                                               self.__battery_values.battery_current_capacity(),
+                                                                               '%',
                                                                                self.__battery_values.battery_time())
 
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
@@ -795,7 +797,7 @@ class MainRun(object):
                                     # LAST CHECK before hibernating
                                     if (self.__battery_values.battery_current_capacity()
                                             <= self.__battery_minimal_value
-                                            and not self.__battery_values.is_ac_present()):
+                                        and not self.__battery_values.is_ac_present()):
                                         # lock screen and hibernate
                                         for i in range(0, 4, +1):
                                             time.sleep(.5)
@@ -822,7 +824,7 @@ class MainRun(object):
                     # full charged
                     if (self.__battery_values.is_ac_present()
                         and self.__battery_values.is_battery_fully_charged()
-                            and not self.__battery_values.is_battery_discharging()):
+                        and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
                             print("DEBUG: full battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -848,7 +850,7 @@ class MainRun(object):
                     # ac plugged and battery is charging
                     if (self.__battery_values.is_ac_present()
                         and not self.__battery_values.is_battery_fully_charged()
-                            and not self.__battery_values.is_battery_discharging()):
+                        and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
                             print("DEBUG: charging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -896,9 +898,9 @@ class MainRun(object):
                             break
                         # send no battery notifications and reset no_battery_counter
                         if not self.__battery_values.is_battery_present() \
-                           and no_battery_counter == remainder_time_in_sek:
-                                self.notification.no_battery()
-                                no_battery_counter = 1
+                                and no_battery_counter == remainder_time_in_sek:
+                            self.notification.no_battery()
+                            no_battery_counter = 1
                     else:
                         # no action wait
                         time.sleep(1)
@@ -910,6 +912,7 @@ class MainRun(object):
                                       % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break
+
 
 if __name__ == '__main__':
     # main parser
@@ -980,7 +983,7 @@ if __name__ == '__main__':
                             action="store",
                             dest="lock_command",
                             type=str,
-                            #nargs="*",
+                            # nargs="*",
                             metavar='''"<PATH> <ARGS>"''',
                             default=defaultOptions['lock_command'],
                             help="path to screenlock command with arguments if any, need to be surrounded with quotes")
