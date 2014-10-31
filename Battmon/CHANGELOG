@@ -1,3 +1,10 @@
+* Version 0.4.4 - (31.10.2014) - https://github.com/nictki/Battmon/releases/0.4.6
+--------------------------------------------------------------------------------------
+ - add default minimal level battery command
+ - add list of screen lock programs, first one will be used as default
+ - logical fixes
+ - small changes
+
 * Version 0.4.3 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.3
 --------------------------------------------------------------------------------------
 - fix setting process name under python3, thus setproctitle module is not really needed

@@ -33,7 +33,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.5~svn31102014'
+VERSION = '0.4.6~svn31102014'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -579,7 +579,7 @@ class MainRun(object):
             command = lock_command_as_list[0]
             command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
             if self.__check_in_path(command):
-                self.__screenlock_command = command + command_args
+                self.__screenlock_command = command + ' ' + command_args
                 if self.__found_notify_send_command and not self.__disable_startup_notifications:
                     notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
                                            % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
