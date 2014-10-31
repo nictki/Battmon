@@ -61,8 +61,8 @@ Notes:
     $: echo disk > /sys/power/state
     as regular user
 
-- If you want change default screenlock command, edit `DEFAULT_SCREEN_LOCK_COMMAND`
-  variable in `battmon.py` or change it by parsing your screenlock command througth `-lp`
+- `DEFAULT_SCREEN_LOCK_COMMANDS` is the list of lockscreen commands, to set your default
+  add your favor command at the beginning of the list or change it by parsing your screenlock command througth `-lp`
   argument in command line, when you use this argument remember to surround whole your
   screenlock command with quotes.
 
