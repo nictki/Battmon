@@ -1,7 +1,8 @@
-* Version 0.4.4 - (31.10.2014) - https://github.com/nictki/Battmon/releases/0.4.6
+* Version 0.4.7 - (31.10.2014) - https://github.com/nictki/Battmon/releases/0.4.7
 --------------------------------------------------------------------------------------
  - add default minimal level battery command
  - add list of screen lock programs, first one will be used as default
+ - add shell scripts to hibernate, suspend and shutdown
  - logical fixes
  - small changes
 

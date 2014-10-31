@@ -43,6 +43,9 @@ Usage:
 
 Notes:
 -------
+- copy files in `bin` to `/usr/local/bin` thus it's will be able to hibernate, suspend or shutdown the system
+  without pm-utils or *KIT stuff
+
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
 	$: ck-list-sessions

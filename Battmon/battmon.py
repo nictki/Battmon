@@ -624,15 +624,15 @@ class MainRun(object):
             for c in minimal_battery_commands:
                     if self.__check_in_path(c):
                         if c == 'shutdown':
-                            power_off_command = "sudo %s -h now" % c
+                            power_off_command = "sudo /usr/local/bin/shutdown.sh" % c
                         if c == 'pm-hibernate':
                             hibernate_command = "sudo %s" % c
                         if c == 'pm-suspend':
                             suspend_command = "sudo %s" % c
                     else:
 
-                        hibernate_command = "sudo echo disk > /sys/power/state"
-                        suspend_command = "sudo echo mem > /sys/power/state"
+                        hibernate_command = "sudo /usr/local/bin/hibernate.sh"
+                        suspend_command = "sudo /usr/local/bin/suspend.sh"
 
         if not (hibernate_command or suspend_command):
             # everybody has shutdown command somewhere
