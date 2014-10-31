@@ -65,7 +65,7 @@ MAX_SOUND_VOLUME_LEVEL = 17
 
 # default screen lock command
 # DEFAULT_SCREEN_LOCK_COMMAND = '/usr/bin/i3lock -c 000000'
-DEFAULT_SCREEN_LOCK_COMMANDS = ['/usr/bin/xtrlock -b', '/usr/bin/i3lock -c 000000', '/usr/bin/xscreensaver-command  -lock']
+DEFAULT_SCREEN_LOCK_COMMANDS = ['xtrlock -b', 'i3lock -c 000000', 'xscreensaver-command -lock']
 DEFAULT_SCREEN_LOCK_COMMAND = ''
 
 # battery values class
@@ -574,38 +574,36 @@ class MainRun(object):
     # check for lock screen program
     def __set_lock_command(self):
         for c in DEFAULT_SCREEN_LOCK_COMMANDS:
-            # check if the given command found in given path
+            # check if the given command was found in given path
             lock_command_as_list = c.split()
             command = lock_command_as_list[0]
             command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
-
-            if os.path.exists(command):
+            if self.__check_in_path(command):
                 self.__screenlock_command = command + command_args
                 if self.__found_notify_send_command and not self.__disable_startup_notifications:
                     notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
-                                         % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                                           % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                     os.popen(notify_send_string)
                 elif not self.__disable_startup_notifications:
                     print("%s %s will be used to lock screen" % (command, command_args))
-
                 elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
                     print("using default program to lock screen")
                 break
-            if self.__screenlock_command == '':
-                if self.__found_notify_send_command:
-                    # missing dependency notification will disappear after 30 seconds
-                    message_string = ("Check if you have installed any screenlock program,\n"
-                                      " you can specify your favorite screenlock\n"
-                                      " program running battmon with -lp '[PATH] [ARGS]',\n"
-                                      " otherwise your session won't be locked")
-                    notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                         % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
-                    os.popen(notify_send_string)
-                if not self.__found_notify_send_command:
-                    print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
-                            you can specify your favorite screen lock program \
-                            running this program with -l PATH, \
-                            otherwise your session won't be locked")
+        if self.__screenlock_command == '':
+            if self.__found_notify_send_command:
+                # missing dependency notification will disappear after 30 seconds
+                message_string = ("Check if you have installed any screenlock program,\n"
+                                " you can specify your favorite screenlock\n"
+                                " program running battmon with -lp '[PATH] [ARGS]',\n"
+                                " otherwise your session won't be locked")
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
+                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
+                os.popen(notify_send_string)
+            if not self.__found_notify_send_command:
+                print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
+                        you can specify your favorite screen lock program \
+                        running this program with -l PATH, \
+                        otherwise your session won't be locked")
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
@@ -624,24 +622,20 @@ class MainRun(object):
                               "/org/freedesktop/UPower org.freedesktop.UPower.Suspend"
         else:
             for c in minimal_battery_commands:
-                for e in EXTRA_PROGRAMS_PATH:
-                    if os.path.isfile(e + c):
+                    if self.__check_in_path(c):
                         if c == 'shutdown':
-                            power_off_command = "sudo %s%s -h now" % (e, c)
+                            power_off_command = "sudo %s -h now" % c
                         if c == 'pm-hibernate':
-                            hibernate_command = "sudo %s%s" % (e, c)
+                            hibernate_command = "sudo %s" % c
                         if c == 'pm-suspend':
-                            suspend_command = "sudo %s%s" % (e, c)
+                            suspend_command = "sudo %s" % c
                     else:
+
                         hibernate_command = "sudo echo disk > /sys/power/state"
                         suspend_command = "sudo echo mem > /sys/power/state"
 
         if not (hibernate_command or suspend_command):
             # everybody has shutdown command somewhere
-            self.__minimal_battery_level_command = power_off_command
-
-            # hibernate_command = "/root/.scripts/echo_hibernate.sh"
-            # suspend_command = "/root/.scripts/echo_suspend.sh"
 
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
