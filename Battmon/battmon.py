@@ -219,11 +219,9 @@ class BatteryNotifications(object):
     # battery discharging notification
     def battery_discharging(self, capacity, battery_time):
         # if use sound only
-        if (self.__sound and ((self.__disable_notifications and not self.__critical)
-                              or (not self.__disable_notifications and self.__critical)
-                              or (self.__disable_notifications and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
-
         # notification
         if not self.__disable_notifications and not self.__critical:
             if self.__sound:
@@ -238,9 +236,8 @@ class BatteryNotifications(object):
     # battery low capacity notification
     def low_capacity_level(self, capacity, battery_time):
         # if use sound only
-        if (self.__sound and ((self.__disable_notifications and not self.__critical)
-                              or (not self.__disable_notifications and self.__critical)
-                              or (self.__disable_notifications and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
         # notification
         if not self.__disable_notifications and not self.__critical:
@@ -296,9 +293,8 @@ class BatteryNotifications(object):
     # battery full notification
     def full_battery(self):
         # if use sound only
-        if (self.__sound and ((self.__disable_notifications and not self.__critical)
-                              or (not self.__disable_notifications and self.__critical)
-                              or (self.__disable_notifications and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
         # notification
         if not self.__disable_notifications and not self.__critical:
@@ -314,9 +310,8 @@ class BatteryNotifications(object):
     # charging notification
     def battery_charging(self, capacity, battery_time):
         # if use sound only
-        if (self.__sound and ((self.__disable_notifications and not self.__critical)
-                              or (not self.__disable_notifications and self.__critical)
-                              or (self.__disable_notifications and self.__critical))):
+        if (self.__sound and ((self.__disable_notifications or not self.__critical)
+                              and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
         # notification
         if not self.__disable_notifications and not self.__critical:
@@ -699,7 +694,6 @@ class MainRun(object):
             while self.__battery_values.is_battery_present():
                 # check if battery is discharging to stay in normal battery level
                 if not self.__battery_values.is_ac_present() and self.__battery_values.is_battery_discharging():
-
                     # discharging and battery level is greater then battery_low_value
                     if (self.__battery_values.battery_current_capacity() > self.__battery_low_value
                             and not self.__battery_values.is_ac_present()):
@@ -757,7 +751,7 @@ class MainRun(object):
                                                                 self.__battery_values.battery_time(),
                                                                 self.__short_minimal_battery_command,
                                                                 (10 * 1000))
-                        # check once more if system will be hibernate
+                        # check once more if system should be hibernate
                         if self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value \
                                 and not self.__battery_values.is_ac_present():
                             # the real thing
@@ -772,7 +766,7 @@ class MainRun(object):
                                                 and not self.__battery_values.is_ac_present()):
                                             time.sleep(2)
                                             os.popen(self.__sound_command)
-                                        # ac plugged bye
+                                        # ac plugged, then bye
                                         else:
                                             break
                                     # one more check if ac was plugged
@@ -814,14 +808,13 @@ class MainRun(object):
                                     if self.__play_sound:
                                         time.sleep(1)
                                         os.popen(self.__sound_command)
-                                print("TEST: Hibernating... Program will be sleep for 10sek")
+                                print("TEST: Hibernating... Program goes sleep for 10sek")
                                 time.sleep(10)
                         else:
                             pass
 
                 # check if we have ac connected
                 if self.__battery_values.is_ac_present() and not self.__battery_values.is_battery_discharging():
-
                     # full charged
                     if (self.__battery_values.is_ac_present()
                             and self.__battery_values.is_battery_fully_charged()
@@ -837,7 +830,6 @@ class MainRun(object):
                         while (self.__battery_values.is_ac_present()
                                and self.__battery_values.is_battery_fully_charged()
                                and not self.__battery_values.is_battery_discharging()):
-
                             if not self.__battery_values.is_battery_present():
                                 self.notification.battery_removed()
                                 if self.__debug:
@@ -867,7 +859,7 @@ class MainRun(object):
                             if not self.__battery_values.is_battery_present():
                                 self.notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: battery removed !!! (%s() in MainRun class)"
+                                    print("DEBUG: battery removed (%s() in MainRun class)"
                                           % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
