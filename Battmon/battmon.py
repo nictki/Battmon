@@ -33,7 +33,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.8~svn01122014'
+VERSION = '0.4.9~svn11122014'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -47,6 +47,8 @@ AUTHOR_EMAIL = 'nictki@gmail.com'
 URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
+PROGRAM_PATH = os.path.dirname(os.path.realpath(__file__))
+
 # path's for external things
 EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/local/bin/',
@@ -55,10 +57,10 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/libexec/',
                        '/sbin/',
                        '/usr/share/sounds/',
-                       os.path.dirname(os.path.realpath(__file__)) + "/bin/"]
+                       PROGRAM_PATH + "/bin/"]
 
 # default sound file path
-DEFAULT_SOUND_FILE_PATH = os.path.dirname(os.path.realpath(__file__)) + "/sounds/info.wav"
+DEFAULT_SOUND_FILE_PATH = PROGRAM_PATH + "/sounds/info.wav"
 
 # default play command
 DEFAULT_PLAYER_COMMAND = 'play'
@@ -485,8 +487,7 @@ class MainRun(object):
             print("**********************\n")
 
     # set name for this program, thus works 'killall Battmon'
-    @staticmethod
-    def __set_proc_name(name):
+    def __set_proc_name(self, name):
         # dirty hack to set 'Battmon' process name under python3
         libc = cdll.LoadLibrary('libc.so.6')
         if sys.version_info[0] == 3:
@@ -495,8 +496,7 @@ class MainRun(object):
             libc.prctl(15, name, 0, 0, 0)
 
     # check if given program is running
-    @staticmethod
-    def __check_if_running(name):
+    def __check_if_running(self, name):
         output = str(subprocess.check_output(['ps', '-A']))
         # check if process is running
         if name in output:
@@ -611,7 +611,7 @@ class MainRun(object):
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
-        minimal_battery_commands = ['shutdown', 'pm-hibernate', 'pm-suspend']
+        minimal_battery_commands = ['shutdown', 'pm-hibernate', 'pm-suspend', 'suspend.sh', 'hibernate.sh']
 
         power_off_command = ''
         hibernate_command = ''
@@ -628,14 +628,18 @@ class MainRun(object):
             for c in minimal_battery_commands:
                 if self.__check_in_path(c):
                     if c == 'shutdown':
-                        power_off_command = "sudo /usr/local/bin/shutdown.sh"
-                    if c == 'pm-hibernate':
+                        power_off_command = "sudo %s/bin/shutdown.sh" % PROGRAM_PATH
+                    elif c == 'pm-hibernate':
                         hibernate_command = "sudo %s" % c
-                    if c == 'pm-suspend':
+                        break
+                    elif c == 'pm-suspend':
                         suspend_command = "sudo %s" % c
-                else:
-                    hibernate_command = "sudo /usr/local/bin/hibernate.sh"
-                    suspend_command = "sudo /usr/local/bin/suspend.sh"
+                        break
+                    elif c == 'hibernate.sh':
+                        hibernate_command = "sudo %s/bin/%s" % (PROGRAM_PATH, c)
+                        break
+                    elif c == 'suspend.sh':
+                        suspend_command = "sudo %s/bin/%s" % (PROGRAM_PATH, c)
 
         if not (hibernate_command or suspend_command):
             # everybody has shutdown command somewhere
@@ -761,7 +765,7 @@ class MainRun(object):
                                 if self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value \
                                         and not self.__battery_values.is_ac_present():
                                     # first warning, beep 5 times every two seconds, and display popup
-                                    for i in range(0, 10, +2):
+                                    for i in range(5):
                                         # check if ac was plugged
                                         if (self.__battery_values.battery_current_capacity()
                                                 <= self.__battery_minimal_value
@@ -796,8 +800,8 @@ class MainRun(object):
                                             <= self.__battery_minimal_value
                                             and not self.__battery_values.is_ac_present()):
                                         # lock screen and hibernate
-                                        for i in range(0, 4, +1):
-                                            time.sleep(.5)
+                                        for i in range(4):
+                                            time.sleep(5)
                                             os.popen(self.__sound_command)
                                         time.sleep(1)
                                         os.popen(self.__screenlock_command)
@@ -806,7 +810,7 @@ class MainRun(object):
                                         break
                             # test block
                             elif self.__test:
-                                for i in range(0, 6, +1):
+                                for i in range(6):
                                     if self.__play_sound:
                                         time.sleep(1)
                                         os.popen(self.__sound_command)

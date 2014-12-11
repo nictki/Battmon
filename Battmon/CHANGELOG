@@ -1,5 +1,12 @@
+* Version 0.4.9 (11.12.2014)
+------------------------------------------------------------------------------------------
+- add scripts to hibernate, suspend and shutdown, when upower or pm-utils aren't installed
+- clean up
+- refactoring
+- bug fixes
+
 * Version 0.4.7 - (31.10.2014) - https://github.com/nictki/Battmon/releases/0.4.7
---------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
  - add default minimal level battery command
  - add list of screen lock programs, first one will be used as default
  - add shell scripts to hibernate, suspend and shutdown
@@ -7,7 +14,7 @@
  - small changes
 
 * Version 0.4.3 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.3
---------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 - fix setting process name under python3, thus setproctitle module is not really needed
 - removed setproctitle module dependency
 - fix unsupported python version check
@@ -15,14 +22,14 @@
 - final version
 
 * Version 0.4.2 - (28.10.2013) - https://github.com/nictki/Battmon/releases/0.4.2
-----------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 - bug fixes
 - add program version in debug
 - add missing arguments in ArgumentError calls
 - play sounds when battery has minimal level, even if sound was disabled
 
 * Version 0.4.1 - (27.10.2013) - https://github.com/nictki/Battmon/releases/0.4.1
-----------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 - add 0 prefix to version naming (0.x.x)
 - refactoring
 - small bug fixes
@@ -31,7 +38,7 @@
 - remove README.md file
 
 * Version 3.2.1 - 26.10.2013 - https://github.com/nictki/Battmon/releases/tag/3.2.1
-------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 - fix behavior in __check_if_running() function
 
 * Version 3.2 - 22.10.2013
@@ -44,7 +51,7 @@
 - fix behavior when battery value is 'Unknown'
 
 * Version 3.0.1 - (10.07.2013) - https://github.com/nictki/Battmon/releases/3.0.1
-----------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 - fix upower check
 - improve computing current battery capacity
 - improve check if battery is full
@@ -59,7 +66,7 @@
 - update README
 
 * Version 2.1.5.1 - 23.05.2013 - https://github.com/nictki/Battmon/releases/tag/2.1.5.1
-----------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 - small fixes
 - add upower check
 
@@ -71,7 +78,7 @@
 - add option to specify default minimal battery level value action (default: hibernate)
 
 * Version 2.0 - 25.02.2013
----------------------------
+------------------------------------------------------------------------------------------
 - 2.0-rc4
 - get rid of pynotify module, use notify-send instead
 - notify-send shows all information, like battery charge time, level etc
@@ -80,7 +87,7 @@
 - re-add session lock commands
 
 * Version 1.2 - 26.11.2012
----------------------------
+------------------------------------------------------------------------------------------
 - improved check if battery is present or not
 - added better warnings if some optional dependency is missing
 - added sound files to github
