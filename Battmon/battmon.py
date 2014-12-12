@@ -644,14 +644,14 @@ class MainRun(object):
         if hibernate_command:
             self.__minimal_battery_level_command = hibernate_command
             self.__short_minimal_battery_command = "HIBERNATE"
-        elif suspend_command and self.__minimal_battery_level_command == "suspend":
+        elif suspend_command:
             self.__minimal_battery_level_command = suspend_command
             self.__short_minimal_battery_command = "SUSPEND"
-        else:
+        elif power_off_command:
             self.__minimal_battery_level_command = power_off_command
             self.__short_minimal_battery_command = "SHUTDOWN"
 
-        if not (hibernate_command or suspend_command):
+        if not (hibernate_command or suspend_command or power_off_command):
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
                 message_string = ("please check if you have installed pm-utils, or *KIT upower...\n"
