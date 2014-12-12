@@ -33,7 +33,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.9~svn11122014'
+VERSION = '0.4.9~svn12122014'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -612,6 +612,7 @@ class MainRun(object):
         hibernate_command = ''
         suspend_command = ''
 
+        # upower first
         if self.__check_if_running('upower'):
             power_off_command = "dbus-send --system --print-reply --dest=org.freedesktop.ConsoleKit " \
                                 "/org/freedesktop/ConsoleKit/Manager org.freedesktop.ConsoleKit.Manager.Stop"
@@ -622,27 +623,40 @@ class MainRun(object):
         else:
             for c in minimal_battery_commands:
                 if self.__check_in_path(c):
-                    if c == 'shutdown':
-                        power_off_command = "sudo %s/bin/shutdown.sh" % PROGRAM_PATH
-                    elif c == 'pm-hibernate':
+                    if c == 'pm-hibernate' and self.__minimal_battery_level_command == "hibernate":
                         hibernate_command = "sudo %s" % c
                         break
-                    elif c == 'pm-suspend':
+                    elif c == 'pm-suspend' and self.__minimal_battery_level_command == "suspend":
                         suspend_command = "sudo %s" % c
                         break
-                    elif c == 'hibernate.sh':
+                    elif c == 'hibernate.sh' and self.__minimal_battery_level_command == "hibernate":
                         hibernate_command = "sudo %s/bin/%s" % (PROGRAM_PATH, c)
                         break
-                    elif c == 'suspend.sh':
+                    elif c == 'suspend.sh' and self.__minimal_battery_level_command == "suspend":
                         suspend_command = "sudo %s/bin/%s" % (PROGRAM_PATH, c)
+                        break
+                    elif c == 'shutdown' and self.__minimal_battery_level_command == "shutdown":
+                        power_off_command = "sudo %s/bin/shutdown.sh" % PROGRAM_PATH
+                        break
+                    else:
+                        power_off_command = "sudo %s/bin/shutdown.sh" % PROGRAM_PATH
+
+        if hibernate_command:
+            self.__minimal_battery_level_command = hibernate_command
+            self.__short_minimal_battery_command = "HIBERNATE"
+        elif suspend_command and self.__minimal_battery_level_command == "suspend":
+            self.__minimal_battery_level_command = suspend_command
+            self.__short_minimal_battery_command = "SUSPEND"
+        else:
+            self.__minimal_battery_level_command = power_off_command
+            self.__short_minimal_battery_command = "SHUTDOWN"
 
         if not (hibernate_command or suspend_command):
-            # everybody has shutdown command somewhere
-
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
                 message_string = ("please check if you have installed pm-utils, or *KIT upower...\n"
-                                  "otherwise your system will be SHUTDOWN at critical battery level")
+                                  "or be sure that you can execute hibernate.sh and suspend.sh files in bin folder, \n"
+                                  "otherwise your system will be SHUTDOWN on critical battery level")
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "%s" %s %s''' \
                                      % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
@@ -650,21 +664,6 @@ class MainRun(object):
                 print('''MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n
                       please check if you have installed pm-utils,\n 
                       or *KIT upower... otherwise your system will be SHUTDOWN at critical battery level''')
-        else:
-            temp = ''
-
-            if self.__minimal_battery_level_command == "poweroff":
-                self.__minimal_battery_level_command = power_off_command
-                temp = "shutdown"
-            elif self.__minimal_battery_level_command == "hibernate":
-                self.__minimal_battery_level_command = hibernate_command
-                temp = "hibernate"
-            elif self.__minimal_battery_level_command == "suspend":
-                self.__minimal_battery_level_command = suspend_command
-                temp = "suspend"
-
-            # set minimal battery command in short for notifying . eg 'HIBERNATE'
-            self.__short_minimal_battery_command = temp.upper()
 
         if self.__found_notify_send_command and not self.__disable_startup_notifications:
             notify_send_string = '''notify-send "System will be: %s\n" "below minimal battery level" %s %s''' \
