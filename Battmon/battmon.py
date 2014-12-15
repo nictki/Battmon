@@ -21,6 +21,7 @@ import os
 import glob
 import time
 import subprocess
+import getpass
 from ctypes import c_char_p, cdll
 
 try:
@@ -47,6 +48,10 @@ AUTHOR_EMAIL = 'nictki@gmail.com'
 URL = 'https://github.com/nictki/Battmon/tree/master/Battmon'
 LICENSE = "GNU GPLv2+"
 
+# get current user name
+USER = getpass.getuser()
+
+# get Battmon root directory
 PROGRAM_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # path's for external things
@@ -68,7 +73,8 @@ MAX_SOUND_VOLUME_LEVEL = 17
 
 # default screen lock command
 # DEFAULT_SCREEN_LOCK_COMMAND = '/usr/bin/i3lock -c 000000'
-SCREEN_LOCK_COMMANDS = ['xtrlock -b', 'i3lock -c 000000', 'xscreensaver-command -lock']
+# screenlock commands first found in this list will be used as default
+SCREEN_LOCK_COMMANDS = ['physlock -d -u ' + USER, 'xtrlock -b', 'i3lock -c 000000', 'xscreensaver-command -lock']
 DEFAULT_SCREEN_LOCK_COMMAND = ''
 
 
@@ -572,37 +578,51 @@ class MainRun(object):
 
     # check for lock screen program
     def __set_lock_command(self):
-        for c in SCREEN_LOCK_COMMANDS:
-            # check if the given command was found in given path
-            lock_command_as_list = c.split()
+        if self.__screenlock_command == '':
+            for c in SCREEN_LOCK_COMMANDS:
+                # check if the given command was found in given path
+                lock_command_as_list = c.split()
+                command = lock_command_as_list[0]
+                command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
+                if self.__check_in_path(command):
+                    self.__screenlock_command = command + ' ' + command_args
+                    if self.__found_notify_send_command and not self.__disable_startup_notifications:
+                        notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
+                                             % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
+                        os.popen(notify_send_string)
+                    elif not self.__disable_startup_notifications:
+                        print("%s %s will be used to lock screen" % (command, command_args))
+                    elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
+                        print("using default program to lock screen")
+                    break
+            if self.__screenlock_command == '':
+                if self.__found_notify_send_command:
+                    # missing dependency notification will disappear after 30 seconds
+                    message_string = ("Check if you have installed any screenlock program,\n"
+                                      " you can specify your favorite screenlock\n"
+                                      " program running battmon with -lp '[PATH] [ARGS]',\n"
+                                      " otherwise your session won't be locked")
+                    notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
+                                         % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
+                    os.popen(notify_send_string)
+                if not self.__found_notify_send_command:
+                    print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
+                            you can specify your favorite screen lock program \
+                            running this program with -l PATH, \
+                            otherwise your session won't be locked")
+        elif not self.__screenlock_command == '':
+            lock_command_as_list = self.__screenlock_command.split()
             command = lock_command_as_list[0]
             command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
-            if self.__check_in_path(command):
-                self.__screenlock_command = command + ' ' + command_args
-                if self.__found_notify_send_command and not self.__disable_startup_notifications:
-                    notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
-                                         % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
-                    os.popen(notify_send_string)
-                elif not self.__disable_startup_notifications:
-                    print("%s %s will be used to lock screen" % (command, command_args))
-                elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
-                    print("using default program to lock screen")
-                break
-        if self.__screenlock_command == '':
-            if self.__found_notify_send_command:
-                # missing dependency notification will disappear after 30 seconds
-                message_string = ("Check if you have installed any screenlock program,\n"
-                                  " you can specify your favorite screenlock\n"
-                                  " program running battmon with -lp '[PATH] [ARGS]',\n"
-                                  " otherwise your session won't be locked")
-                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + PROGRAM_NAME)
+            if self.__found_notify_send_command and not self.__disable_startup_notifications:
+                notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
+                                     % (command, command_args, '-t ' + str(self.__timeout), '-a ' + PROGRAM_NAME)
                 os.popen(notify_send_string)
-            if not self.__found_notify_send_command:
-                print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
-                        you can specify your favorite screen lock program \
-                        running this program with -l PATH, \
-                        otherwise your session won't be locked")
+            elif not self.__disable_startup_notifications:
+                print("%s %s will be used to lock screen" % (command, command_args))
+            elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
+                print("using default program to lock screen")
+
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
@@ -803,10 +823,12 @@ class MainRun(object):
                                         break
                             # test block
                             elif self.__test:
-                                for i in range(6):
+                                for i in range(5):
                                     if self.__play_sound:
-                                        time.sleep(1)
                                         os.popen(self.__sound_command)
+                                    if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
+                                            and not self.__battery_values.is_ac_present()):
+                                        time.sleep(2)
                                 print("TEST: Hibernating... Program goes sleep for 10sek")
                                 time.sleep(10)
                         else:
