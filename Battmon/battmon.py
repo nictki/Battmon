@@ -71,10 +71,12 @@ DEFAULT_SOUND_FILE_PATH = PROGRAM_PATH + "/sounds/info.wav"
 DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
-# default screen lock command
-# DEFAULT_SCREEN_LOCK_COMMAND = '/usr/bin/i3lock -c 000000'
 # screenlock commands first found in this list will be used as default
 SCREEN_LOCK_COMMANDS = ['physlock -d -u ' + USER, 'xtrlock -b', 'i3lock -c 000000', 'xscreensaver-command -lock']
+# default screen lock command, default empty
+# this value can be hardcoded as well eg:
+# DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock -c 000000'
+# but will be overwrite when command line parameter was given
 DEFAULT_SCREEN_LOCK_COMMAND = ''
 
 
@@ -622,7 +624,6 @@ class MainRun(object):
                 print("%s %s will be used to lock screen" % (command, command_args))
             elif not self.__disable_startup_notifications and not self.__found_notify_send_command:
                 print("using default program to lock screen")
-
 
     # set critical battery value command
     def __set_minimal_battery_level_command(self):
