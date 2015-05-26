@@ -7,6 +7,10 @@ About:
 Battmon is simple battery monitoring program written in python,
 especially for tiling window managers like xmonad, dwm or awesome.
 
+Note:
+------
+Currently systemd isn't supported and probably will never be.
+
 Features:
 ----------
 - very light (for really basic functionality you need only python installed)
@@ -43,9 +47,9 @@ Usage:
 
 Notes:
 -------
-- files in `bin` will be used when no upower or pm-utils are installed,
+- Files in `bin` will be used when no upower or pm-utils are installed,
   thus it's will be able to hibernate, suspend or shutdown the system,
-  so be sure, that you can execute them with root privileges
+  so be sure, that you can execute them with root privileges.
 
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
@@ -56,10 +60,10 @@ Notes:
    	is-local = TRUE
    	...
 
-- If you don't use *KIT soft and have `pm-suspend`, `pm-hibernate` and `shutdown` installed,
-  you with root privileges.
+- If you don't use *KIT software and have `pm-suspend`, `pm-hibernate` installed,
+  you have to be able to execute them with root privileges.
 
-- If you don"t have installed `pm-utils`, be sure, that you can execute:
+- If you don't have installed `pm-utils`, be sure, that you can execute:
     $: echo mem > /sys/power/state
     and
     $: echo disk > /sys/power/state
@@ -70,9 +74,11 @@ Notes:
   without quotes.
 
 - You can specify your favor lock screen command using `-lp` argument in command line,
-  if none given, then will be used first one found in `SCREEN_LOCK_COMMANDS` list in `battmon.py` file.
-  If you want change default screenlock command, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable
-  in `battmon.py`, but will be overwrite when command line parameter was given.
+  if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
+  list variable in `battmon.py` file.
+  You can also change default screenlock command editing `DEFAULT_SCREEN_LOCK_COMMAND` variable
+  in `battmon.py` file, but this will be overwritten when screen lock command
+  was given in command line using `-lp` argument.
 
 Issues:
 --------
