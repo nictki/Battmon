@@ -34,7 +34,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.9~svn12122014'
+VERSION = '0.4.9~svn27052014'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -72,7 +72,7 @@ DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
 # screenlock commands first found in this list will be used as default
-SCREEN_LOCK_COMMANDS = ['physlock -d -u ' + USER, 'xtrlock -b', 'i3lock -c 000000', 'xscreensaver-command -lock']
+SCREEN_LOCK_COMMANDS = ['i3lock -c 000000', 'physlock -d -u ' + USER, 'xtrlock -b', 'xscreensaver-command -lock']
 # default screen lock command, default empty
 # this value can be hardcoded as well eg:
 # DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock -c 000000'
@@ -475,8 +475,9 @@ class MainRun(object):
             print("- use notifications: %s" % self.__disable_notifications)
             print("- show only critical notifications: %s" % self.__show_only_critical)
             print("- play sounds: %s" % self.__play_sound)
+            print("- sound file path: '%s'" % self.__sound_file)
             print("- sound volume level: %s" % self.__sound_volume)
-            print("- sound command '%s'" % self.__sound_command)
+            print("- sound command: '%s'" % self.__sound_command)
             print("- notification timeout: %ssec" % int(self.__timeout / 1000))
             print("- battery update timeout: %ssec" % self.__battery_update_timeout)
             print("- battery low level value: %s%%" % self.__battery_low_value)
@@ -561,12 +562,12 @@ class MainRun(object):
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
-        if os.path.exists(self.__sound_file) and self.__check_play():
+        if os.path.exists(self.__sound_file):
             self.__sound_command = '%s -V1 -q -v%s %s' % (self.__sound_player, self.__sound_volume, self.__sound_file)
         else:
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
-                message_string = ("Check if you have sound files in:  \n %s\n"
+                message_string = ("Check if you have sound files exist:  \n %s\n"
                                   " If you've specified your own sound file path, "
                                   " please check if it was correctly") % self.__sound_file
                 notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \

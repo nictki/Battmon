@@ -1,5 +1,6 @@
-* Version 0.4.9 (11.12.2014)
+* Version 0.4.9 (27.05.2015)
 ------------------------------------------------------------------------------------------
+- don't check twice if sox is installed
 - add scripts to hibernate, suspend and shutdown, when upower or pm-utils aren't installed
 - clean up
 - refactoring
