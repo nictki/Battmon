@@ -19,8 +19,8 @@ Features:
 Prerequisites:
 ---------------
 - only python for basic functionality
-  (>=3.2 and >=2.7 are supported,
-  if you have another python version, install argparse from https://pypi.python.org/pypi/argparse)
+  (>=3.2 and >=2.7 are supported, if you have another python version,
+  install argparse from https://pypi.python.org/pypi/argparse)
 - libnotify: for pop up notifications
 - sox: for playing sounds
 - i3lock: to lock user session before hibernating/suspending
@@ -43,8 +43,9 @@ Usage:
 
 Notes:
 -------
-- files in `bin` will be used when no upower or pm-utils are installed, thus it's will be able to hibernate,
-  suspend or shutdown the system, so be sure, that you can execute them with root privileges
+- files in `bin` will be used when no upower or pm-utils are installed,
+  thus it's will be able to hibernate, suspend or shutdown the system,
+  so be sure, that you can execute them with root privileges
 
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
@@ -64,7 +65,8 @@ Notes:
     $: echo disk > /sys/power/state
     as regular user
 
-- `DEFAULT_SCREEN_LOCK_COMMANDS` is the list of lockscreen commands, first found will be used as default.
+- `DEFAULT_SCREEN_LOCK_COMMANDS` is the list of lockscreen commands,
+  first found will be used as default.
   To set your default one, just add your favor command at the beginning of the list
   or change it by parsing your screenlock command througth `-lp` argument in command line,
   when you use this argument remember to surround whole your screenlock command with quotes.
