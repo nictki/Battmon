@@ -65,16 +65,14 @@ Notes:
     $: echo disk > /sys/power/state
     as regular user
 
-- `DEFAULT_SCREEN_LOCK_COMMANDS` is the list of lockscreen commands,
-  first found will be used as default.
-  To set your default one, just add your favor command at the beginning of the list
-  or change it by parsing your screenlock command througth `-lp` argument in command line,
-  when you use this argument remember to surround whole your screenlock command with quotes.
-
 - Sound file is search by default in the same path where battmon was started,
   you can change this by parsing your path to your sound file using `-sp` argument
   without quotes.
 
+- You can specify your favor lock screen command using `-lp` argument in command line,
+  if none given, then will be used first one found in `SCREEN_LOCK_COMMANDS` list in `battmon.py` file.
+  If you want change default screenlock command, edit `DEFAULT_SCREEN_LOCK_COMMAND` variable
+  in `battmon.py`, but will be overwrite when command line parameter was given.
 
 Issues:
 --------

@@ -72,12 +72,12 @@ DEFAULT_PLAYER_COMMAND = 'play'
 MAX_SOUND_VOLUME_LEVEL = 17
 
 # screenlock commands first found in this list will be used as default
-SCREEN_LOCK_COMMANDS = ['i3lock -c 000000', 'physlock -d -u ' + USER, 'xtrlock -b', 'xscreensaver-command -lock']
+SCREEN_LOCK_COMMANDS = ['physlock -d -u ' + USER, 'i3lock -c 000000', 'xtrlock -b', 'xscreensaver-command -lock']
 # default screen lock command, default empty
 # this value can be hardcoded as well eg:
-# DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock -c 000000'
+# DEFAULT_SCREEN_LOCK_COMMAND = 'xscreensaver-command -lock'
 # but will be overwrite when command line parameter was given
-DEFAULT_SCREEN_LOCK_COMMAND = ''
+DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock -c 000000'
 
 
 # battery values class
