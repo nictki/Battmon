@@ -7,9 +7,6 @@ About:
 Battmon is simple battery monitoring program written in python,
 especially for tiling window managers like xmonad, dwm or awesome.
 
-Note:
-------
-Currently systemd isn't supported and probably will never be.
 
 Features:
 ----------
@@ -19,6 +16,7 @@ Features:
 - no tray icon
 - pop-up notifications
 - options can be given through the command line (see battmon --help for details)
+
 
 Prerequisites:
 ---------------
@@ -30,6 +28,7 @@ Prerequisites:
 - i3lock: to lock user session before hibernating/suspending
 - pm-utils/upower: for hibernate, suspend or shutdown system on critical battery level
   (when both installed, upower will be used as default)
+
 
 Usage:
 -------
@@ -45,11 +44,13 @@ Usage:
 - To see all available options run Battmon with `-h` or `--help` option.
     python ./battmon.py -h
 
+
 Notes:
 -------
-- Files in `bin` will be used when no upower or pm-utils are installed,
-  thus it's will be able to hibernate, suspend or shutdown the system,
-  so be sure, that you can execute them with root privileges.
+- Currently `systemd` isn't supported and probably will never be.
+
+- Files in `bin` will be used when `upower` or `pm-utils` aren't installed.
+  (See below)
 
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
@@ -61,13 +62,22 @@ Notes:
    	...
 
 - If you don't use *KIT software and have `pm-suspend`, `pm-hibernate` installed,
-  you have to be able to execute them with root privileges.
+  remember that this command must be execute as a root.
+  (See below)
 
-- If you don't have installed `pm-utils`, be sure, that you can execute:
-    $: echo mem > /sys/power/state
-    and
-    $: echo disk > /sys/power/state
-    as regular user
+- If you don't have `pm-utils` installed, the scripts in `bin` must be executed
+  as a root, the best way is to make this scripts accessible to normal user
+  by running sudo without root password.
+  To do so just edit `/etc/sudoers` file and add something like this, replacing username
+  with your own user name and <PATH_TO_BATTMON> with absolute path to your Battmon folder:
+    your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
+    your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
+    your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
+
+  or enable it for a group, remember to replace group and <PATH_TO_BATTMON>:
+    %group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
+    %group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
+    %group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
 
 - Sound file is search by default in the same path where battmon was started,
   you can change this by parsing your path to your sound file using `-sp` argument
@@ -79,6 +89,7 @@ Notes:
   You can also change default screenlock command editing `DEFAULT_SCREEN_LOCK_COMMAND` variable
   in `battmon.py` file, but this will be overwritten when screen lock command
   was given in command line using `-lp` argument.
+
 
 Issues:
 --------
