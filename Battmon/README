@@ -33,16 +33,16 @@ Prerequisites:
 Usage:
 -------
 - Make battmon executable:
+
 	chmod +x ./battmon.py
+
   and run: ./battmon.py
 
 - or just run:
+
     python ./battmon.py
-  ff you have any problems with above command, try:
-    'python<YOUR PYTHON VERSION> ./battmon.py'
 
 - To see all available options run Battmon with `-h` or `--help` option.
-    python ./battmon.py -h
 
 
 Notes:
@@ -54,12 +54,14 @@ Notes:
 
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
+
 	$: ck-list-sessions
    	...
    	active = TRUE
    	...
    	is-local = TRUE
    	...
+
 
 - If you don't use *KIT software and have pm-suspend, pm-hibernate installed,
   remember that this command must be execute as a root.
