@@ -34,9 +34,11 @@ Usage:
 -------
 - Make battmon executable:
 
-	chmod +x ./battmon.py
+    chmod +x ./battmon.py
 
-  and run: ./battmon.py
+  and run:
+
+    ./battmon.py
 
 - or just run:
 
