@@ -66,7 +66,7 @@ Notes:
   remember that this command must be execute as a root.
   (See below)
 
-- If you don't have pm-utils and upower installed, the scripts in `bin` folder must be executed
+- If you don't have pm-utils and upower installed, scripts in `bin` folder must be executed
   as a root, to allow regular user suspend, hibernate or shutdown computer.
   The easiest way to to do this, is to make this scripts accessible to normal user
   by running sudo without root password.
