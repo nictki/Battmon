@@ -51,9 +51,6 @@ Notes:
 -------
 - Currently systemd isn't supported and probably will never be.
 
-- Files in `bin` folder will be used when upower or pm-utils aren't installed.
-  (See below)
-
 - If you want to use hibernate, suspend or shutdown with upower,
   be sure that your ck-list-sessions output gives you something like this:
 
@@ -69,8 +66,9 @@ Notes:
   remember that this command must be execute as a root.
   (See below)
 
-- If you don't have pm-utils installed, the scripts in `bin` folder must be executed
-  as a root, the best way is to make this scripts accessible to normal user
+- If you don't have pm-utils and upower installed, the scripts in `bin` folder must be executed
+  as a root, to allow regular user suspend, hibernate or shutdown computer.
+  The easiest way to to do this, is to make this scripts accessible to normal user
   by running sudo without root password.
   To do so just edit `/etc/sudoers` file and add something like this, replacing username
   with your own user name and <PATH_TO_BATTMON> with absolute path to your Battmon folder:
