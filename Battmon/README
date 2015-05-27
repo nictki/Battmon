@@ -47,9 +47,9 @@ Usage:
 
 Notes:
 -------
-- Currently `systemd` isn't supported and probably will never be.
+- Currently systemd isn't supported and probably will never be.
 
-- Files in `bin` will be used when `upower` or `pm-utils` aren't installed.
+- Files in `bin` folder will be used when upower or pm-utils aren't installed.
   (See below)
 
 - If you want to use hibernate, suspend or shutdown with upower,
@@ -61,11 +61,11 @@ Notes:
    	is-local = TRUE
    	...
 
-- If you don't use *KIT software and have `pm-suspend`, `pm-hibernate` installed,
+- If you don't use *KIT software and have pm-suspend, pm-hibernate installed,
   remember that this command must be execute as a root.
   (See below)
 
-- If you don't have `pm-utils` installed, the scripts in `bin` must be executed
+- If you don't have pm-utils installed, the scripts in `bin` folder must be executed
   as a root, the best way is to make this scripts accessible to normal user
   by running sudo without root password.
   To do so just edit `/etc/sudoers` file and add something like this, replacing username
