@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.9~svn27052014'
+VERSION = '0.4.9-27052015'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -719,13 +719,13 @@ class MainRun(object):
                     if (self.__battery_values.battery_current_capacity() > self.__battery_low_value
                             and not self.__battery_values.is_ac_present()):
                         if self.__debug:
-                            print("DEBUG: discharging check (%s() in MainRun class)"
+                            print("DEBUG: Discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
                         self.__check_battery_update_times()
                         self.notification.battery_discharging(self.__battery_values.battery_current_capacity(),
                                                               self.__battery_values.battery_time())
-                        # have enough power and if we should stay in save battery level loop
+                        # have enough power and check if we should stay in save battery level loop
                         while (self.__battery_values.battery_current_capacity() > self.__battery_low_value
                                and not self.__battery_values.is_ac_present()):
                             time.sleep(1)
@@ -734,7 +734,7 @@ class MainRun(object):
                     elif (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
                             self.__battery_critical_value and not self.__battery_values.is_ac_present()):
                         if self.__debug:
-                            print("DEBUG: low level battery check (%s() in MainRun class)"
+                            print("DEBUG: Low level battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
                         self.__check_battery_update_times()
@@ -749,7 +749,7 @@ class MainRun(object):
                     elif self.__battery_critical_value >= self.__battery_values.battery_current_capacity() > \
                             self.__battery_minimal_value and not self.__battery_values.is_ac_present():
                         if self.__debug:
-                            print("DEBUG: critical battery level check (%s() in MainRun class)"
+                            print("DEBUG: Critical battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
                         self.__check_battery_update_times()
@@ -764,7 +764,7 @@ class MainRun(object):
                     elif (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
                           and not self.__battery_values.is_ac_present()):
                         if self.__debug:
-                            print("DEBUG: hibernate battery level check (%s() in MainRun class)"
+                            print("DEBUG: Hibernate battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
                         self.__check_battery_update_times()
@@ -843,7 +843,7 @@ class MainRun(object):
                             and self.__battery_values.is_battery_fully_charged()
                             and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
-                            print("DEBUG: full battery check (%s() in MainRun class)"
+                            print("DEBUG: Full battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
                         # simulate self.__check_battery_update_times() behavior
@@ -856,7 +856,7 @@ class MainRun(object):
                             if not self.__battery_values.is_battery_present():
                                 self.notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: battery removed !!! (%s() in MainRun class)"
+                                    print("DEBUG: Battery removed !!! (%s() in MainRun class)"
                                           % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
@@ -868,7 +868,7 @@ class MainRun(object):
                             and not self.__battery_values.is_battery_fully_charged()
                             and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
-                            print("DEBUG: charging check (%s() in MainRun class)"
+                            print("DEBUG: Charging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
                         self.__check_battery_update_times()
@@ -882,7 +882,7 @@ class MainRun(object):
                             if not self.__battery_values.is_battery_present():
                                 self.notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: battery removed (%s() in MainRun class)"
+                                    print("DEBUG: Battery removed (%s() in MainRun class)"
                                           % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
@@ -894,7 +894,7 @@ class MainRun(object):
                 # notification
                 self.notification.no_battery()
                 if self.__debug:
-                    print("DEBUG: no battery check (%s() in MainRun class)"
+                    print("DEBUG: No battery check (%s() in MainRun class)"
                           % self.run_main_loop.__name__)
                 # no battery remainder loop counter
                 no_battery_counter = 1
@@ -908,7 +908,7 @@ class MainRun(object):
                         if self.__battery_values.is_battery_present():
                             self.notification.battery_plugged()
                             if self.__debug:
-                                print("DEBUG: battery plugged (%s() in MainRun class)"
+                                print("DEBUG: Battery plugged (%s() in MainRun class)"
                                       % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break
@@ -924,7 +924,7 @@ class MainRun(object):
                         if self.__battery_values.is_battery_present():
                             self.notification.battery_plugged()
                             if self.__debug:
-                                print("DEBUG: battery plugged (%s() in MainRun class)"
+                                print("DEBUG: Battery plugged (%s() in MainRun class)"
                                       % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break
@@ -932,15 +932,15 @@ class MainRun(object):
 
 if __name__ == '__main__':
     # main parser
-    ap = argparse.ArgumentParser(usage="usage: %(prog)s [OPTION...]", description=DESCRIPTION,
+    ap = argparse.ArgumentParser(usage="Usage: %(prog)s [OPTION...]", description=DESCRIPTION,
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                  epilog=EPILOG)
 
     # group parsers
-    file_group = ap.add_argument_group("files path arguments")
-    battery_group = ap.add_argument_group("battery arguments")
-    sound_group = ap.add_argument_group("sound arguments")
-    notification_group = ap.add_argument_group("notification arguments")
+    file_group = ap.add_argument_group("File path arguments")
+    battery_group = ap.add_argument_group("Battery arguments")
+    sound_group = ap.add_argument_group("Sound arguments")
+    notification_group = ap.add_argument_group("Notification arguments")
 
     # default options
     defaultOptions = {"debug": False,
