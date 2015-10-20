@@ -22,8 +22,8 @@ Battmon is simple battery monitoring program written in python for Linux systems
 * **[sox](http://sox.sourceforge.net/):** sounds
 * **[i3lock](http://i3wm.org/i3lock/), [xtrlock](http://ftp.debian.org/debian/pool/main/x/xtrlock/), [xscreensaver](http://ftp.debian.org/debian/pool/main/x/xtrlock/), [physlock](https://github.com/muennich/physlock):** lock user session before hibernating or suspending  
   (you can specify your favorite screenlocker through command line, xtrlock will be used as default, when no arguments were given)
-* **[pm-utils](http://pm-utils.freedesktop.org/wiki/)/[upower](http://upower.freedesktop.org/):** hibernate, suspend or shutdown system on critical battery level  
-  (when both installed, upower will be used as default, when this utils hasn't been found, than will be used hibernate.sh and suspend.sh scripts)
+* **[pm-utils](http://pm-utils.freedesktop.org/wiki/):** hibernate, suspend or shutdown system on critical battery level  
+  (when this pm-utils hasn't been found, than will be used hibernate.sh and suspend.sh scripts)
   
 ### Notes:
-* Currently systemd isn't supported and probably will never be.
+* Currently systemd/upower isn't supported and probably will never be.

@@ -62,9 +62,20 @@ Notes:
    	...
 
 
-- If you don't use *KIT software and have pm-suspend, pm-hibernate installed,
+- If you have pm-utils installed,
   remember that this command must be execute as a root.
-  (See below)
+  To do so just edit `/etc/sudousers` file and add something like this, replacing username
+  with your own user name:
+
+    your_username ALL = NOPASSWD: /usr/sbin/pm-hibernate
+    your_username ALL = NOPASSWD: /usr/sbin/pm-suspend
+    your_username ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
+
+  or enable it for a group, remember to replace group and <PATH_TO_BATTMON>:
+
+    %your_group ALL = NOPASSWD: /usr/sbin/pm-hibernate
+    %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend
+    %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
 
 - If you don't have pm-utils and upower installed, scripts in `bin` folder must be executed
   as a root, to allow regular user suspend, hibernate or shutdown computer.
@@ -79,9 +90,9 @@ Notes:
 
   or enable it for a group, remember to replace group and <PATH_TO_BATTMON>:
 
-    %group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
-    %group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
-    %group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
+    %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
+    %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
+    %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
 
 - Sound file is search by default in the same path where battmon was started,
   you can change this by parsing your path to your sound file using `-sp` argument

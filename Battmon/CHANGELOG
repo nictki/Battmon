@@ -1,3 +1,9 @@
+* Version 0.4.10 (20.10.2015)
+------------------------------------------------------------------------------------------
+- add support for suspend hybrid from pm-utils, from now this is default action on critical battery level
+- drop support for upower dbus interface since is not supported
+- small fixes
+
 * Version 0.4.9 (27.05.2015)
 ------------------------------------------------------------------------------------------
 - don't check twice if sox is installed
