@@ -20,14 +20,15 @@ Features:
 
 Prerequisites:
 ---------------
-- only python for basic functionality
+- python for basic functionality
   (>=3.2 and >=2.7 are supported, if you have another python version,
   install argparse from https://pypi.python.org/pypi/argparse)
-- libnotify: for pop up notifications
-- sox: for playing sounds
-- i3lock: to lock user session before hibernating/suspending
-- pm-utils/upower: for hibernate, suspend or shutdown system on critical battery level
-  (when both installed, upower will be used as default)
+
+  * Optional
+    - libnotify: for pop up notifications
+    - sox: for playing sounds
+    - i3lock: to lock user session before hibernating/suspending
+    - pm-utils: for hibernate, suspend or shutdown system on critical battery level
 
 
 Usage:
@@ -49,18 +50,7 @@ Usage:
 
 Notes:
 -------
-- Currently systemd isn't supported and probably will never be.
-
-- If you want to use hibernate, suspend or shutdown with upower,
-  be sure that your ck-list-sessions output gives you something like this:
-
-	$: ck-list-sessions
-   	...
-   	active = TRUE
-   	...
-   	is-local = TRUE
-   	...
-
+- Currently systemd/upower isn't supported and probably will never be.
 
 - If you have pm-utils installed,
   remember that this command must be execute as a root.
@@ -77,7 +67,7 @@ Notes:
     %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend
     %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
 
-- If you don't have pm-utils and upower installed, scripts in `bin` folder must be executed
+- If you don't have pm-utils installed, scripts in `bin` folder must be executed
   as a root, to allow regular user suspend, hibernate or shutdown computer.
   The easiest way to to do this, is to make this scripts accessible to normal user
   by running sudo without root password.
