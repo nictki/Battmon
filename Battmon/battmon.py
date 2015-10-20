@@ -36,7 +36,7 @@ except ImportError:
     exit(0)
 
 PROGRAM_NAME = "Battmon"
-VERSION = '0.4.10-20102015'
+VERSION = '0.5-20102015'
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
@@ -81,9 +81,6 @@ SCREEN_LOCK_COMMANDS = ['physlock -d -u ' + USER, 'i3lock -c 000000', 'xtrlock -
 # but will be overwrite when command line parameter was given
 DEFAULT_SCREEN_LOCK_COMMAND = 'i3lock -c 000000'
 
-
-
-# battery notifications class
 
 # main class
 class MainRun(object):
