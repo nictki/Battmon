@@ -1,3 +1,8 @@
+* Version 0.5 (20.10.2015)
+------------------------------------------------------------------------------------------
+- add two modules 'battery_notifications' and 'battery_values'
+- refactoring
+
 * Version 0.4.10 (20.10.2015)
 ------------------------------------------------------------------------------------------
 - add support for suspend hybrid from pm-utils, from now this is default action on critical battery level
