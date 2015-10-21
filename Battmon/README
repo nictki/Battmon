@@ -54,7 +54,7 @@ Notes:
 
 - If you have pm-utils installed,
   remember that this command must be execute as a root.
-  To do so just edit `/etc/sudousers` file and add something like this, replacing username
+  To do so just edit `/etc/sudoers` file and add something like this, replacing username
   with your own user name:
 
     your_username ALL = NOPASSWD: /usr/sbin/pm-hibernate

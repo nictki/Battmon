@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
+
 from ctypes import cdll, c_char_p
 import os
 import subprocess
@@ -21,10 +22,6 @@ import time
 
 from values import battery_values, internal_config
 from notifications import battery_notifications
-
-
-# default screen lock command, default empty
-# this value can be hardcoded as well eg:
 
 
 # set name for this program, thus works 'killall Battmon'
