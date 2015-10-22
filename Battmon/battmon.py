@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 from values import help_and_values_parser
 from monitor import battery_monitor
 
-# let's go
 if __name__ == '__main__':
     bt = battery_monitor.Monitor(**vars(help_and_values_parser.args))
     bt.run_main_loop()
