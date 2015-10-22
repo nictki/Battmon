@@ -19,7 +19,10 @@ BATTERY_MINIMAL_LEVEL_VALUE = 3
 # possible values are: hibernate, suspend, hybrid, poweroff
 BATTERY_MINIMAL_LEVEL_COMMAND = 'hybrid'
 
+# play sounds
 PLAY_SOUNDS = True
+
+# sounds volume max is 17
 SOUND_VOLUME = 3
 
 # default sound file path, give full path to audio file '/foo/bar'

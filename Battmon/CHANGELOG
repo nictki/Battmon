@@ -1,6 +1,7 @@
 * Version 0.5.2 (22.10.2015)
 ------------------------------------------------------------------------------------------
 - add 'help_and_values_parser' module
+- small bug fixes
 - refactoring
 
 * Version 0.5.1 (21.10.2015)

@@ -16,6 +16,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import sys
 
+# check for argparse module
 try:
     import argparse
 except ImportError:

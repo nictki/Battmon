@@ -21,6 +21,7 @@ import time
 from values import internal_config
 
 
+# deal with standard battery notifications
 class BatteryNotifications(object):
     def __init__(self, disable_notifications, notify_send, critical, sound, sound_command, timeout):
         self.__disable_notifications = disable_notifications

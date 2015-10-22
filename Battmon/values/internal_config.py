@@ -10,6 +10,7 @@ LICENSE = "GNU GPLv2+"
 
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
+
 EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
           ' or change it by parsing your screenlock command througth -lp argument in command line,'
           ' when you use this argument remember to surround whole your screenlock command with quotes.'

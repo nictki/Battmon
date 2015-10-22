@@ -45,6 +45,7 @@ def check_if_running(name):
         return False
 
 
+# main class
 class Monitor(object):
     def __init__(self, debug=None, test=None, foreground=None, more_then_one_instance=None, lock_command=None,
                  disable_notifications=None, critical=None, sound_file=None, play_sound=None, sound_volume=None,
