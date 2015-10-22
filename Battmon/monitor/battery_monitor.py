@@ -20,7 +20,8 @@ import subprocess
 import sys
 import time
 
-from values import battery_values, internal_config
+# local imports
+from values import read_battery_values, internal_config
 from notifications import battery_notifications
 
 
@@ -80,7 +81,7 @@ class Monitor(object):
         self.__short_minimal_battery_command = ''
 
         # initialize BatteryValues class instance
-        self.__battery_values = battery_values.BatteryValues()
+        self.__battery_values = read_battery_values.BatteryValues()
 
         # check if we can send notifications via notify-send
         self.__check_notify_send()

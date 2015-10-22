@@ -16,9 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from values import help
+# local imports
+from values import help_and_values_parser
 from monitor import battery_monitor
 
 if __name__ == '__main__':
-    ml = battery_monitor.Monitor(**vars(help.args))
+    ml = battery_monitor.Monitor(**vars(help_and_values_parser.args))
     ml.run_main_loop()

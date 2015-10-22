@@ -16,9 +16,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import sys
 
-from values import internal_config
-import config
-
 try:
     import argparse
 except ImportError:
@@ -28,8 +25,11 @@ except ImportError:
     print("Please install argparse from: https://pypi.python.org/pypi/argparse")
     exit(0)
 
+# local imports
+from values import internal_config
+import config
 
-# main parser
+# Default values parser and command line parameters parser
 ap = argparse.ArgumentParser(usage="Usage: %(prog)s [OPTION...]", description=internal_config.DESCRIPTION,
                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                              epilog=internal_config.EPILOG)  # group parsers

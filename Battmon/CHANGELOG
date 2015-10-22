@@ -1,11 +1,11 @@
 * Version 0.5.2 (2210.2015)
 ------------------------------------------------------------------------------------------
-- add help module
+- add 'help_and_values_parser' module
 - refactoring
 
 * Version 0.5.1 (21.10.2015)
 ------------------------------------------------------------------------------------------
-- add modules 'battery_monitor', 'battery_notifications' and 'battery_values'
+- add modules 'battery_monitor', 'battery_notifications' and 'read_battery_values'
 - add config file for internal variables
 - add config file for user parameters
 - bug and type fixes
