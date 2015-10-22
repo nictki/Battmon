@@ -49,7 +49,7 @@ Notes:
 -------
 - Currently systemd/upower isn't supported and probably will never be.
 
-- If you have pm-utils installed,
+- If you have pm-utils installed, then
   remember that this command must be execute as a root.
   To do so just edit `/etc/sudoers` file and add something like this, replacing username
   with your own user name:
