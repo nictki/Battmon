@@ -22,5 +22,5 @@ from monitor import battery_monitor
 
 # let's go
 if __name__ == '__main__':
-    ml = battery_monitor.Monitor(**vars(help_and_values_parser.args))
-    ml.run_main_loop()
+    bt = battery_monitor.Monitor(**vars(help_and_values_parser.args))
+    bt.run_main_loop()
