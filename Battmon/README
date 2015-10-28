@@ -1,11 +1,9 @@
-======
-README
-======
 
 About:
 -------
 Battmon is simple battery monitoring program written in python,
 especially for tiling window managers like xmonad, dwm or awesome.
+
 
 Features:
 ----------
@@ -16,62 +14,83 @@ Features:
 - pop-up notifications
 - options can be given through the command line (see battmon --help for details)
 
+
 Prerequisites:
 ---------------
-- only python for basic functionality
-  (>=3.2 and >=2.7 are supported,
-  if you have another python version, install argparse from https://pypi.python.org/pypi/argparse)
-- libnotify: for pop up notifications
-- sox: for playing sounds
-- i3lock: to lock user session before hibernating/suspending
-- pm-utils/upower: for hibernate, suspend or shutdown system on critical battery level
-  (when both installed, upower will be used as default)
+- python for basic functionality
+  (>=3.2 and >=2.7 are supported, if you have another python version,
+  install argparse from https://pypi.python.org/pypi/argparse)
+
+  * Optional
+    - libnotify: for pop up notifications
+    - sox: for playing sounds
+    - i3lock: to lock user session before hibernating/suspending
+    - pm-utils: for hibernate, suspend or shutdown system on critical battery level
+
 
 Usage:
 -------
 - Make battmon executable:
-	chmod +x ./battmon.py
-  and run: ./battmon.py
+
+    chmod +x ./battmon.py
+
+  and run:
+
+    ./battmon.py
 
 - or just run:
+
     python ./battmon.py
-  ff you have any problems with above command, try:
-    'python<YOUR PYTHON VERSION> ./battmon.py'
 
 - To see all available options run Battmon with `-h` or `--help` option.
-    python ./battmon.py -h
+
 
 Notes:
 -------
-- files in `bin` will be used when no upower or pm-utils are installed, thus it's will be able to hibernate,
-  suspend or shutdown the system, but you have to be sure, that you can execute them with root privileges
+- Currently systemd/upower isn't supported and probably will never be.
 
-- If you want to use hibernate, suspend or shutdown with upower,
-  be sure that your ck-list-sessions output gives you something like this:
-	$: ck-list-sessions
-   	...
-   	active = TRUE
-   	...
-   	is-local = TRUE
-   	...
+- If you have pm-utils installed, then
+  remember that, this commands must be execute as a root.
+  To do so just edit `/etc/sudoers` file and add something like this, replacing username
+  with your own user name:
 
-- If you don't use *KIT soft, then be sure,
-  that you can execute `pm-suspend`, `pm-hibernate` and `shutdown` with root privileges.
+    your_username ALL = NOPASSWD: /usr/sbin/pm-hibernate
+    your_username ALL = NOPASSWD: /usr/sbin/pm-suspend
+    your_username ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
 
-- If you don"t have installed `pm-utils`, be sure, that you can execute:
-    $: echo mem > /sys/power/state
-    and
-    $: echo disk > /sys/power/state
-    as regular user
+  or enable it for a group, remember to replace group and <PATH_TO_BATTMON>:
 
-- `DEFAULT_SCREEN_LOCK_COMMANDS` is the list of lockscreen commands, to set your default
-  add your favor command at the beginning of the list or change it by parsing your screenlock command througth `-lp`
-  argument in command line, when you use this argument remember to surround whole your
-  screenlock command with quotes.
+    %your_group ALL = NOPASSWD: /usr/sbin/pm-hibernate
+    %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend
+    %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
+
+- If you don't have pm-utils installed, scripts in `bin` folder must be executed
+  as a root, to allow regular user suspend, hibernate or shutdown computer.
+  The easiest way to to do this, is to make this scripts accessible to normal user
+  by running sudo without root password.
+  To do so just edit `/etc/sudoers` file and add something like this, replacing username
+  with your own user name and <PATH_TO_BATTMON> with absolute path to your Battmon folder:
+
+    your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
+    your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
+    your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
+
+  or enable it for a group, remember to replace group and <PATH_TO_BATTMON>:
+
+    %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
+    %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
+    %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
 
 - Sound file is search by default in the same path where battmon was started,
   you can change this by parsing your path to your sound file using `-sp` argument
   without quotes.
+
+- You can specify your favor lock screen command using `-lp` argument in command line,
+  if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
+  list variable in `battmon.py` file.
+  You can also change default screenlock command editing `DEFAULT_SCREEN_LOCK_COMMAND` variable
+  in `battmon.py` file, but this will be overwritten when screen lock command
+  was given in command line using `-lp` argument.
 
 
 Issues:
