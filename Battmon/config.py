@@ -6,7 +6,7 @@ from values import internal_config
 ######################
 
 # will be overwrite when command line parameter was given
-SCREEN_LOCK_COMMAND = 'i3lock -c 000000'
+SCREEN_LOCK_COMMAND = 'xlock'
 
 # how oft update battery values in seconds
 BATTERY_UPDATE_INTERVAL = 6
@@ -17,7 +17,7 @@ BATTERY_CRITICAL_LEVEL_VALUE = 7
 BATTERY_MINIMAL_LEVEL_VALUE = 3
 
 # possible values are: hibernate, suspend, hybrid, poweroff
-BATTERY_MINIMAL_LEVEL_COMMAND = 'hybrid'
+BATTERY_MINIMAL_LEVEL_COMMAND = 'hibernate'
 
 # play sounds
 PLAY_SOUNDS = True

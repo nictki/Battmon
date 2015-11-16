@@ -38,6 +38,6 @@ MAX_SOUND_VOLUME_LEVEL = 17
 DEFAULT_SOUND_FILE_PATH = PROGRAM_PATH + "/sounds/info.wav"
 
 # screenlock commands first found in this list will be used as default
-SCREEN_LOCK_COMMANDS = ['i3lock -c 000000', 'xtrlock -b', 'xscreensaver-command -lock']
+SCREEN_LOCK_COMMANDS = ['xlock', 'i3lock -c 000000', 'xtrlock -b', 'xscreensaver-command -lock']
 
 
