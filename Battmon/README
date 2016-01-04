@@ -24,8 +24,9 @@ Prerequisites:
   * Optional
     - libnotify: for pop up notifications
     - sox: for playing sounds
-    - i3lock: to lock user session before hibernating/suspending
+    - screen locker application: to lock user session before hibernating/suspending
     - pm-utils: for hibernate, suspend or shutdown system on critical battery level
+      (if not installed, the scripts in 'bin' will be used, see below)
 
 
 Usage:

@@ -31,7 +31,7 @@ from values import internal_config
 import config
 
 # Default values parser and command line parameters parser
-ap = argparse.ArgumentParser(usage="Usage: %(prog)s [OPTION...]", description=internal_config.DESCRIPTION,
+ap = argparse.ArgumentParser(usage="Usage: %(prog)s [...OPTIONS...]", description=internal_config.DESCRIPTION,
                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                              epilog=internal_config.EPILOG)  # group parsers
 file_group = ap.add_argument_group("File path arguments")
