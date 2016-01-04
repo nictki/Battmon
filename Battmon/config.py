@@ -1,12 +1,12 @@
 # local import
 from values import internal_config
 
-######################
-# configuration file #
-######################
+##############################
+# example configuration file #
+##############################
 
 # will be overwrite when command line parameter was given
-SCREEN_LOCK_COMMAND = 'xlock'
+SCREEN_LOCK_COMMAND = 'xlock -lockdelay 0'
 
 # how oft update battery values in seconds
 BATTERY_UPDATE_INTERVAL = 6
