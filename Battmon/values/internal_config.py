@@ -1,7 +1,7 @@
 import os
 
 PROGRAM_NAME = "Battmon"
-VERSION = "0.5.2-22102015"
+VERSION = "0.5.23-27062016"
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
