@@ -51,7 +51,8 @@ class Monitor(object):
                  disable_notifications=None, critical=None, sound_file=None, play_sound=None, sound_volume=None,
                  timeout=None, battery_update_timeout=None, battery_low_value=None, battery_critical_value=None,
                  battery_minimal_value=None, minimal_battery_level_command=None, set_no_battery_remainder=None,
-                 disable_startup_notifications=None, **kwargs):
+                 disable_startup_notifications=None):
+
         # parameters
         self.__debug = debug
         self.__test = test
@@ -129,9 +130,6 @@ class Monitor(object):
             print("* !!! Debug Mode !!! *")
             print("**********************\n")
             self.__print_debug_info()
-            # print("\n**********************")
-            # print("* !!! Debug Mode !!! *")
-            # print("**********************\n")
 
     def __print_debug_info(self):
         print("- Battmon version: %s" % internal_config.VERSION)

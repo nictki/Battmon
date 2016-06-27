@@ -43,7 +43,8 @@ class BatteryNotifications(object):
                 os.popen(self.__sound_command)
             if self.__notify_send:
                 notify_send_string = '''notify-send "DISCHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout),
+                                        '-a ' + internal_config.PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("DISCHARGING")
@@ -61,7 +62,8 @@ class BatteryNotifications(object):
             if self.__notify_send:
                 notify_send_string = '''notify-send "LOW BATTERY LEVEL\n" \
                                      "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout),
+                                        '-a ' + internal_config.PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("LOW BATTERY LEVEL")
@@ -79,7 +81,8 @@ class BatteryNotifications(object):
             if self.__notify_send:
                 notify_send_string = '''notify-send "CRITICAL BATTERY LEVEL\n" \
                                      "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout),
+                                        '-a ' + internal_config.PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("CRITICAL BATTERY LEVEL")
@@ -100,7 +103,8 @@ class BatteryNotifications(object):
                                     capacity, '%', battery_time)
 
                 notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(notification_timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(notification_timeout),
+                                        '-a ' + internal_config.PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("!!! MINIMAL BATTERY LEVEL !!!")
@@ -134,7 +138,8 @@ class BatteryNotifications(object):
                 os.popen(self.__sound_command)
             if self.__notify_send:
                 notify_send_string = '''notify-send "CHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
-                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (capacity, '%', battery_time, '-t ' + str(self.__timeout),
+                                        '-a ' + internal_config.PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__notify_send:
                 print("CHARGING")

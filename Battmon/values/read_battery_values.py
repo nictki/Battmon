@@ -103,7 +103,6 @@ class BatteryValues(object):
 
     # check if battery is present
     def is_battery_present(self):
-        self.__is_battery_found = False
         self.__find_battery_and_ac()
         if self.__is_battery_found:
             status = self.__get_value(self.__battery_path + 'present')
@@ -114,12 +113,10 @@ class BatteryValues(object):
 
     # check if ac is present
     def is_ac_present(self):
-        self.__is_ac_found = False
         self.__find_battery_and_ac()
-        if self.__is_ac_found:
-            status = self.__get_value(self.__ac_path + 'online')
-            if status.find("1") != -1:
-                return True
+        status = self.__get_value(self.__ac_path + 'online')
+        if status.find("1") != -1:
+            return True
         else:
             return False
 
