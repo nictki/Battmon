@@ -253,9 +253,8 @@ class Monitor(object):
                                       " program running battmon with -lp '[PATH] [ARGS]',\n"
                                       " otherwise your session won't be locked")
                     notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                         % (
-                                             message_string, '-t ' + str(30 * 1000),
-                                             '-a ' + internal_config.PROGRAM_NAME)
+                                         % (message_string, '-t ' + str(30 * 1000),
+                                            '-a ' + internal_config.PROGRAM_NAME)
                     os.popen(notify_send_string)
                 if not self.__found_notify_send_command:
                     print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
@@ -499,10 +498,9 @@ class Monitor(object):
                             pass
 
                 # check if we have ac connected and we've battery
-                if self.__battery_values.is_ac_present() and self.__battery_values.is_battery_present():
+                if self.__battery_values.is_ac_present() and not self.__battery_values.is_battery_discharging():
                     # full charged
-                    if (self.__battery_values.is_ac_present()
-                            and self.__battery_values.is_battery_fully_charged()
+                    if (self.__battery_values.is_battery_fully_charged()
                             and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
                             print("DEBUG: Full battery check (%s() in MainRun class)"
