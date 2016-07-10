@@ -377,8 +377,8 @@ class Monitor(object):
                 # check if battery is discharging to stay in normal battery level
                 if not self.__battery_values.is_ac_present() and self.__battery_values.is_battery_discharging():
                     # discharging and battery level is greater then battery_low_value
-                    if (self.__battery_values.battery_current_capacity() > self.__battery_low_value
-                            and not self.__battery_values.is_ac_present()):
+                    if (not self.__battery_values.is_ac_present()
+                            and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
                         if self.__debug:
                             print("DEBUG: Discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -387,13 +387,14 @@ class Monitor(object):
                         self.notification.battery_discharging(self.__battery_values.battery_current_capacity(),
                                                               self.__battery_values.battery_time())
                         # have enough power and check if we should stay in save battery level loop
-                        while (self.__battery_values.battery_current_capacity() > self.__battery_low_value
-                               and not self.__battery_values.is_ac_present()):
+                        while (not self.__battery_values.is_ac_present()
+                               and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
                             time.sleep(1)
 
                     # low capacity level
-                    elif (self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
-                              self.__battery_critical_value and not self.__battery_values.is_ac_present()):
+                    elif (not self.__battery_values.is_ac_present()
+                            and self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
+                            self.__battery_critical_value):
                         if self.__debug:
                             print("DEBUG: Low level battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -402,13 +403,15 @@ class Monitor(object):
                         self.notification.low_capacity_level(self.__battery_values.battery_current_capacity(),
                                                              self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in low battery level loop
-                        while self.__battery_low_value >= self.__battery_values.battery_current_capacity() > \
-                                self.__battery_critical_value and not self.__battery_values.is_ac_present():
+                        while (not self.__battery_values.is_ac_present()
+                                and self.__battery_low_value >= self.__battery_values.battery_current_capacity()
+                                > self.__battery_critical_value):
                             time.sleep(1)
 
                     # critical capacity level
-                    elif self.__battery_critical_value >= self.__battery_values.battery_current_capacity() > \
-                            self.__battery_minimal_value and not self.__battery_values.is_ac_present():
+                    elif (not self.__battery_values.is_ac_present()
+                            and self.__battery_critical_value >= self.__battery_values.battery_current_capacity()
+                            > self.__battery_minimal_value):
                         if self.__debug:
                             print("DEBUG: Critical battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -417,13 +420,14 @@ class Monitor(object):
                         self.notification.critical_battery_level(self.__battery_values.battery_current_capacity(),
                                                                  self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in critical battery level loop
-                        while self.__battery_critical_value >= self.__battery_values.battery_current_capacity() > \
-                                self.__battery_minimal_value and not self.__battery_values.is_ac_present():
+                        while (not self.__battery_values.is_ac_present()
+                                and self.__battery_critical_value >= self.__battery_values.battery_current_capacity()
+                                > self.__battery_minimal_value):
                             time.sleep(1)
 
                     # hibernate level
-                    elif (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
-                          and not self.__battery_values.is_ac_present()):
+                    elif (not self.__battery_values.is_ac_present()
+                          and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                         if self.__debug:
                             print("DEBUG: Hibernate battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -434,27 +438,27 @@ class Monitor(object):
                                                                 self.__short_minimal_battery_command,
                                                                 (10 * 1000))
                         # check once more if system should be hibernate
-                        if self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value \
-                                and not self.__battery_values.is_ac_present():
+                        if (not self.__battery_values.is_ac_present()
+                                and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                             # the real thing
                             if not self.__test:
-                                if self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value \
-                                        and not self.__battery_values.is_ac_present():
+                                if (not self.__battery_values.is_ac_present()
+                                        and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                                     # first warning, beep 5 times every two seconds, and display popup
                                     for i in range(5):
                                         # check if ac was plugged
-                                        if (self.__battery_values.battery_current_capacity()
-                                                <= self.__battery_minimal_value
-                                                and not self.__battery_values.is_ac_present()):
+                                        if (not self.__battery_values.is_ac_present()
+                                                and self.__battery_values.battery_current_capacity()
+                                                <= self.__battery_minimal_value):
                                             time.sleep(2)
                                             os.popen(self.__sound_command)
                                         # ac plugged, then bye
                                         else:
                                             break
                                     # one more check if ac was plugged
-                                    if (self.__battery_values.battery_current_capacity()
-                                            <= self.__battery_minimal_value
-                                        and not self.__battery_values.is_ac_present()):
+                                    if (not self.__battery_values.is_ac_present()
+                                            and self.__battery_values.battery_current_capacity()
+                                            <= self.__battery_minimal_value):
                                         time.sleep(2)
                                         os.popen(self.__sound_command)
                                         message_string = ("last chance to plug in AC cable...\n"
@@ -472,9 +476,9 @@ class Monitor(object):
                                         os.popen(notify_send_string)
                                         time.sleep(10)
                                     # LAST CHECK before hibernating
-                                    if (self.__battery_values.battery_current_capacity()
-                                            <= self.__battery_minimal_value
-                                            and not self.__battery_values.is_ac_present()):
+                                    if (not self.__battery_values.is_ac_present()
+                                            and self.__battery_values.battery_current_capacity()
+                                            <= self.__battery_minimal_value):
                                         # lock screen and hibernate
                                         for i in range(4):
                                             time.sleep(5)
@@ -489,8 +493,8 @@ class Monitor(object):
                                 for i in range(5):
                                     if self.__play_sound:
                                         os.popen(self.__sound_command)
-                                    if (self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value
-                                            and not self.__battery_values.is_ac_present()):
+                                    if (not self.__battery_values.is_ac_present()
+                                            and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                                         time.sleep(2)
                                 print("TEST: Hibernating... Program goes sleep for 10sek")
                                 time.sleep(10)
@@ -500,8 +504,7 @@ class Monitor(object):
                 # check if we have ac connected and we've battery
                 if self.__battery_values.is_ac_present() and not self.__battery_values.is_battery_discharging():
                     # full charged
-                    if (self.__battery_values.is_battery_fully_charged()
-                            and not self.__battery_values.is_battery_discharging()):
+                    if (self.__battery_values.is_battery_fully_charged() and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
                             print("DEBUG: Full battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
