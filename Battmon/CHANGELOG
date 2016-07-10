@@ -1,6 +1,6 @@
-* Version 0.5.3 (10.07.2016)
+* Version 0.6 (10.07.2016)
 ------------------------------------------------------------------------------------------
-- fixed crash when battery was removed during hibernation and ac cable was plugged in
+- fix crashes when batter/ac adapter was removed/plugged during suspend/hibernate states
 - minor fixes
 - refactoring
 
