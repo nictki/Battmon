@@ -1,5 +1,6 @@
-* Version 0.5.23 (27.06.2016)
+* Version 0.5.3 (10.07.2016)
 ------------------------------------------------------------------------------------------
+- fixed crash when battery was removed during hibernation and ac cable was plugged in
 - minor fixes
 - refactoring
 
