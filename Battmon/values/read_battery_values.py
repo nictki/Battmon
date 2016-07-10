@@ -60,11 +60,19 @@ class BatteryValues(object):
 
     # find battery and ac-adapter
     def __find_battery_and_ac(self):
+
+        # set values to default
+        self.__battery_path = ''
+        self.__ac_path = ''
+        self.__is_battery_found = False
+        self.__is_ac_found = False
+
         try:
             devices = (glob.glob(self.__path))
         except IOError as ioe:
-            print('Error: ' + str(ioe))
+            print('Error in __find_battery_and_ac: ' + str(ioe))
             sys.exit()
+
         for i in devices:
             try:
                 with open(i + '/type') as d:
@@ -73,15 +81,13 @@ class BatteryValues(object):
                     if d == 'Battery':
                         self.__battery_path = i
                         self.__is_battery_found = True
-                    else:
-                        self.__is_battery_found = False
+
                     if d == 'Mains':
                         self.__ac_path = i
                         self.__is_ac_found = True
-                    else:
-                        self.__is_ac_found = False
+
             except IOError as ioe:
-                print('Error: ' + str(ioe))
+                print('Error in __find_battery_and_ac in devices for loop: ' + str(ioe))
                 sys.exit()
 
     # get battery time in seconds
@@ -118,9 +124,10 @@ class BatteryValues(object):
     # check if ac is present
     def is_ac_present(self):
         self.__find_battery_and_ac()
-        status = self.__get_value(self.__ac_path + 'online')
-        if status.find("1") != -1:
-            return True
+        if self.__is_ac_found:
+            status = self.__get_value(self.__ac_path + 'online')
+            if status.find("1") != -1:
+                return True
         else:
             return False
 

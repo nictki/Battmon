@@ -388,13 +388,13 @@ class Monitor(object):
                                                               self.__battery_values.battery_time())
                         # have enough power and check if we should stay in save battery level loop
                         while (not self.__battery_values.is_ac_present()
-                               and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
+                                and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
                             time.sleep(1)
 
                     # low capacity level
                     elif (not self.__battery_values.is_ac_present()
-                            and self.__battery_low_value >= self.__battery_values.battery_current_capacity() >
-                            self.__battery_critical_value):
+                            and self.__battery_low_value >= self.__battery_values.battery_current_capacity()
+                            > self.__battery_critical_value):
                         if self.__debug:
                             print("DEBUG: Low level battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -576,8 +576,7 @@ class Monitor(object):
                             time.sleep(self.__timeout / 1000)
                             break
                         # send no battery notifications and reset no_battery_counter
-                        if not self.__battery_values.is_battery_present() \
-                                and no_battery_counter == remainder_time_in_sek:
+                        if no_battery_counter == remainder_time_in_sek:
                             self.notification.no_battery()
                             no_battery_counter = 1
                     else:

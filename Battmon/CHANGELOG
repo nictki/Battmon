@@ -1,6 +1,7 @@
 * Version 0.6 (10.07.2016)
 ------------------------------------------------------------------------------------------
-- fix crashes when batter/ac adapter was removed/plugged during suspend/hibernate states
+- fix crashes when battery/ac adapter was removed/plugged during suspend/hibernate
+- fix battery/ac checks
 - minor fixes
 - refactoring
 
