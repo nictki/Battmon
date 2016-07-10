@@ -1,7 +1,7 @@
 import os
 
 PROGRAM_NAME = "Battmon"
-VERSION = "0.5.23-27062016"
+VERSION = "0.5.3-10072016"
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
@@ -25,6 +25,7 @@ print(PROGRAM_PATH)
 # path's for external things
 EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/local/bin/',
+                       '/usr/local/sbin/'
                        '/bin/',
                        '/usr/sbin/',
                        '/usr/libexec/',

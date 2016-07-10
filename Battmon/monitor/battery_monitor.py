@@ -253,7 +253,9 @@ class Monitor(object):
                                       " program running battmon with -lp '[PATH] [ARGS]',\n"
                                       " otherwise your session won't be locked")
                     notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                         % (message_string, '-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
+                                         % (
+                                             message_string, '-t ' + str(30 * 1000),
+                                             '-a ' + internal_config.PROGRAM_NAME)
                     os.popen(notify_send_string)
                 if not self.__found_notify_send_command:
                     print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
@@ -266,7 +268,8 @@ class Monitor(object):
             command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
             if self.__found_notify_send_command and not self.__disable_startup_notifications:
                 notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
-                                     % (command, command_args, '-t ' + str(self.__timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (command, command_args, '-t ' + str(self.__timeout),
+                                        '-a ' + internal_config.PROGRAM_NAME)
                 os.popen(notify_send_string)
             elif not self.__disable_startup_notifications:
                 print("%s %s will be used to lock screen" % (command, command_args))
@@ -495,8 +498,8 @@ class Monitor(object):
                         else:
                             pass
 
-                # check if we have ac connected
-                if self.__battery_values.is_ac_present() and not self.__battery_values.is_battery_discharging():
+                # check if we have ac connected and we've battery
+                if self.__battery_values.is_ac_present() and self.__battery_values.is_battery_present():
                     # full charged
                     if (self.__battery_values.is_ac_present()
                             and self.__battery_values.is_battery_fully_charged()

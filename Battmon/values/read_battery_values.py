@@ -73,9 +73,13 @@ class BatteryValues(object):
                     if d == 'Battery':
                         self.__battery_path = i
                         self.__is_battery_found = True
+                    else:
+                        self.__is_battery_found = False
                     if d == 'Mains':
                         self.__ac_path = i
                         self.__is_ac_found = True
+                    else:
+                        self.__is_ac_found = False
             except IOError as ioe:
                 print('Error: ' + str(ioe))
                 sys.exit()
