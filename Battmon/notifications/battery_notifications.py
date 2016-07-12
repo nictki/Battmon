@@ -72,7 +72,7 @@ class BatteryNotifications(object):
     def critical_battery_level(self, capacity, battery_time):
         # if use sound only
         if (self.__sound and ((self.__disable_notifications or not self.__critical)
-                              and (self.__disable_notifications or self.__critical))):
+                and (self.__disable_notifications or self.__critical))):
             os.popen(self.__sound_command)
         # notification
         if not self.__disable_notifications:
