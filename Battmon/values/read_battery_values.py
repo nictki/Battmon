@@ -70,7 +70,7 @@ class BatteryValues(object):
         try:
             devices = (glob.glob(self.__path))
         except IOError as ioe:
-            print('Error in __find_battery_and_ac: ' + str(ioe))
+            print('''Error in '__find_battery_and_ac function': find devices glob''' + str(ioe))
             sys.exit()
 
         for i in devices:
@@ -87,7 +87,7 @@ class BatteryValues(object):
                         self.__is_ac_found = True
 
             except IOError as ioe:
-                print('Error in __find_battery_and_ac in devices for loop: ' + str(ioe))
+                print('''Error in '__find_battery_and_ac in devices' devices iteration problem: ''' + str(ioe))
                 sys.exit()
 
     # get battery time in seconds
