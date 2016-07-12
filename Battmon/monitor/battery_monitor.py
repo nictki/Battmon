@@ -139,7 +139,7 @@ class Monitor(object):
         print("- foreground: %s" % self.__foreground)
         print("- run more instances: %s" % self.__more_then_one_instance)
         print("- screen lock command: '%s'" % self.__screenlock_command)
-        print("- use notifications: %s" % self.__disable_notifications)
+        print("- disable notifications: %s" % self.__disable_notifications)
         print("- show only critical notifications: %s" % self.__show_only_critical)
         print("- play sounds: %s" % self.__play_sound)
         print("- sound file path: '%s'" % self.__sound_file)
