@@ -1,10 +1,12 @@
 * Version 0.6.1 (10.07.2016)
 ------------------------------------------------------------------------------------------
 - fix crashes when battery/ac adapter was removed/plugged during suspend/hibernate
-- fix battery/ac checks
+- fix battery/ac adapter checks
+- make debug mode more informative
 - fix typo in debug mode
 - minor fixes
-- refactoring
+- some refactoring
+- added internal support for pulseaudio
 
 * Version 0.5.2 (22.10.2015)
 ------------------------------------------------------------------------------------------

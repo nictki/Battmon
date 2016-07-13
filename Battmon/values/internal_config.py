@@ -34,7 +34,7 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        PROGRAM_PATH + "/bin/"]
 
 # default play command
-DEFAULT_PLAYER_COMMAND = 'play'
+DEFAULT_PLAYER_COMMAND = ['paplay', 'play']
 MAX_SOUND_VOLUME_LEVEL = 17
 DEFAULT_SOUND_FILE_PATH = PROGRAM_PATH + "/sounds/info.wav"
 
