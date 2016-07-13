@@ -87,7 +87,7 @@ class Monitor(object):
 
         # check if we can send notifications via notify-send
         self.__check_notify_send()
-        # check play command (sox) and if file sounds are in PATH's
+        # check play command and if file sounds are in PATH's
         self.__check_play()
         self.__set_sound_file_and_volume()
 
@@ -130,6 +130,8 @@ class Monitor(object):
             print("* !!! Debug Mode !!! *")
             print("**********************\n")
             self.__print_debug_info()
+
+        self.__SOUND_VOLUME = self.__sound_volume
 
     def __print_debug_info(self):
         print("- Battmon version: %s" % internal_config.VERSION)
@@ -190,26 +192,31 @@ class Monitor(object):
 
     # check if we have sound player
     def __check_play(self):
-        if self.__check_in_path(internal_config.DEFAULT_PLAYER_COMMAND):
-            self.__sound_player = self.__current_program_path
-            return True
-        # if not found sox in path, send notification about it
-        elif self.__found_notify_send_command:
-            self.__play_sound = False
-            notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
-                                "You have to install sox to play sounds" %s %s''' \
-                                 % ('-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
-            os.popen(notify_send_string)
-        elif not self.__found_notify_send_command:
-            self.__play_sound = False
-            print("DEPENDENCY MISSING:\n You have to install sox to play sounds.\n")
-        else:
-            return False
+        for i in internal_config.DEFAULT_PLAYER_COMMAND:
+            if self.__check_in_path(i):
+                self.__sound_player = self.__current_program_path
+                return True
+            # if not found in path, send notification about it
+            elif self.__found_notify_send_command:
+                self.__play_sound = False
+                notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
+                                    "You have to install %s to play sounds" %s %s''' \
+                                     % (i, '-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
+                os.popen(notify_send_string)
+            elif not self.__found_notify_send_command:
+                self.__play_sound = False
+                print("DEPENDENCY MISSING:\n You have to install %s to play sounds.\n" % i)
+            else:
+                return False
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
         if os.path.exists(self.__sound_file):
-            self.__sound_command = '%s -V1 -q -v%s %s' % (self.__sound_player, self.__sound_volume, self.__sound_file)
+            if not self.__sound_player.find('paplay') == 0 and os.popen('pidof pulseaudio'):
+                __pa_volume = self.__sound_volume * int(3855)
+                self.__sound_command = '%s --volume %s %s' % (self.__sound_player, __pa_volume, self.__sound_file)
+            elif not self.__sound_player.find('play') == 0:
+                self.__sound_command = '%s -V1 -q -v%s %s' % (self.__sound_player, self.__sound_volume, self.__sound_file)
         else:
             if self.__found_notify_send_command:
                 # missing dependency notification will disappear after 30 seconds
@@ -357,17 +364,20 @@ class Monitor(object):
             print("below minimal battery level system will be: %s" % self.__short_minimal_battery_command)
 
     # check for battery update times
-    def __check_battery_update_times(self):
+    def __check_battery_update_times(self, name):
         while self.__battery_values.battery_time() == 'Unknown':
             if self.__debug:
-                print("DEBUG: battery value is %s, next check in %d sec"
+                print('''DEBUG: Battery value is '%s', next check in %d sec'''
                       % (str(self.__battery_values.battery_time()), self.__battery_update_timeout))
             time.sleep(self.__battery_update_timeout)
             if self.__battery_values.battery_time() == 'Unknown':
                 if self.__debug:
-                    print("DEBUG: battery value is still %s, continuing anyway"
+                    print('''DEBUG: Battery value is still '%s', continuing anyway'''
                           % str(self.__battery_values.battery_time()))
+                    print("DEBUG: Back to >>> %s <<<" % name)
                 break
+            else:
+                print("DEBUG: Back to >>> %s <<<" % name)
 
     # start main loop
     def run_main_loop(self):
@@ -383,7 +393,7 @@ class Monitor(object):
                             print("DEBUG: Discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times()
+                        self.__check_battery_update_times("Discharging check (%s() in MainRun class)")
                         self.notification.battery_discharging(self.__battery_values.battery_current_capacity(),
                                                               self.__battery_values.battery_time())
                         # have enough power and check if we should stay in save battery level loop
@@ -399,7 +409,8 @@ class Monitor(object):
                             print("DEBUG: Low level battery check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times()
+                        self.__check_battery_update_times("Low level battery check (%s() in MainRun class)"
+                                                          % self.run_main_loop.__name__)
                         self.notification.low_capacity_level(self.__battery_values.battery_current_capacity(),
                                                              self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in low battery level loop
@@ -416,7 +427,8 @@ class Monitor(object):
                             print("DEBUG: Critical battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times()
+                        self.__check_battery_update_times("Critical battery level check (%s() in MainRun class)"
+                                                          % self.run_main_loop.__name__)
                         self.notification.critical_battery_level(self.__battery_values.battery_current_capacity(),
                                                                  self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in critical battery level loop
@@ -432,7 +444,8 @@ class Monitor(object):
                             print("DEBUG: Hibernate battery level check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times()
+                        self.__check_battery_update_times("Hibernate battery level check (%s() in MainRun class)"
+                                                          % self.run_main_loop.__name__)
                         self.notification.minimal_battery_level(self.__battery_values.battery_current_capacity(),
                                                                 self.__battery_values.battery_time(),
                                                                 self.__short_minimal_battery_command,
@@ -451,6 +464,8 @@ class Monitor(object):
                                                 and self.__battery_values.battery_current_capacity()
                                                 <= self.__battery_minimal_value):
                                             time.sleep(2)
+                                            self.__sound_volume = 10
+                                            self.__set_sound_file_and_volume()
                                             os.popen(self.__sound_command)
                                         # ac plugged, then bye
                                         else:
@@ -487,9 +502,13 @@ class Monitor(object):
                                         os.popen(self.__screenlock_command)
                                         os.popen(self.__minimal_battery_level_command)
                                     else:
+                                        self.__sound_volume = self.__SOUND_VOLUME
+                                        self.__set_sound_file_and_volume()
                                         break
                             # test block
                             elif self.__test:
+                                self.__sound_volume = 10
+                                self.__set_sound_file_and_volume()
                                 for i in range(5):
                                     if self.__play_sound:
                                         os.popen(self.__sound_command)
@@ -497,6 +516,8 @@ class Monitor(object):
                                             and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                                         time.sleep(2)
                                 print("TEST: Hibernating... Program goes sleep for 10sek")
+                                self.__sound_volume = self.__SOUND_VOLUME
+                                self.__set_sound_file_and_volume()
                                 time.sleep(10)
                         else:
                             pass
@@ -534,7 +555,8 @@ class Monitor(object):
                             print("DEBUG: Charging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times()
+                        self.__check_battery_update_times("Charging check (%s() in MainRun class)"
+                                                          % self.run_main_loop.__name__)
                         self.notification.battery_charging(self.__battery_values.battery_current_capacity(),
                                                            self.__battery_values.battery_time())
 

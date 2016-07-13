@@ -23,7 +23,7 @@ Prerequisites:
 
   * Optional
     - libnotify: for pop up notifications
-    - sox: for playing sounds
+    - sox/pulseaudio: for playing sounds
     - screen locker application: to lock user session before hibernating/suspending
     - pm-utils: for hibernate, suspend or shutdown system on critical battery level
       (if not installed, the scripts in 'bin' will be used, see below)
@@ -85,6 +85,8 @@ Notes:
 - Sound file is search by default in the same path where battmon was started,
   you can change this by parsing your path to your sound file using `-sp` argument
   without quotes.
+
+- Battmon looks first for pulseaudio, then alsa
 
 - You can specify your favor lock screen command using `-lp` argument in command line,
   if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
