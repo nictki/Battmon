@@ -86,7 +86,7 @@ Notes:
   you can change this by parsing your path to your sound file using `-sp` argument
   without quotes.
 
-- Battmon looks first for pulseaudio, then alsa
+- Battmon looks first for pulseaudio, then sox
 
 - You can specify your favor lock screen command using `-lp` argument in command line,
   if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
