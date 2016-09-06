@@ -1,3 +1,7 @@
+* Version 0.6.2 (06.09.2016)
+------------------------------------------------------------------------------------------
+- fix some logic in setting default commands
+
 * Version 0.6.1 (10.07.2016)
 ------------------------------------------------------------------------------------------
 - fix crashes when battery/ac adapter was removed/plugged during suspend/hibernate
