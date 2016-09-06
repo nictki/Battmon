@@ -305,7 +305,6 @@ class Monitor(object):
 
         for c in minimal_battery_commands:
             if self.__check_in_path(c):
-                print(self.__check_in_path(c))
                 if c == 'pm-hibernate' and self.__minimal_battery_level_command == "hibernate":
                     hibernate_command = "sudo %s" % self.__current_program_path
                     break
