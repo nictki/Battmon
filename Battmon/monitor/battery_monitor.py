@@ -198,12 +198,14 @@ class Monitor(object):
 
         # if none ware found in path, send notification about it
         if self.__sound_player == '' and self.__found_notify_send_command:
+            self.__sound_command = "Not found"
             self.__play_sound = False
             notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
                                     "You have to install sox or pulseaudio to play sounds" %s %s''' \
                                  % ('-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
             os.popen(notify_send_string)
         elif not self.__found_notify_send_command:
+            self.__sound_command = "Not found"
             self.__play_sound = False
             print("DEPENDENCY MISSING:\n You have to install sox or pulseaudio to play sounds.\n")
 
