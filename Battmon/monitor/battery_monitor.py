@@ -195,20 +195,17 @@ class Monitor(object):
         for i in internal_config.DEFAULT_PLAYER_COMMAND:
             if self.__check_in_path(i):
                 self.__sound_player = self.__current_program_path
-                return True
 
-        # if not found in path, send notification about it
-        if not self.__sound_player == '' and self.__found_notify_send_command:
+        # if none ware found in path, send notification about it
+        if self.__sound_player == '' and self.__found_notify_send_command:
             self.__play_sound = False
             notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
-                                    "You have to install %s to play sounds" %s %s''' \
-                                 % (i, '-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
+                                    "You have to install sox or pulseaudio to play sounds" %s %s''' \
+                                 % ('-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
             os.popen(notify_send_string)
         elif not self.__found_notify_send_command:
             self.__play_sound = False
-            print("DEPENDENCY MISSING:\n You have to install %s to play sounds.\n" % i)
-        else:
-            return False
+            print("DEPENDENCY MISSING:\n You have to install sox or pulseaudio to play sounds.\n")
 
     # check if sound files exist
     def __set_sound_file_and_volume(self):
