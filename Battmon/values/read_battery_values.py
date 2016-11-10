@@ -30,8 +30,7 @@ class BatteryValues(object):
     __is_ac_found = False
 
     # get battery, ac values status
-    @staticmethod
-    def __get_value(v):
+    def __get_value(self, v):
         try:
             with open(v) as value:
                 return value.read().strip()
@@ -40,8 +39,7 @@ class BatteryValues(object):
             return ''
 
     # convert remaining time
-    @staticmethod
-    def __convert_time(battery_time):
+    def __convert_time(self, battery_time):
         if battery_time <= 0:
             return 'Unknown'
 

@@ -1,3 +1,12 @@
+* Version 0.6.4 (10.10.2016)
+------------------------------------------------------------------------------------------
+- small fixes
+- update README, CHANGELOG files
+
+* Version 0.6.3 (19.09.2016)
+------------------------------------------------------------------------------------------
+- fix __check_play() when sound player was not found
+
 * Version 0.6.2 (06.09.2016)
 ------------------------------------------------------------------------------------------
 - fix some logic in setting default commands
@@ -28,7 +37,8 @@
 
 * Version 0.4.10 (20.10.2015)
 ------------------------------------------------------------------------------------------
-- add support for suspend hybrid from pm-utils, from now this is default action on critical battery level
+- add support for suspend hybrid from pm-utils
+  (from now this is default action on critical battery level)
 - drop support for upower dbus interface since is not supported
 - small fixes
 

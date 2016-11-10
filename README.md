@@ -6,9 +6,9 @@ Battmon is simple battery monitoring program written in python for Linux systems
 * works in background
 * compute all battery and ac values through `/sys/class/power_supply` (acpi not needed)
 * sound notifications
-* custom sound file
-* specify favorite screenlock command
-* set favorite battery level values 
+* specify your favorite sound file
+* specify your favorite screenlock command
+* set your favorite battery level values 
 * choose if you want hibernate, suspend or shutdown on minimal battery level
 * pop-up notifications
 * ... and more options can be given through the command line (run ./battmon.py -h/--help)
