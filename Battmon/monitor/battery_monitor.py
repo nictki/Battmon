@@ -388,7 +388,7 @@ class Monitor(object):
                 if not self.__battery_values.is_ac_present() and self.__battery_values.is_battery_discharging():
                     # discharging and battery level is greater then battery_low_value
                     if (not self.__battery_values.is_ac_present()
-                        and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
+                            and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
                         if self.__debug:
                             print("DEBUG: Discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -452,7 +452,7 @@ class Monitor(object):
                                                                 (10 * 1000))
                         # check once more if system should be hibernate
                         if (not self.__battery_values.is_ac_present()
-                            and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
+                                and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                             # the real thing
                             if not self.__test:
                                 if (not self.__battery_values.is_ac_present()
@@ -480,10 +480,11 @@ class Monitor(object):
                                         message_string = ("last chance to plug in AC cable...\n"
                                                           " system will be %s in 10 seconds\n"
                                                           " current capacity: %s%s\n"
-                                                          " time left: %s") % (self.__short_minimal_battery_command,
-                                                                               self.__battery_values.battery_current_capacity(),
-                                                                               '%',
-                                                                               self.__battery_values.battery_time())
+                                                          " time left: %s") % \
+                                                         (self.__short_minimal_battery_command,
+                                                          self.__battery_values.battery_current_capacity(),
+                                                          '%',
+                                                          self.__battery_values.battery_time())
 
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                                                 "%s" %s %s''' \
@@ -554,7 +555,7 @@ class Monitor(object):
                     # ac plugged and battery is charging
                     if (self.__battery_values.is_ac_present()
                         and not self.__battery_values.is_battery_fully_charged()
-                        and not self.__battery_values.is_battery_discharging()):
+                            and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
                             print("DEBUG: Charging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)

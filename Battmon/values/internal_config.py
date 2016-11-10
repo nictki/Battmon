@@ -1,7 +1,7 @@
 import os
 
 PROGRAM_NAME = "Battmon"
-VERSION = "0.6.2-06092016"
+VERSION = "0.6.4-10102016"
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
@@ -38,5 +38,3 @@ DEFAULT_SOUND_FILE_PATH = PROGRAM_PATH + "/sounds/info.wav"
 
 # screenlock commands first found in this list will be used as default
 SCREEN_LOCK_COMMANDS = ['i3lock -c 000000', 'xlock', 'xtrlock -b', 'xscreensaver-command -lock']
-
-
