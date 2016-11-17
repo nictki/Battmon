@@ -1,7 +1,7 @@
 """
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
+the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,26 +23,6 @@ import time
 # local imports
 from values import read_battery_values, internal_config
 from notifications import battery_notifications
-
-
-# set name for this program, thus works 'killall Battmon'
-def set_proc_name(name):
-    # dirty hack to set 'Battmon' process name under python3
-    libc = cdll.LoadLibrary('libc.so.6')
-    if sys.version_info[0] == 3:
-        libc.prctl(15, c_char_p(b'Battmon'), 0, 0, 0)
-    else:
-        libc.prctl(15, name, 0, 0, 0)
-
-
-# check if given program is running
-def check_if_running(name):
-    output = str(subprocess.check_output(['ps', '-A']))
-    # check if process is running
-    if name in output:
-        return True
-    else:
-        return False
 
 
 # main class
@@ -96,7 +76,7 @@ class Monitor(object):
             self.__check_if_battmon_already_running()
 
         # set Battmon process name
-        set_proc_name(internal_config.PROGRAM_NAME)
+        self.__set_proc_name(internal_config.PROGRAM_NAME)
 
         # set default arguments for debug
         if self.__debug:
@@ -156,6 +136,24 @@ class Monitor(object):
         print("- no battery remainder: %smin" % self.__set_no_battery_remainder)
         print("- disable startup notifications: %s\n" % self.__disable_startup_notifications)
 
+    # set name for this program, thus works 'killall Battmon'
+    def __set_proc_name(self, name):
+        # dirty hack to set 'Battmon' process name under python3
+        libc = cdll.LoadLibrary('libc.so.6')
+        if sys.version_info[0] == 3:
+            libc.prctl(15, c_char_p(b'Battmon'), 0, 0, 0)
+        else:
+            libc.prctl(15, name, 0, 0, 0)
+
+    # check if given program is running
+    def __check_if_running(self, name):
+        output = str(subprocess.check_output(['ps', '-A']))
+        # check if process is running
+        if name in output:
+            return True
+        else:
+            return False
+
     # check if in path
     def __check_in_path(self, program_name, path=internal_config.EXTRA_PROGRAMS_PATH):
         try:
@@ -170,7 +168,7 @@ class Monitor(object):
 
     # check if Battmon is already running
     def __check_if_battmon_already_running(self):
-        if check_if_running(internal_config.PROGRAM_NAME):
+        if self.__check_if_running(internal_config.PROGRAM_NAME):
             if self.__play_sound:
                 os.popen(self.__sound_command)
             if self.__found_notify_send_command:
