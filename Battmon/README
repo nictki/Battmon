@@ -7,12 +7,13 @@ especially for tiling window managers like xmonad, dwm or awesome.
 
 Features:
 ----------
-- very light (for really basic functionality you need only python installed)
+- very light (for really basic functionality you need have only python installed)
 - works in background
-- configurable
+- very configurable
 - no tray icon
-- pop-up notifications
+- pop-up notifications (need libnotify)
 - options can be given through the command line (see battmon --help for details)
+- don't have to be run as root user
 
 
 Prerequisites:
@@ -26,33 +27,20 @@ Prerequisites:
     - sox/pulseaudio: for playing sounds
     - screen locker application: to lock user session before hibernating/suspending
     - pm-utils: for hibernate, suspend or shutdown system on critical battery level
-      (if not installed, the scripts in 'bin' will be used, see below)
-
+      (if not installed, the scripts in 'bin' directory will be used, see below)
 
 Usage:
 -------
-- Make battmon executable:
-
-    chmod +x ./battmon.py
-
-  and run:
-
-    ./battmon.py
-
-- or just run:
-
+- Just run
     python ./battmon.py
-
 - To see all available options run Battmon with `-h` or `--help` option.
-
 
 Notes:
 -------
 - Currently systemd/upower isn't supported and probably will never be.
-
-- If you have pm-utils installed, then
-  remember that, this commands must be execute as a root.
-  To do so just edit `/etc/sudoers` file and add something like this, replacing username
+- If you have pm-utils installed, then please
+  remember that, following commands must been execute as a root user.
+  To do so just edit `/etc/sudoers` file and add something  similar like this, replacing 'username'
   with your own user name:
 
     your_username ALL = NOPASSWD: /usr/sbin/pm-hibernate
