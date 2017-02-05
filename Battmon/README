@@ -29,28 +29,15 @@ Prerequisites:
     - pm-utils: for hibernate, suspend or shutdown system on critical battery level
       (if not installed, the scripts in 'bin' directory will be used, see below)
 
-
 Usage:
 -------
-- Make battmon executable:
-
-    chmod +x ./battmon.py
-
-  and run:
-
-    ./battmon.py
-
-- or just run:
-
+- Just run
     python ./battmon.py
-
 - To see all available options run Battmon with `-h` or `--help` option.
-
 
 Notes:
 -------
 - Currently systemd/upower isn't supported and probably will never be.
-
 - If you have pm-utils installed, then please
   remember that, following commands must been execute as a root user.
   To do so just edit `/etc/sudoers` file and add something  similar like this, replacing 'username'
