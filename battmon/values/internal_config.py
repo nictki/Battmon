@@ -17,8 +17,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
 
-PROGRAM_NAME = "Battmon"
-VERSION = "0.6.6-17.02.2017"
+PROGRAM_NAME = "battmon"
+VERSION = "0.6.7"
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
@@ -28,7 +28,7 @@ LICENSE = "GNU GPLv2+"
 DESCRIPTION = ('Simple battery monitoring program written in python especially for tiling window managers '
                'like awesome, dwm, xmonad.')
 
-EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in battmon.py'
+EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LOCK_COMMAND variable in config.py'
           ' or change it by parsing your screenlock command througth -lp argument in command line,'
           ' when you use this argument remember to surround whole your screenlock command with quotes.'
           ' Sound file is search by default in the same path where battmon was started,'

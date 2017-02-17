@@ -27,8 +27,8 @@ except ImportError:
     exit(0)
 
 # local imports
-from values import internal_config
-import config
+from battmon.values import internal_config
+from battmon import config
 
 # Default values parser and command line parameters parser
 ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=internal_config.DESCRIPTION,

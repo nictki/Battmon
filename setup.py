@@ -14,24 +14,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
-try:
-    from values import internal_config
-except ImportError:
-    from values import internal_config
+from distutils.core import setup
+from battmon.values import internal_config
 
 setup(
+
     name=internal_config.PROGRAM_NAME,
     version=internal_config.VERSION,
     license=internal_config.LICENSE,
     description=internal_config.DESCRIPTION,
-    long_description="",
+    packages=['battmon', 'battmon.scripts', 'battmon.monitor', 'battmon.notifications', 'battmon.values', 'battmon.sounds' ],
     author=internal_config.AUTHOR,
     author_email=internal_config.AUTHOR_EMAIL,
-    keywords="battery monitor linux light configurable",
-    scripts=['battmon']
-)
+    )

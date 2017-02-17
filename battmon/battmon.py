@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,9 +15,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 # local imports
-from monitor import battery_monitor
-from values import help_and_values_parser
+from battmon.monitor import battery_monitor
+from battmon.values import help_and_values_parser
 
-if __name__ == '__main__':
+
+# main
+def run_main():
     bt = battery_monitor.Monitor(**vars(help_and_values_parser.args))
     bt.run_main_loop()
+
+
+if __name__ == '__main__':
+    run_main()

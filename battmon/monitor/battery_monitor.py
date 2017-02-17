@@ -20,8 +20,8 @@ import sys
 import time
 from ctypes import cdll, c_char_p
 
-from notifications import battery_notifications
-from values import read_battery_values, internal_config
+from battmon.notifications import battery_notifications
+from battmon.values import read_battery_values, internal_config
 
 
 # main class
