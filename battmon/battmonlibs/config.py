@@ -15,7 +15,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 # local import
-from battmon.values import internal_config
+from battmon.battmonlibs import internal_config
 
 ##############################
 # example configuration file #

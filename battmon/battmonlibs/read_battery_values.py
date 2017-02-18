@@ -21,16 +21,16 @@ import sys
 # battery values class
 class BatteryValues(object):
     def __init__(self):
-        self.__find_battery_and_ac()
+        self._find_battery_and_ac()
 
-    __path = "/sys/class/power_supply/*/"
-    __battery_path = ''
-    __ac_path = ''
-    __is_battery_found = False
-    __is_ac_found = False
+    _path = "/sys/class/power_supply/*/"
+    _battery_path = ''
+    _ac_path = ''
+    _is_battery_found = False
+    _is_ac_found = False
 
     # get battery, ac values status
-    def __get_value(self, v):
+    def _get_value(self, v):
         try:
             with open(v) as value:
                 return value.read().strip()
@@ -39,7 +39,7 @@ class BatteryValues(object):
             return ''
 
     # convert remaining time
-    def __convert_time(self, battery_time):
+    def _convert_time(self, battery_time):
         if battery_time <= 0:
             return 'Unknown'
 
@@ -57,18 +57,18 @@ class BatteryValues(object):
             return '%sh %smin' % (hours, minutes)
 
     # find battery and ac-adapter
-    def __find_battery_and_ac(self):
+    def _find_battery_and_ac(self):
 
         # set values to default
-        self.__battery_path = ''
-        self.__ac_path = ''
-        self.__is_battery_found = False
-        self.__is_ac_found = False
+        self._battery_path = ''
+        self._ac_path = ''
+        self._is_battery_found = False
+        self._is_ac_found = False
 
         try:
-            devices = (glob.glob(self.__path))
+            devices = (glob.glob(self._path))
         except IOError as ioe:
-            print('''Error in '__find_battery_and_ac function': find devices glob''' + str(ioe))
+            print('''Error in '_find_battery_and_ac function': find devices glob''' + str(ioe))
             sys.exit()
 
         for i in devices:
@@ -77,28 +77,28 @@ class BatteryValues(object):
                     d = d.read().split('\n')[0]
                     # set battery and ac path
                     if d == 'Battery':
-                        self.__battery_path = i
-                        self.__is_battery_found = True
+                        self._battery_path = i
+                        self._is_battery_found = True
 
                     if d == 'Mains':
-                        self.__ac_path = i
-                        self.__is_ac_found = True
+                        self._ac_path = i
+                        self._is_ac_found = True
 
             except IOError as ioe:
-                print('''Error in '__find_battery_and_ac in devices' devices iteration problem: ''' + str(ioe))
+                print('''Error in '_find_battery_and_ac in devices' devices iteration problem: ''' + str(ioe))
                 sys.exit()
 
     # get battery time in seconds
-    def __get_battery_times(self):
+    def _get_battery_times(self):
         bat_energy_full = 0
         bat_energy_now = 0
         bat_power_now = 0
 
         # get battery values
         if self.is_battery_present():
-            bat_energy_now = int(self.__get_value(self.__battery_path + 'energy_now'))
-            bat_energy_full = int(self.__get_value(self.__battery_path + 'energy_full'))
-            bat_power_now = int(self.__get_value(self.__battery_path + 'power_now'))
+            bat_energy_now = int(self._get_value(self._battery_path + 'energy_now'))
+            bat_energy_full = int(self._get_value(self._battery_path + 'energy_full'))
+            bat_power_now = int(self._get_value(self._battery_path + 'power_now'))
         if bat_power_now > 0:
             if self.is_battery_discharging():
                 remaining_time = (bat_energy_now * 60 * 60) // bat_power_now
@@ -111,9 +111,9 @@ class BatteryValues(object):
 
     # check if battery is present
     def is_battery_present(self):
-        self.__find_battery_and_ac()
-        if self.__is_battery_found:
-            status = self.__get_value(self.__battery_path + 'present')
+        self._find_battery_and_ac()
+        if self._is_battery_found:
+            status = self._get_value(self._battery_path + 'present')
             if status.find("1") != -1:
                 return True
         else:
@@ -121,9 +121,9 @@ class BatteryValues(object):
 
     # check if ac is present
     def is_ac_present(self):
-        self.__find_battery_and_ac()
-        if self.__is_ac_found:
-            status = self.__get_value(self.__ac_path + 'online')
+        self._find_battery_and_ac()
+        if self._is_ac_found:
+            status = self._get_value(self._ac_path + 'online')
             if status.find("1") != -1:
                 return True
         else:
@@ -132,15 +132,15 @@ class BatteryValues(object):
     # return battery values
     def battery_time(self):
         if self.is_battery_present():
-            return self.__convert_time(self.__get_battery_times())
+            return self._convert_time(self._get_battery_times())
         else:
             return -1
 
     # get current battery capacity
     def battery_current_capacity(self):
         if self.is_battery_present():
-            battery_now = float(self.__get_value(self.__battery_path + 'energy_now'))
-            battery_full = float(self.__get_value(self.__battery_path + 'energy_full'))
+            battery_now = float(self._get_value(self._battery_path + 'energy_now'))
+            battery_full = float(self._get_value(self._battery_path + 'energy_full'))
             return int("%d" % (battery_now / battery_full * 100.0))
 
     # check if battery is fully charged
@@ -153,7 +153,7 @@ class BatteryValues(object):
     # check if battery discharging
     def is_battery_discharging(self):
         if self.is_battery_present() and not self.is_ac_present():
-            status = self.__get_value(self.__battery_path + 'status')
+            status = self._get_value(self._battery_path + 'status')
             if status.find("Discharging") != -1:
                 return True
         else:

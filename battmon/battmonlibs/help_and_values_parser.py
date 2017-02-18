@@ -19,7 +19,7 @@ import sys
 # check for argparse module
 try:
     import argparse
-except ImportError:
+except ImportError as ie:
     print("!!! Unsupported python version !!!")
     print("Supported python version are: >=2.7 and >=3.2")
     print("Your python version is: %s.%s.%s" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
@@ -27,8 +27,9 @@ except ImportError:
     exit(0)
 
 # local imports
-from battmon.values import internal_config
-from battmon import config
+from battmon.battmonlibs import config
+from battmon.battmonlibs import internal_config
+
 
 # Default values parser and command line parameters parser
 ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=internal_config.DESCRIPTION,

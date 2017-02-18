@@ -13,17 +13,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-
 # local imports
-from battmon.monitor import battery_monitor
-from battmon.values import help_and_values_parser
+from battmon.battmonlibs import battery_monitor
+from battmon.battmonlibs import help_and_values_parser
 
 
 # main
 def run_main():
     bt = battery_monitor.Monitor(**vars(help_and_values_parser.args))
     bt.run_main_loop()
-
-
-if __name__ == '__main__':
-    run_main()
