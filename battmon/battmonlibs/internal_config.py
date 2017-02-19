@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
 
-PROGRAM_NAME = "Battmon"
+PROGRAM_NAME = "battmon"
 VERSION = "0.6.7"
 
 AUTHOR = 'nictki'
@@ -45,13 +45,13 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/sbin/',
                        '/usr/libexec/',
                        '/sbin/',
-                       '/usr/share/sounds/',
-                       PROGRAM_PATH + "/scripts/"]
+                       '/usr/share/sounds/'
+                       '/usr/share/doc/' + PROGRAM_NAME + '-' + VERSION + "/scripts"]
 
 # default play command
 DEFAULT_PLAYER_COMMAND = ['paplay', 'play']
 MAX_SOUND_VOLUME_LEVEL = 17
-DEFAULT_SOUND_FILE_PATH = PROGRAM_PATH + "/data/sounds/battmon-info.wav"
+DEFAULT_SOUND_FILE_PATH = "/usr/share/sounds/battmon-info.wav"
 
 # screenlock commands first found in this list will be used as default
 SCREEN_LOCK_COMMANDS = ['i3lock -c 000000', 'xlock', 'xtrlock -b', 'xscreensaver-command -lock']

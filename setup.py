@@ -28,7 +28,14 @@ setup(
     author=internal_config.AUTHOR,
     author_email=internal_config.AUTHOR_EMAIL,
     entry_points={
-          'console_scripts': ['battmon = battmon.battmonlibs.battmon:run_main'],
+          'console_scripts': ['battmon = battmon.battmonlibs.run_battmon:run_main'],
       },
-
+    data_files=[
+        ('/usr/share/sounds', ['data/sounds/battmon-info.wav', 'data/sounds/battmon-warning.wav']),
+        # gentoo specific ?
+        ('/usr/share/doc/' + internal_config.PROGRAM_NAME + '-' + internal_config.VERSION + '/scripts',
+         ['data/scripts/hibernate.sh', 'data/scripts/shutdown.sh', 'data/scripts/suspend.sh']),
+        ('/usr/share/doc/' + internal_config.PROGRAM_NAME + '-' + internal_config.VERSION,
+         ['data/default-battmon.conf']),
+    ],
 )

@@ -14,8 +14,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from battmon.battmonlibs import battmon
+from battmon.battmonlibs import run_battmon
 
 
 if __name__ == '__main__':
-    battmon.run_main()
+    run_battmon.run_main()

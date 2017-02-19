@@ -14,21 +14,74 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import sys
+import argparse
+from os.path import expanduser
 
-# check for argparse module
-try:
-    import argparse
-except ImportError as ie:
-    print("!!! Unsupported python version !!!")
-    print("Supported python version are: >=2.7 and >=3.2")
-    print("Your python version is: %s.%s.%s" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
-    print("Please install argparse from: https://pypi.python.org/pypi/argparse")
-    exit(0)
-
-# local imports
-from battmon.battmonlibs import config
 from battmon.battmonlibs import internal_config
+
+
+# Default config in the when we're not able to parse one
+_DEFAULT_CONFIG = {'NO_BATTERY_REMAINDER': '30',
+                   'BATTERY_UPDATE_INTERVAL': '6',
+                   'DISABLE_NOTIFICATIONS': 'False',
+                   'CRITICAL_NOTIFICATIONS': 'False',
+                   'DISABLE_STARTUP_NOTIFICATIONS': 'True',
+                   'BATTERY_MINIMAL_LEVEL_COMMAND': 'hibernate',
+                   'BATTERY_LOW_LEVEL_VALUE': '23',
+                   'BATTERY_MINIMAL_LEVEL_VALUE': '3',
+                   'SOUND_VOLUME': '3',
+                   'BATTERY_CRITICAL_LEVEL_VALUE': '7',
+                   'PLAY_SOUNDS': 'True',
+                   'SCREEN_LOCK_COMMAND': 'xlock -lockdelay 0',
+                   'NOTIFICATION_TIMEOUT': '6'}
+
+
+def _open_config_file_and_parse_it():
+    _current_user_home_path = expanduser("~")
+    # _current_user_name = getpass.getuser()
+    # check if config is user path
+    _config_parsed = ''
+
+    try:
+        _config_file = open(_current_user_home_path + '/.battmon.conf')
+        _config_parsed = _config_parser(_config_file)
+        _config_file.close()
+    except FileNotFoundError as e:
+        # print("Config file not found: " + str(e))
+        pass
+
+    try:
+        _config_file = open('/etc/battmon.conf')
+        _config_parsed = _config_parser(_config_file)
+        _config_file.close()
+    except FileNotFoundError as e:
+        # print("Config file not found: " + str(e))
+        pass
+
+    if not _config_parsed:
+        return _DEFAULT_CONFIG
+    else:
+        return _config_parsed
+
+
+def _config_parser(config_file):
+    _config_file = {}
+    for i in config_file:
+        try:
+            if not i.startswith('#'):
+                (option, value) = i.split('=', 1)
+                _config_file[option.strip()] = value.strip()
+        except ValueError:
+            pass
+
+    if not len(_config_file) == 0:
+        return _config_file
+    else:
+        print("ERROR: no valid config found!!!\n!!!! THIS INFO SHOULDN'T NEVER APPEAR !!!!")
+
+
+# Parsed config
+_config = _open_config_file_and_parse_it()
 
 
 # Default values parser and command line parameters parser
@@ -45,20 +98,20 @@ defaultOptions = {"debug": False,
                   "test": False,
                   "foreground": False,
                   "more_then_one_instance": False,
-                  "lock_command": config.SCREEN_LOCK_COMMAND,
-                  "disable_notifications": config.DISABLE_NOTIFICATIONS,
-                  "critical": config.CRITICAL_NOTIFICATIONS,
-                  "sound_file": config.SOUND_FILE_PATH,
-                  "play_sound": config.PLAY_SOUNDS,
-                  "sound_volume": config.SOUND_VOLUME,
-                  "timeout": config.NOTIFICATION_TIMEOUT,
-                  "battery_update_timeout": config.BATTERY_UPDATE_INTERVAL,
-                  "battery_low_value": config.BATTERY_LOW_LEVEL_VALUE,
-                  "battery_critical_value": config.BATTERY_CRITICAL_LEVEL_VALUE,
-                  "battery_minimal_value": config.BATTERY_MINIMAL_LEVEL_VALUE,
-                  "minimal_battery_level_command": config.BATTERY_MINIMAL_LEVEL_COMMAND,
-                  "set_no_battery_remainder": config.NO_BATTERY_REMAINDER,
-                  "disable_startup_notifications": config.DISABLE_STARTUP_NOTIFICATIONS}
+                  "lock_command": _config.get('SCREEN_LOCK_COMMAND'),
+                  "disable_notifications": _config.get('DISABLE_NOTIFICATIONS'),
+                  "critical": _config.get('CRITICAL_NOTIFICATIONS'),
+                  "sound_file": internal_config.DEFAULT_SOUND_FILE_PATH,
+                  "play_sound": _config.get('PLAY_SOUNDS'),
+                  "sound_volume": _config.get('SOUND_VOLUME'),
+                  "timeout": _config.get('NOTIFICATION_TIMEOUT'),
+                  "battery_update_timeout": _config.get('BATTERY_UPDATE_INTERVAL'),
+                  "battery_low_value": _config.get('BATTERY_LOW_LEVEL_VALUE'),
+                  "battery_critical_value": _config.get('BATTERY_CRITICAL_LEVEL_VALUE'),
+                  "battery_minimal_value": _config.get('BATTERY_MINIMAL_LEVEL_VALUE'),
+                  "minimal_battery_level_command": _config.get('BATTERY_MINIMAL_LEVEL_COMMAND'),
+                  "set_no_battery_remainder": _config.get('NO_BATTERY_REMAINDER'),
+                  "disable_startup_notifications": _config.get('DISABLE_STARTUP_NOTIFICATIONS')}
 
 ap.add_argument("-v", "--version",
                 action="version",
@@ -293,3 +346,4 @@ def check_battery_minimal_value(minimal_value):
 check_battery_low_value(args.battery_low_value)
 check_battery_critical_value(args.battery_critical_value)
 check_battery_minimal_value(args.battery_minimal_value)
+
