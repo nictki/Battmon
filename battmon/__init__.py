@@ -1,6 +1,6 @@
 
 __program_name__ = 'battmon'
-__version__ = '0.7.0_rc3'
+__version__ = '0.7.0_rc4'
 
 __author__ = 'nictki'
 __author_email__ = 'nictki@gmail.com'
@@ -16,6 +16,9 @@ __epilog__ = ('If you want change default screenlock command, edit DEFAULT_SCREE
               ' Sound file is search by default in the same path where battmon was started,'
               ' you can change this by parsing your path to sound file using -sp argument in command line without quotes.')
 
+
+# screen lockers
+__screen_lock_commands__ = ['i3lock -c 000000', 'xlock', 'xtrlock -b', 'xscreensaver-command -lock']
 
 # path's for external things
 __extra_programs_paths__ = ['/usr/bin/',

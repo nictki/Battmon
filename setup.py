@@ -18,7 +18,6 @@ from setuptools import setup
 
 import battmon
 
-
 setup(
     name=battmon.__program_name__,
     version=battmon.__version__,
@@ -26,6 +25,7 @@ setup(
     description=battmon.__description__,
     packages=['battmon', 'battmon.battmonlibs'],
     author=battmon.__author__,
+    url=battmon.__url__,
     author_email=battmon.__author_email__,
     entry_points={
           'console_scripts': ['battmon = battmon.battmonlibs.run_battmon:run_main'],
@@ -41,8 +41,9 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'Topic :: Linux :: Battery Monitor',
-        'License :: OSI Approved :: GNU GPLv2+',
+        'Operating System :: POSIX :: Linux',
+        'Environment :: Console',
+        'Topic :: System',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
