@@ -26,7 +26,7 @@ _DEFAULT_CONFIG = {'no_battery_remainder': '30',
                    'disable_startup_notifications': 'True',
                    'battery_minimal_level_command': 'hibernate',
                    'battery_low_level_value': '23',
-                   'battery_critical_level_value': '23',
+                   'battery_critical_level_value': '7',
                    'battery_minimal_level_value': '3',
                    'sound_volume': '3',
                    'play_sounds': 'True',
@@ -55,6 +55,8 @@ def _open_config_file_and_parse_it():
     except IOError:
         # print("Config file not found: " + str(e))
         pass
+
+    print(_config_parsed)
 
     if not _config_parsed:
         return _DEFAULT_CONFIG

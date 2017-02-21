@@ -1,6 +1,6 @@
 
 __program_name__ = 'battmon'
-__version__ = '0.7.0_rc2'
+__version__ = '0.7.0_rc3'
 
 __author__ = 'nictki'
 __author_email__ = 'nictki@gmail.com'
@@ -27,7 +27,7 @@ __extra_programs_paths__ = ['/usr/bin/',
                             '/sbin/',
                             '/usr/share/sounds/']
 
-__default_sound_file_path = '/usr/share/sounds'
+__default_sound_file_path = '/usr/share/sounds/battmon-info.wav'
 
 # default play command
 __default_player_command__ = ['paplay', 'play']
