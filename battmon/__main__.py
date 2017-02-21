@@ -16,6 +16,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from battmon.battmonlibs import run_battmon
 
-
 if __name__ == '__main__':
     run_battmon.run_main()

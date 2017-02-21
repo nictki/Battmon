@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import os
 import time
 
-from battmon.battmonlibs import internal_config
+import battmon
 
 
 # deal with standard battery notifications
@@ -43,7 +43,7 @@ class BatteryNotifications(object):
             if self._notify_send:
                 notify_send_string = '''notify-send "DISCHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (capacity, '%', battery_time, '-t ' + str(self._timeout),
-                                        '-a ' + internal_config.PROGRAM_NAME)
+                                        '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("DISCHARGING")
@@ -62,7 +62,7 @@ class BatteryNotifications(object):
                 notify_send_string = '''notify-send "LOW BATTERY LEVEL\n" \
                                      "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (capacity, '%', battery_time, '-t ' + str(self._timeout),
-                                        '-a ' + internal_config.PROGRAM_NAME)
+                                        '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("LOW BATTERY LEVEL")
@@ -81,7 +81,7 @@ class BatteryNotifications(object):
                 notify_send_string = '''notify-send "CRITICAL BATTERY LEVEL\n" \
                                      "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (capacity, '%', battery_time, '-t ' + str(self._timeout),
-                                        '-a ' + internal_config.PROGRAM_NAME)
+                                        '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("CRITICAL BATTERY LEVEL")
@@ -103,7 +103,7 @@ class BatteryNotifications(object):
 
                 notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" "%s" %s %s''' \
                                      % (message_string, '-t ' + str(notification_timeout),
-                                        '-a ' + internal_config.PROGRAM_NAME)
+                                        '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("!!! MINIMAL BATTERY LEVEL !!!")
@@ -120,7 +120,7 @@ class BatteryNotifications(object):
                 os.popen(self._sound_command)
             if self._notify_send:
                 notify_send_string = '''notify-send "BATTERY FULL" %s %s''' \
-                                     % ('-t ' + str(self._timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % ('-t ' + str(self._timeout), '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("BATTERY FULL")
@@ -138,7 +138,7 @@ class BatteryNotifications(object):
             if self._notify_send:
                 notify_send_string = '''notify-send "CHARGING\n" "current capacity: %s%s\n time left: %s" %s %s''' \
                                      % (capacity, '%', battery_time, '-t ' + str(self._timeout),
-                                        '-a ' + internal_config.PROGRAM_NAME)
+                                        '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("CHARGING")
@@ -156,7 +156,7 @@ class BatteryNotifications(object):
                 os.popen(self._sound_command)
             if self._notify_send:
                 notify_send_string = '''notify-send "!!! BATTERY REMOVED !!!" %s %s''' \
-                                     % ('-t ' + str(self._timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % ('-t ' + str(self._timeout), '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("!!! BATTERY REMOVED !!!")
@@ -174,7 +174,7 @@ class BatteryNotifications(object):
                 os.popen(self._sound_command)
             if self._notify_send:
                 notify_send_string = '''notify-send "BATTERY PLUGGED " %s %s''' \
-                                     % ('-t ' + str(self._timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % ('-t ' + str(self._timeout), '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("Battery plugged !!!")
@@ -192,7 +192,7 @@ class BatteryNotifications(object):
                 os.popen(self._sound_command)
             if self._notify_send:
                 notify_send_string = '''notify-send "!!! NO BATTERY !!!" %s %s''' \
-                                     % ('-t ' + str(self._timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % ('-t ' + str(self._timeout), '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
             elif not self._notify_send:
                 print("!!! NO BATTERY !!!")

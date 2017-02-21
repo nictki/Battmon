@@ -15,25 +15,23 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 import argparse
+import battmon
 from os.path import expanduser
 
-from battmon.battmonlibs import internal_config
-
-
 # Default config in the when we're not able to parse one
-_DEFAULT_CONFIG = {'NO_BATTERY_REMAINDER': '30',
-                   'BATTERY_UPDATE_INTERVAL': '6',
-                   'DISABLE_NOTIFICATIONS': 'False',
-                   'CRITICAL_NOTIFICATIONS': 'False',
-                   'DISABLE_STARTUP_NOTIFICATIONS': 'True',
-                   'BATTERY_MINIMAL_LEVEL_COMMAND': 'hibernate',
-                   'BATTERY_LOW_LEVEL_VALUE': '23',
-                   'BATTERY_MINIMAL_LEVEL_VALUE': '3',
-                   'SOUND_VOLUME': '3',
-                   'BATTERY_CRITICAL_LEVEL_VALUE': '7',
-                   'PLAY_SOUNDS': 'True',
-                   'SCREEN_LOCK_COMMAND': 'xlock -lockdelay 0',
-                   'NOTIFICATION_TIMEOUT': '6'}
+_DEFAULT_CONFIG = {'no_battery_remainder': '30',
+                   'battery_update_interval': '6',
+                   'disable_notifications': 'False',
+                   'critical_notifications': 'False',
+                   'disable_startup_notifications': 'True',
+                   'battery_minimal_level_command': 'hibernate',
+                   'battery_low_level_value': '23',
+                   'battery_critical_level_value': '23',
+                   'battery_minimal_level_value': '3',
+                   'sound_volume': '3',
+                   'play_sounds': 'True',
+                   'screen_lock_command': 'xlock -lockdelay 0',
+                   'notification_timeout': '6'}
 
 
 def _open_config_file_and_parse_it():
@@ -46,7 +44,7 @@ def _open_config_file_and_parse_it():
         _config_file = open(_current_user_home_path + '/.battmon.conf')
         _config_parsed = _config_parser(_config_file)
         _config_file.close()
-    except FileNotFoundError as e:
+    except IOError:
         # print("Config file not found: " + str(e))
         pass
 
@@ -54,7 +52,7 @@ def _open_config_file_and_parse_it():
         _config_file = open('/etc/battmon.conf')
         _config_parsed = _config_parser(_config_file)
         _config_file.close()
-    except FileNotFoundError as e:
+    except IOError:
         # print("Config file not found: " + str(e))
         pass
 
@@ -83,11 +81,10 @@ def _config_parser(config_file):
 # Parsed config
 _config = _open_config_file_and_parse_it()
 
-
 # Default values parser and command line parameters parser
-ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=internal_config.DESCRIPTION,
+ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=battmon.__description__,
                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                             epilog=internal_config.EPILOG)  # group parsers
+                             epilog=battmon.__epilog__)  # group parsers
 file_group = ap.add_argument_group("File path arguments")
 battery_group = ap.add_argument_group("Battery arguments")
 sound_group = ap.add_argument_group("Sound arguments")
@@ -98,24 +95,24 @@ defaultOptions = {"debug": False,
                   "test": False,
                   "foreground": False,
                   "more_then_one_instance": False,
-                  "lock_command": _config.get('SCREEN_LOCK_COMMAND'),
-                  "disable_notifications": _config.get('DISABLE_NOTIFICATIONS'),
-                  "critical": _config.get('CRITICAL_NOTIFICATIONS'),
-                  "sound_file": internal_config.DEFAULT_SOUND_FILE_PATH,
-                  "play_sound": _config.get('PLAY_SOUNDS'),
-                  "sound_volume": _config.get('SOUND_VOLUME'),
-                  "timeout": _config.get('NOTIFICATION_TIMEOUT'),
-                  "battery_update_timeout": _config.get('BATTERY_UPDATE_INTERVAL'),
-                  "battery_low_value": _config.get('BATTERY_LOW_LEVEL_VALUE'),
-                  "battery_critical_value": _config.get('BATTERY_CRITICAL_LEVEL_VALUE'),
-                  "battery_minimal_value": _config.get('BATTERY_MINIMAL_LEVEL_VALUE'),
-                  "minimal_battery_level_command": _config.get('BATTERY_MINIMAL_LEVEL_COMMAND'),
-                  "set_no_battery_remainder": _config.get('NO_BATTERY_REMAINDER'),
-                  "disable_startup_notifications": _config.get('DISABLE_STARTUP_NOTIFICATIONS')}
+                  "lock_command": _config.get('screen_lock_command'),
+                  "disable_notifications": _config.get('disable_notifications'),
+                  "critical": _config.get('critical_notifications'),
+                  "sound_file": battmon.__default_sound_file_path,
+                  "play_sound": _config.get('play_sounds'),
+                  "sound_volume": _config.get('sound_volume'),
+                  "timeout": _config.get('notification_timeout'),
+                  "battery_update_timeout": _config.get('battery_update_interval'),
+                  "battery_low_value": _config.get('battery_low_level_value'),
+                  "battery_critical_value": _config.get('battery_critical_level_value'),
+                  "battery_minimal_value": _config.get('battery_minimal_level_value'),
+                  "minimal_battery_level_command": _config.get('battery_minimal_level_command'),
+                  "set_no_battery_remainder": _config.get('no_battery_remainder'),
+                  "disable_startup_notifications": _config.get('disable_startup_notifications')}
 
 ap.add_argument("-v", "--version",
                 action="version",
-                version=internal_config.VERSION)
+                version=battmon.__version__)
 
 # debug options
 ap.add_argument("-d", "--debug",
@@ -191,9 +188,9 @@ def set_sound_volume_level(volume_value):
     volume_value = int(volume_value)
     if volume_value < 1:
         raise argparse.ArgumentError(volume_value, "Sound level must be greater then 1")
-    if volume_value > internal_config.MAX_SOUND_VOLUME_LEVEL:
+    if volume_value > battmon.__max_sound_volume_level__:
         raise argparse.ArgumentError(volume_value,
-                                     "Sound level can't be greater then %s" % internal_config.MAX_SOUND_VOLUME_LEVEL)
+                                     "Sound level can't be greater then %s" % battmon.__max_sound_volume_level__)
     return volume_value
 
 
@@ -201,7 +198,7 @@ def set_sound_volume_level(volume_value):
 sound_group.add_argument("-sl", "--set-sound-loudness",
                          dest="sound_volume",
                          type=set_sound_volume_level,
-                         metavar="<1-%d>" % internal_config.MAX_SOUND_VOLUME_LEVEL,
+                         metavar="<1-%d>" % battmon.__max_sound_volume_level__,
                          default=defaultOptions['sound_volume'],
                          help="sound volume level")
 
@@ -346,4 +343,3 @@ def check_battery_minimal_value(minimal_value):
 check_battery_low_value(args.battery_low_value)
 check_battery_critical_value(args.battery_critical_value)
 check_battery_minimal_value(args.battery_minimal_value)
-

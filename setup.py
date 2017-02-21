@@ -16,26 +16,26 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from setuptools import setup
 
-from battmon.battmonlibs import internal_config
+import battmon
+
 
 setup(
-
-    name=internal_config.PROGRAM_NAME,
-    version=internal_config.VERSION,
-    license=internal_config.LICENSE,
-    description=internal_config.DESCRIPTION,
+    name=battmon.__program_name__,
+    version=battmon.__version__,
+    license=battmon.__licence__,
+    description=battmon.__description__,
     packages=['battmon', 'battmon.battmonlibs'],
-    author=internal_config.AUTHOR,
-    author_email=internal_config.AUTHOR_EMAIL,
+    author=battmon.__author__,
+    author_email=battmon.__author_email__,
     entry_points={
           'console_scripts': ['battmon = battmon.battmonlibs.run_battmon:run_main'],
       },
     data_files=[
         ('/usr/share/sounds', ['data/sounds/battmon-info.wav', 'data/sounds/battmon-warning.wav']),
         # gentoo specific ?
-        ('/usr/share/doc/' + internal_config.PROGRAM_NAME + '-' + internal_config.VERSION + '/scripts',
+        ('/usr/share/doc/' + battmon.__program_name__ + '-' + battmon.__version__ + '/scripts',
          ['data/scripts/hibernate.sh', 'data/scripts/shutdown.sh', 'data/scripts/suspend.sh']),
-        ('/usr/share/doc/' + internal_config.PROGRAM_NAME + '-' + internal_config.VERSION,
+        ('/usr/share/doc/' + battmon.__program_name__ + '-' + battmon.__version__,
          ['data/default-battmon.conf']),
     ],
 )
