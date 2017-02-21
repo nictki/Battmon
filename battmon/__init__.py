@@ -1,6 +1,6 @@
 
 __program_name__ = 'battmon'
-__version__ = '0.7.0_rc1'
+__version__ = '0.7.0_rc2'
 
 __author__ = 'nictki'
 __author_email__ = 'nictki@gmail.com'

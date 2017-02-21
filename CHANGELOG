@@ -6,7 +6,7 @@
 - updated documentation
 - added gentoo ebuilds
 - no functionality changes in compare to previous versions
-- scripts are now installed by default in /usr/local/sbin
+- scripts are now installed by default in /usr/doc/<battmon>-<version>/scripts
 - sound files are now installed by default in /usr/share/sounds
 
 * Version 0.6.7

@@ -32,10 +32,22 @@ setup(
       },
     data_files=[
         ('/usr/share/sounds', ['data/sounds/battmon-info.wav', 'data/sounds/battmon-warning.wav']),
-        # gentoo specific ?
+        # for gentoo paths
         ('/usr/share/doc/' + battmon.__program_name__ + '-' + battmon.__version__ + '/scripts',
          ['data/scripts/hibernate.sh', 'data/scripts/shutdown.sh', 'data/scripts/suspend.sh']),
         ('/usr/share/doc/' + battmon.__program_name__ + '-' + battmon.__version__,
          ['data/default-battmon.conf']),
+    ],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Topic :: Linux :: Battery Monitor',
+        'License :: OSI Approved :: GNU GPLv2+',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
     ],
 )
