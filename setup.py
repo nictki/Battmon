@@ -16,26 +16,28 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from setuptools import setup
 
-from battmon.battmonlibs import internal_config
+from battmon.battmonlibs import help_and_values_parser
+
+_config = help_and_values_parser.populate_internal_config()
 
 setup(
-
-    name=internal_config.PROGRAM_NAME,
-    version=internal_config.VERSION,
-    license=internal_config.LICENSE,
-    description=internal_config.DESCRIPTION,
+    # GNU GPLv2+
+    name=_config.get('PROGRAM_NAME'),
+    version=_config.get('VERSION'),
+    license=_config.get('LICENSE'),
+    description=_config.get('DESCRIPTION'),
     packages=['battmon', 'battmon.battmonlibs'],
-    author=internal_config.AUTHOR,
-    author_email=internal_config.AUTHOR_EMAIL,
+    author=_config.get('AUTHOR'),
+    author_email=_config.get('AUTHOR_EMAIL'),
     entry_points={
           'console_scripts': ['battmon = battmon.battmonlibs.run_battmon:run_main'],
       },
     data_files=[
         ('/usr/share/sounds', ['data/sounds/battmon-info.wav', 'data/sounds/battmon-warning.wav']),
         # gentoo specific ?
-        ('/usr/share/doc/' + internal_config.PROGRAM_NAME + '-' + internal_config.VERSION + '/scripts',
+        ('/usr/share/doc/' + _config.get('PROGRAM_NAME') + '-' + _config.get('VERSION') + '/scripts',
          ['data/scripts/hibernate.sh', 'data/scripts/shutdown.sh', 'data/scripts/suspend.sh']),
-        ('/usr/share/doc/' + internal_config.PROGRAM_NAME + '-' + internal_config.VERSION,
+        ('/usr/share/doc/' + _config.get('PROGRAM_NAME') + '-' + _config.get('VERSION'),
          ['data/default-battmon.conf']),
     ],
 )

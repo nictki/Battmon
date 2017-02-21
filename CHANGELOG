@@ -1,3 +1,20 @@
+* Version 0.7.0-rc1
+------------------------------------------------------------------------------------------
+- now available on PyPi
+- added configurations file for user
+- refactoring
+- updated documentation
+- added gentoo ebuilds
+- no functionality changes in compare to previous versions
+- scripts are now installed by default in /usr/local/sbin
+- sound files are now installed by default in /usr/share/sounds
+
+* Version 0.6.7
+------------------------------------------------------------------------------------------
+- last version from 0.6.x series
+- small fixes
+- update README, CHANGELOG files
+
 * Version 0.6.6
 ------------------------------------------------------------------------------------------
 - small fixes

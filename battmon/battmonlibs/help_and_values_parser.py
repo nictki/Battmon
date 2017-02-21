@@ -15,10 +15,42 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 import argparse
+import os
 from os.path import expanduser
 
-from battmon.battmonlibs import internal_config
+__program_name__ = 'battmon'
+__version__ = ''
 
+_INTERNAL_CONFIG = {'PROGRAM_NAME': __program_name__,
+                    'VERSION': __version__,
+                    'AUTHOR': 'nictki',
+                    'AUTHOR_EMAIL': 'nictki@gmail.com',
+                    'URL': 'https://github.com/nictki/Battmon/tree/master/Battmon',
+                    'LICENSE': 'GNU GPLv2+',
+                    'DESCRIPTION': (
+                        'Simple battery monitoring program written in python especially for tiling window managers '
+                        'like awesome, dwm, xmonad.'),
+                    'EPILOG': (
+                        'If you want change default screenlock command, edit SCREEN_LOCK_COMMAND variable in config.py file'
+                        ' or change it by parsing your screenlock command througth -lp argument in command line,'
+                        ' when you use this argument remember to surround whole your screenlock command with quotes.'
+                        ' Sound file is search by default in the same path where battmon was started,'
+                        ' you can change this by parsing your path to sound file using -sp argument in command line without quotes.'),
+                    'PROGRAM_PATH': os.path.split(os.path.dirname(os.path.realpath(__file__))),
+                    'EXTRA_PROGRAMS_PATHS': ['/usr/bin/',
+                                             '/usr/local/bin/',
+                                             '/usr/local/sbin/',
+                                             '/bin/',
+                                             '/usr/sbin/',
+                                             '/usr/libexec/',
+                                             '/sbin/',
+                                             '/usr/share/sounds/',
+                                             '/usr/share/doc/' + __program_name__ + '-' + __version__ + '/scripts'],
+                    'DEFAULT_PLAYER_COMMAND': ['paplay', 'play'],
+                    'MAX_SOUND_VOLUME_LEVEL': 17,
+                    'DEFAULT_SOUND_FILE_PATH': '/usr/share/sounds/battmon-info.wav',
+                    'SCREEN_LOCK_COMMANDS': ['i3lock -c 000000', 'xlock', 'xtrlock -b', 'xscreensaver-command -lock'],
+                    }
 
 # Default config in the when we're not able to parse one
 _DEFAULT_CONFIG = {'NO_BATTERY_REMAINDER': '30',
@@ -46,7 +78,7 @@ def _open_config_file_and_parse_it():
         _config_file = open(_current_user_home_path + '/.battmon.conf')
         _config_parsed = _config_parser(_config_file)
         _config_file.close()
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         # print("Config file not found: " + str(e))
         pass
 
@@ -54,7 +86,7 @@ def _open_config_file_and_parse_it():
         _config_file = open('/etc/battmon.conf')
         _config_parsed = _config_parser(_config_file)
         _config_file.close()
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         # print("Config file not found: " + str(e))
         pass
 
@@ -80,14 +112,17 @@ def _config_parser(config_file):
         print("ERROR: no valid config found!!!\n!!!! THIS INFO SHOULDN'T NEVER APPEAR !!!!")
 
 
+def populate_internal_config():
+    return _INTERNAL_CONFIG
+
+
 # Parsed config
 _config = _open_config_file_and_parse_it()
 
-
 # Default values parser and command line parameters parser
-ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=internal_config.DESCRIPTION,
+ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=_INTERNAL_CONFIG.get('DESCRIPTION'),
                              formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-                             epilog=internal_config.EPILOG)  # group parsers
+                             epilog=_INTERNAL_CONFIG.get('EPILOG'))  # group parsers
 file_group = ap.add_argument_group("File path arguments")
 battery_group = ap.add_argument_group("Battery arguments")
 sound_group = ap.add_argument_group("Sound arguments")
@@ -101,7 +136,7 @@ defaultOptions = {"debug": False,
                   "lock_command": _config.get('SCREEN_LOCK_COMMAND'),
                   "disable_notifications": _config.get('DISABLE_NOTIFICATIONS'),
                   "critical": _config.get('CRITICAL_NOTIFICATIONS'),
-                  "sound_file": internal_config.DEFAULT_SOUND_FILE_PATH,
+                  "sound_file": _INTERNAL_CONFIG.get('DEFAULT_SOUND_FILE_PATH'),
                   "play_sound": _config.get('PLAY_SOUNDS'),
                   "sound_volume": _config.get('SOUND_VOLUME'),
                   "timeout": _config.get('NOTIFICATION_TIMEOUT'),
@@ -115,7 +150,7 @@ defaultOptions = {"debug": False,
 
 ap.add_argument("-v", "--version",
                 action="version",
-                version=internal_config.VERSION)
+                version=_INTERNAL_CONFIG.get('VERSION'))
 
 # debug options
 ap.add_argument("-d", "--debug",
@@ -191,9 +226,10 @@ def set_sound_volume_level(volume_value):
     volume_value = int(volume_value)
     if volume_value < 1:
         raise argparse.ArgumentError(volume_value, "Sound level must be greater then 1")
-    if volume_value > internal_config.MAX_SOUND_VOLUME_LEVEL:
+    if volume_value > _INTERNAL_CONFIG.get('MAX_SOUND_VOLUME_LEVEL'):
         raise argparse.ArgumentError(volume_value,
-                                     "Sound level can't be greater then %s" % internal_config.MAX_SOUND_VOLUME_LEVEL)
+                                     "Sound level can't be greater then %s" % _INTERNAL_CONFIG.get(
+                                         'MAX_SOUND_VOLUME_LEVEL'))
     return volume_value
 
 
@@ -201,7 +237,7 @@ def set_sound_volume_level(volume_value):
 sound_group.add_argument("-sl", "--set-sound-loudness",
                          dest="sound_volume",
                          type=set_sound_volume_level,
-                         metavar="<1-%d>" % internal_config.MAX_SOUND_VOLUME_LEVEL,
+                         metavar="<1-%d>" % _INTERNAL_CONFIG.get('MAX_SOUND_VOLUME_LEVEL'),
                          default=defaultOptions['sound_volume'],
                          help="sound volume level")
 
@@ -346,4 +382,3 @@ def check_battery_minimal_value(minimal_value):
 check_battery_low_value(args.battery_low_value)
 check_battery_critical_value(args.battery_critical_value)
 check_battery_minimal_value(args.battery_minimal_value)
-

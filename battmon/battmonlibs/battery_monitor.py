@@ -22,7 +22,7 @@ from ctypes import cdll, c_char_p
 
 from battmon.battmonlibs import battery_notifications
 from battmon.battmonlibs import read_battery_values
-from battmon.battmonlibs import internal_config
+from battmon.battmonlibs import help_and_values_parser
 
 
 # main class
@@ -32,6 +32,8 @@ class Monitor(object):
                  timeout=None, battery_update_timeout=None, battery_low_value=None, battery_critical_value=None,
                  battery_minimal_value=None, minimal_battery_level_command=None, set_no_battery_remainder=None,
                  disable_startup_notifications=None):
+
+        self._internal_config = help_and_values_parser.populate_internal_config()
 
         # parameters
         self._debug = debug
@@ -76,7 +78,7 @@ class Monitor(object):
             self._check_if_battmon_already_running()
 
         # set Battmon process name
-        self._set_proc_name(internal_config.PROGRAM_NAME)
+        self._set_proc_name(self._internal_config.get('PROGRAM_NAME'))
 
         # set default arguments for debug
         if self._debug:
@@ -114,7 +116,7 @@ class Monitor(object):
         self.__SOUND_VOLUME = self._sound_volume
 
     def __print_debug_info(self):
-        print("- Battmon version: %s" % internal_config.VERSION)
+        print("- Battmon version: %s" % self._internal_config.get('VERSION'))
         print("- python version: %s.%s.%s\n" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
         print("- debug: %s" % self._debug)
         print("- dry run: %s" % self._test)
@@ -155,7 +157,10 @@ class Monitor(object):
             return False
 
     # check if in path
-    def _check_in_path(self, program_name, path=internal_config.EXTRA_PROGRAMS_PATH):
+    def _check_in_path(self, program_name, extra_path=''):
+        path = self._internal_config.get('EXTRA_PROGRAMS_PATHS')
+        if extra_path is not None:
+            path.append(extra_path)
         try:
             for p in path:
                 if os.path.isfile(p + program_name):
@@ -168,12 +173,12 @@ class Monitor(object):
 
     # check if Battmon is already running
     def _check_if_battmon_already_running(self):
-        if self._check_if_running(internal_config.PROGRAM_NAME):
+        if self._check_if_running(self._internal_config.get('PROGRAM_NAME')):
             if self._play_sound:
                 os.popen(self._sound_command)
             if self._found_notify_send_command:
                 notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING" %s %s''' \
-                                     % ('-t ' + str(self._timeout), '-a ' + internal_config.PROGRAM_NAME)
+                                     % ('-t ' + str(self._timeout), '-a ' + self._internal_config.get('PROGRAM_NAME'))
                 os.popen(notify_send_string)
                 sys.exit(1)
             else:
@@ -190,7 +195,7 @@ class Monitor(object):
 
     # check if we have sound player
     def _check_play(self):
-        for i in internal_config.DEFAULT_PLAYER_COMMAND:
+        for i in self._internal_config.get('DEFAULT_PLAYER_COMMAND'):
             if self._check_in_path(i):
                 self._sound_player = self._current_program_path
 
@@ -200,7 +205,7 @@ class Monitor(object):
             self._play_sound = False
             notify_send_string = '''notify-send "DEPENDENCY MISSING\n" \
                                     "You have to install sox or pulseaudio to play sounds" %s %s''' \
-                                 % ('-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
+                                 % ('-t ' + str(30 * 1000), '-a ' + self._internal_config.get('PROGRAM_NAME'))
             os.popen(notify_send_string)
         elif not self._found_notify_send_command:
             self._sound_command = "Not found"
@@ -223,7 +228,7 @@ class Monitor(object):
                                   " If you've specified your own sound file path, "
                                   " please check if it was correctly") % self._sound_file
                 notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + self._internal_config.get('PROGRAM_NAME'))
                 os.popen(notify_send_string)
             if not self._found_notify_send_command:
                 print("DEPENDENCY MISSING:\n Check if you have sound files in %s. \n"
@@ -234,7 +239,7 @@ class Monitor(object):
     # check for lock screen program
     def _set_lock_command(self):
         if self._screenlock_command == '':
-            for c in internal_config.SCREEN_LOCK_COMMANDS:
+            for c in self._internal_config.get('SCREEN_LOCK_COMMANDS'):
                 # check if the given command was found in given path
                 lock_command_as_list = c.split()
                 command = lock_command_as_list[0]
@@ -245,7 +250,7 @@ class Monitor(object):
                         notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
                                              % (
                                                  command, command_args, '-t ' + str(self._timeout),
-                                                 '-a ' + internal_config.PROGRAM_NAME)
+                                                 '-a ' + self._internal_config.get('PROGRAM_NAME'))
                         os.popen(notify_send_string)
                     elif not self._disable_startup_notifications:
                         print("%s %s will be used to lock screen" % (command, command_args))
@@ -260,7 +265,7 @@ class Monitor(object):
                                       " otherwise your session won't be locked")
                     notify_send_string = '''notify-send "DEPENDENCY MISSING\n" "%s" %s %s''' \
                                          % (message_string, '-t ' + str(30 * 1000),
-                                            '-a ' + internal_config.PROGRAM_NAME)
+                                            '-a ' + self._internal_config.get('PROGRAM_NAME'))
                     os.popen(notify_send_string)
                 if not self._found_notify_send_command:
                     print("DEPENDENCY MISSING:\n please check if you have installed any screenlock program, \
@@ -274,7 +279,7 @@ class Monitor(object):
             if self._found_notify_send_command and not self._disable_startup_notifications:
                 notify_send_string = '''notify-send "Using '%s' to lock screen\n" "with args: %s" %s %s''' \
                                      % (command, command_args, '-t ' + str(self._timeout),
-                                        '-a ' + internal_config.PROGRAM_NAME)
+                                        '-a ' + self._internal_config.get('PROGRAM_NAME'))
                 os.popen(notify_send_string)
             elif not self._disable_startup_notifications:
                 print("%s %s will be used to lock screen" % (command, command_args))
@@ -322,8 +327,7 @@ class Monitor(object):
                     power_off_command = "sudo %s" % self._current_program_path
                     break
             else:
-                self._check_in_path('shutdown.sh')
-                power_off_command = "sudo %s/scripts/shutdown.sh" % internal_config.PROGRAM_PATH
+                power_off_command = "sudo /usr/local/sbin/shutdown.sh"
 
         if hibernate_command:
             self._minimal_battery_level_command = hibernate_command
@@ -346,7 +350,7 @@ class Monitor(object):
                                   " suspend.sh files in scripts folder, \n"
                                   " otherwise your system will be SHUTDOWN on critical\n battery level")
                 notify_send_string = '''notify-send "MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n" "%s" %s %s''' \
-                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + internal_config.PROGRAM_NAME)
+                                     % (message_string, '-t ' + str(30 * 1000), '-a ' + self._internal_config.get('PROGRAM_NAME'))
                 os.popen(notify_send_string)
             elif not self._found_notify_send_command:
                 print('''MINIMAL BATTERY VALUE PROGRAM NOT FOUND\n
@@ -356,7 +360,7 @@ class Monitor(object):
         if self._found_notify_send_command and not self._disable_startup_notifications:
             notify_send_string = '''notify-send "System will be: %s\n" "below minimal battery level" %s %s''' \
                                  % (self._short_minimal_battery_command, '-t ' + str(self._timeout),
-                                    '-a ' + internal_config.PROGRAM_NAME)
+                                    '-a ' + self._internal_config.get('PROGRAM_NAME'))
             os.popen(notify_send_string)
         elif not self._disable_startup_notifications and not self._found_notify_send_command:
             print("below minimal battery level system will be: %s" % self._short_minimal_battery_command)
@@ -487,7 +491,7 @@ class Monitor(object):
                                         notify_send_string = '''notify-send "!!! MINIMAL BATTERY LEVEL !!!\n" \
                                                                 "%s" %s %s''' \
                                                              % (message_string, '-t ' + str(10 * 1000),
-                                                                '-a ' + internal_config.PROGRAM_NAME)
+                                                                '-a ' + self._internal_config.get('PROGRAM_NAME'))
                                         os.popen(notify_send_string)
                                         time.sleep(10)
                                     # LAST CHECK before hibernating
