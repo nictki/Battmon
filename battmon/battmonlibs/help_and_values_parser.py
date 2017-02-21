@@ -15,8 +15,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 import argparse
+import os
+import sys
+
 import battmon
 from os.path import expanduser
+
+_internal_config_token = 'USING INTERNAL CONFIG'
 
 # Default config in the when we're not able to parse one
 _DEFAULT_CONFIG = {'no_battery_remainder': '30',
@@ -31,37 +36,74 @@ _DEFAULT_CONFIG = {'no_battery_remainder': '30',
                    'sound_volume': '3',
                    'play_sounds': 'True',
                    'screen_lock_command': 'xlock -lockdelay 0',
-                   'notification_timeout': '6'}
+                   'notification_timeout': '6',
+                   'config_file': ''}
 
 
-def _open_config_file_and_parse_it():
+def _check_if_config_is_valid(c):
+    if c is None:
+        c = _DEFAULT_CONFIG
+    if c is not _DEFAULT_CONFIG:
+        for key in c:
+            if key not in _DEFAULT_CONFIG:
+                return key + ' : is not a valid configuration option!'
+
+
+def _open_config_file_and_parse_it(c=None):
     _current_user_home_path = expanduser("~")
     # _current_user_name = getpass.getuser()
     # check if config is user path
     _config_parsed = ''
+    _current_config_file = ''
+
+    if c is not None:
+        try:
+            _cf = open(c)
+            _config_parsed = _config_parser(_cf)
+            _current_config_file = _cf.name
+            _cf.close()
+        except IOError:
+            # print("Config file not found: " + str(e))
+            pass
 
     try:
-        _config_file = open(_current_user_home_path + '/.battmon.conf')
-        _config_parsed = _config_parser(_config_file)
-        _config_file.close()
+        _cf = open(_current_user_home_path + '/.battmon.conf')
+        _config_parsed = _config_parser(_cf)
+        _current_config_file = _cf.name
+        _cf.close()
     except IOError:
         # print("Config file not found: " + str(e))
         pass
 
     try:
-        _config_file = open('/etc/battmon.conf')
-        _config_parsed = _config_parser(_config_file)
-        _config_file.close()
+        _cf = open('/etc/battmon.conf')
+        _config_parsed = _config_parser(_cf)
+        _current_config_file = _cf.name
+        _cf.close()
     except IOError:
         # print("Config file not found: " + str(e))
         pass
 
-    print(_config_parsed)
+    # _check_if_config_is_valid(_config_parsed)
 
-    if not _config_parsed:
-        return _DEFAULT_CONFIG
+    if _config_parsed and _current_config_file:
+        _config_parsed['config_file'] = _current_config_file
+    elif not _config_parsed and _current_config_file:
+        _config_parsed = _DEFAULT_CONFIG
+        _config_parsed['config_file'] = _current_config_file
+    elif _config_parsed and not _current_config_file:
+        _config_parsed['config_file'] = _internal_config_token
     else:
+        _config_parsed = _DEFAULT_CONFIG
+        _config_parsed['config_file'] = _internal_config_token
+
+    # if _is_valid is empty, then config file is ok
+    _is_valid = _check_if_config_is_valid(_config_parsed)
+    if not _is_valid:
         return _config_parsed
+    else:
+        print(_is_valid)
+        sys.exit(1)
 
 
 def _config_parser(config_file):
@@ -74,14 +116,17 @@ def _config_parser(config_file):
         except ValueError:
             pass
 
-    if not len(_config_file) == 0:
+    if _config_file:
         return _config_file
     else:
-        print("ERROR: no valid config found!!!\n!!!! THIS INFO SHOULDN'T NEVER APPEAR !!!!")
+        print("ERROR: no valid config found!!!\n!!!! THIS ERROR SHOULDN'T NEVER APPEAR !!!!")
 
 
 # Parsed config
 _config = _open_config_file_and_parse_it()
+
+# print(_check_if_config_is_valid(_config))
+
 
 # Default values parser and command line parameters parser
 ap = argparse.ArgumentParser(usage="%(prog)s [OPTION]", description=battmon.__description__,
@@ -97,20 +142,21 @@ defaultOptions = {"debug": False,
                   "test": False,
                   "foreground": False,
                   "more_then_one_instance": False,
-                  "lock_command": _config.get('screen_lock_command'),
-                  "disable_notifications": _config.get('disable_notifications'),
-                  "critical": _config.get('critical_notifications'),
-                  "sound_file": battmon.__default_sound_file_path,
-                  "play_sound": _config.get('play_sounds'),
-                  "sound_volume": _config.get('sound_volume'),
-                  "timeout": _config.get('notification_timeout'),
-                  "battery_update_timeout": _config.get('battery_update_interval'),
-                  "battery_low_value": _config.get('battery_low_level_value'),
-                  "battery_critical_value": _config.get('battery_critical_level_value'),
-                  "battery_minimal_value": _config.get('battery_minimal_level_value'),
-                  "minimal_battery_level_command": _config.get('battery_minimal_level_command'),
-                  "set_no_battery_remainder": _config.get('no_battery_remainder'),
-                  "disable_startup_notifications": _config.get('disable_startup_notifications')}
+                  "lock_command": _config['screen_lock_command'],
+                  "disable_notifications": _config['disable_notifications'],
+                  "critical": _config['critical_notifications'],
+                  "config_file": _config['config_file'],
+                  "sound_file": battmon.__default_sound_file_path__,
+                  "play_sound": _config['play_sounds'],
+                  "sound_volume": _config['sound_volume'],
+                  "timeout": _config['notification_timeout'],
+                  "battery_update_timeout": _config['battery_update_interval'],
+                  "battery_low_value": _config['battery_low_level_value'],
+                  "battery_critical_value": _config['battery_critical_level_value'],
+                  "battery_minimal_value": _config['battery_minimal_level_value'],
+                  "minimal_battery_level_command": _config['battery_minimal_level_command'],
+                  "set_no_battery_remainder": _config['no_battery_remainder'],
+                  "disable_startup_notifications": _config['disable_startup_notifications']}
 
 ap.add_argument("-v", "--version",
                 action="version",
@@ -122,6 +168,30 @@ ap.add_argument("-d", "--debug",
                 dest="debug",
                 default=defaultOptions['debug'],
                 help="print debug information, implies -f, option")
+
+
+def _check_config_file(c):
+    if os.path.exists(c):
+        if _open_config_file_and_parse_it(c):
+            return c
+        else:
+            print("Config file is not valid !!!")
+    elif c is _internal_config_token:
+        return c
+    else:
+        print('*** WARNING ***')
+        print('*** File: ' + c + ' not found, using ' + _config['config_file'])
+        return _config['config_file']
+
+
+# config_file
+ap.add_argument("-C", "--config",
+                action="store",
+                type=_check_config_file,
+                metavar="<PATH>",
+                dest="config_file",
+                default=defaultOptions['config_file'],
+                help="specify your config file")
 
 # dry run
 ap.add_argument("-dr", "--dry-run",

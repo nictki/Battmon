@@ -31,7 +31,7 @@ class Monitor(object):
                  disable_notifications=None, critical=None, sound_file=None, play_sound=None, sound_volume=None,
                  timeout=None, battery_update_timeout=None, battery_low_value=None, battery_critical_value=None,
                  battery_minimal_value=None, minimal_battery_level_command=None, set_no_battery_remainder=None,
-                 disable_startup_notifications=None):
+                 disable_startup_notifications=None, config_file=None):
 
         # parameters
         self._debug = debug
@@ -52,6 +52,7 @@ class Monitor(object):
         self._minimal_battery_level_command = minimal_battery_level_command
         self._set_no_battery_remainder = set_no_battery_remainder
         self._disable_startup_notifications = disable_startup_notifications
+        self._config_file = config_file
 
         # external programs
         self._current_program_path = ''
@@ -111,11 +112,12 @@ class Monitor(object):
             print("**********************\n")
             self.__print_debug_info()
 
-        self.__SOUND_VOLUME = self._sound_volume
+        self._SOUND_VOLUME = self._sound_volume
 
     def __print_debug_info(self):
-        print("- Battmon version: %s" % battmon.__version__)
+        print("- battmon version: %s" % battmon.__version__)
         print("- python version: %s.%s.%s\n" % (sys.version_info[0], sys.version_info[1], sys.version_info[2]))
+        print("- config file: %s\n" % self._config_file)
         print("- debug: %s" % self._debug)
         print("- dry run: %s" % self._test)
         print("- foreground: %s" % self._foreground)
@@ -505,7 +507,7 @@ class Monitor(object):
                                         os.popen(self._screenlock_command)
                                         os.popen(self._minimal_battery_level_command)
                                     else:
-                                        self._sound_volume = self.__SOUND_VOLUME
+                                        self._sound_volume = self._SOUND_VOLUME
                                         self._set_sound_file_and_volume()
                                         break
                             # test block
@@ -520,7 +522,7 @@ class Monitor(object):
                                             self._battery_minimal_value):
                                         time.sleep(2)
                                 print("TEST: Hibernating... Program goes sleep for 10sek")
-                                self._sound_volume = self.__SOUND_VOLUME
+                                self._sound_volume = self._SOUND_VOLUME
                                 self._set_sound_file_and_volume()
                                 time.sleep(10)
                         else:

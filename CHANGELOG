@@ -1,8 +1,10 @@
-* Version 0.7.0-rc1
+* Version 0.7.0-rc5
 ------------------------------------------------------------------------------------------
 - now available on PyPi
 - added configurations file for user
 - refactoring
+- improved debugging
+- add option to specify config file
 - updated documentation
 - added gentoo ebuilds
 - no functionality changes in compare to previous versions

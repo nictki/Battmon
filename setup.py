@@ -18,6 +18,7 @@ from setuptools import setup
 
 import battmon
 
+
 setup(
     name=battmon.__program_name__,
     version=battmon.__version__,
