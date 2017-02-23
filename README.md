@@ -1,3 +1,8 @@
+## NOTE
+Since version 0.7.0 please use PyPi to install battmon, or do it locally
+'python setup.py install --user' from battmon directory or if you use gentoo
+use ebuilds shipped with.
+
 ## Battmon
 Battmon is simple battery monitoring program written in python for Linux systems, which has especially in mind tiling window managers like xmonad, dwm or awesome.
 
@@ -23,12 +28,13 @@ Battmon is simple battery monitoring program written in python for Linux systems
       (if not installed, the scripts in 'bin' directory will be used, see below)
       
 #### Usage:
-* Just run: 
+* After installing just run: 
   ```
-  python ./battmon.py
+  battmon
   ```
   
 * to see all available options run Battmon with `-h` or `--help` option.
+* read `README` file to get more information.
 
 #### Notes:
 * Currently systemd/upower isn't supported and probably will never be.
@@ -41,7 +47,7 @@ Battmon is simple battery monitoring program written in python for Linux systems
   your_username ALL = NOPASSWD: /usr/sbin/pm-suspend
   your_username ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
   ```  
-  or enable it for a group, remember to replace group and `PATH_TO_BATTMON`:  
+  or enable it for a group, remember to replace group:  
   ```
   %your_group ALL = NOPASSWD: /usr/sbin/pm-hibernate
   %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend
@@ -54,13 +60,13 @@ Battmon is simple battery monitoring program written in python for Linux systems
   The easiest way to to do this, is to make this scripts accessible to normal user
   by running sudo without root password.
   To do so just edit `/etc/sudoers` file and add something like this, replacing username
-  with your own user name and `PATH_TO_BATTMON` with absolute path to your Battmon folder:
+  with your own user name:
   ```
   your_username  ALL = NOPASSWD: /usr/local/sbin/suspend.sh
   your_username  ALL = NOPASSWD: /usr/local/sbin/hibernate.sh
   your_username  ALL = NOPASSWD: /usr/local/sbin/shutdown.sh
   ```
-  or enable it for a group, remember to replace group and `PATH_TO_BATTMON`:
+  or enable it for a group, remember to replace group:
   ```
   %your_group  ALL = NOPASSWD: /usr/local/sbin/suspend.sh
   %your_group  ALL = NOPASSWD: /usr/local/sbin/hibernate.sh
