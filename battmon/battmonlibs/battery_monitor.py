@@ -135,7 +135,6 @@ class Monitor(object):
         print("- no battery remainder: %smin" % self._set_no_battery_remainder)
         print("- disable startup notifications: %s\n" % self._disable_startup_notifications)
 
-
     # check if given program is running
     def _check_if_running(self, name):
         output = str(subprocess.check_output(['ps', '-A']))
@@ -145,11 +144,6 @@ class Monitor(object):
             print(name + " pid: " + str(own_pid) + " :TRUE")
             return True
         else:
-            libc = cdll.LoadLibrary('libc.so.6')
-            if sys.version_info[0] == 3:
-                libc.prctl(15, c_char_p(b'battmon'), 0, 0, 0)
-            else:
-                libc.prctl(15, name, 0, 0, 0)
             return False
 
     # check if in path
@@ -180,6 +174,12 @@ class Monitor(object):
             else:
                 print("BATTMON IS ALREADY RUNNING")
                 sys.exit(1)
+        else:
+            libc = cdll.LoadLibrary('libc.so.6')
+            if sys.version_info[0] == 3:
+                libc.prctl(15, c_char_p(b'battmon'), 0, 0, 0)
+            else:
+                libc.prctl(15, battmon.__program_name__, 0, 0, 0)
 
     # check for notify-send command
     def _check_notify_send(self):
