@@ -18,7 +18,7 @@ import os
 import subprocess
 import sys
 import time
-from ctypes import cdll, c_char_p
+from ctypes import cdll, byref, create_string_buffer, c_char_p
 
 import battmon
 from battmon.battmonlibs import battery_notifications
@@ -71,9 +71,6 @@ class Monitor(object):
         # check play command and if file sounds are in PATH's
         self._check_play()
         self._set_sound_file_and_volume()
-
-        # set Battmon process name
-        self._set_proc_name(battmon.__program_name__)
 
         # check if program already running otherwise set name
         if not self._more_then_one_instance:
@@ -138,22 +135,21 @@ class Monitor(object):
         print("- no battery remainder: %smin" % self._set_no_battery_remainder)
         print("- disable startup notifications: %s\n" % self._disable_startup_notifications)
 
-    # set name for this program, thus works 'killall Battmon'
-    def _set_proc_name(self, name):
-        # dirty hack to set 'Battmon' process name under python3
-        libc = cdll.LoadLibrary('libc.so.6')
-        if sys.version_info[0] == 3:
-            libc.prctl(15, c_char_p(b'battmon'), 0, 0, 0)
-        else:
-            libc.prctl(15, name, 0, 0, 0)
 
     # check if given program is running
     def _check_if_running(self, name):
         output = str(subprocess.check_output(['ps', '-A']))
+        own_pid = os.getpid()
         # check if process is running
         if name in output:
+            print(name + " pid: " + str(own_pid) + " :TRUE")
             return True
         else:
+            libc = cdll.LoadLibrary('libc.so.6')
+            if sys.version_info[0] == 3:
+                libc.prctl(15, c_char_p(b'battmon'), 0, 0, 0)
+            else:
+                libc.prctl(15, name, 0, 0, 0)
             return False
 
     # check if in path
