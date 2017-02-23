@@ -143,7 +143,7 @@ class Monitor(object):
         # dirty hack to set 'Battmon' process name under python3
         libc = cdll.LoadLibrary('libc.so.6')
         if sys.version_info[0] == 3:
-            libc.prctl(15, c_char_p(b'name'), 0, 0, 0)
+            libc.prctl(15, c_char_p(b'battmon'), 0, 0, 0)
         else:
             libc.prctl(15, name, 0, 0, 0)
 
