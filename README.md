@@ -42,6 +42,7 @@ Battmon is simple battery monitoring program written in python for Linux systems
 * If you have pm-utils installed, then please remember that, following commands must been execute as a root user.
   To do so just edit `/etc/sudoers` file and add something  similar like this, replacing `username`
   with your own user name:
+  s
   ```
   your_username ALL = NOPASSWD: /usr/sbin/pm-hibernate
   your_username ALL = NOPASSWD: /usr/sbin/pm-suspend
@@ -78,10 +79,10 @@ Battmon is simple battery monitoring program written in python for Linux systems
   without quotes.
 
 * You can specify your favor lock screen command using `-lp` argument in command line,
-  if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
-  list variable in `battmon.conf` file.
+  if none given, then will be used one gave in `screen_lock_command` as default from
+  `default-battmon.conf`
   
 * For more information about configuration see  `README` file. 
 
 #### Bugs:
-* Please tell me ;)
+* Please tell me...

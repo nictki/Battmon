@@ -84,7 +84,7 @@ Notes:
 - Battmon looks first for pulseaudio, then for sox.
 
 - You can specify your favor lock screen command using `-lp` argument in command line,
-  if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
+  if none given, then as default will be used first one found in `screen_lock_command`
   list variable in `battmon.conf` file.
 
 Issues:
