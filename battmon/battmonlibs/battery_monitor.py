@@ -143,7 +143,7 @@ class Monitor(object):
         # dirty hack to set 'Battmon' process name under python3
         libc = cdll.LoadLibrary('libc.so.6')
         if sys.version_info[0] == 3:
-            libc.prctl(15, c_char_p(b'Battmon'), 0, 0, 0)
+            libc.prctl(15, c_char_p(b'name'), 0, 0, 0)
         else:
             libc.prctl(15, name, 0, 0, 0)
 
@@ -152,10 +152,8 @@ class Monitor(object):
         output = str(subprocess.check_output(['ps', '-A']))
         # check if process is running
         if name in output:
-            print(name + " TRUE")
             return True
         else:
-            print(name + " FALSE")
             return False
 
     # check if in path
