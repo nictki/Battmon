@@ -48,22 +48,23 @@ Battmon is simple battery monitoring program written in python for Linux systems
   %your_group ALL = NOPASSWD: /usr/sbin/pm-suspend-hybrid
   ```
   
-* If you don't have pm-utils installed, scripts in `bin` folder must be executed
-  as a root, to allow regular user suspend, hibernate or shutdown computer.
+* - If you don't have pm-utils installed, copy scripts in `data/scripts` into `/usr/local/sbin/`folder
+  and remember that this files must be executed as a root, to allow regular user suspend, 
+  hibernate or shutdown computer.
   The easiest way to to do this, is to make this scripts accessible to normal user
   by running sudo without root password.
   To do so just edit `/etc/sudoers` file and add something like this, replacing username
   with your own user name and `PATH_TO_BATTMON` with absolute path to your Battmon folder:
   ```
-  your_username  ALL = NOPASSWD: /PATH_TO_BATTMON/bin/suspend.sh
-  your_username  ALL = NOPASSWD: /PATH_TO_BATTMON/bin/hibernate.sh
-  your_username  ALL = NOPASSWD: /PATH_TO_BATTMON/bin/shutdown.sh
+  your_username  ALL = NOPASSWD: /usr/local/sbin/suspend.sh
+  your_username  ALL = NOPASSWD: /usr/local/sbin/hibernate.sh
+  your_username  ALL = NOPASSWD: /usr/local/sbin/shutdown.sh
   ```
   or enable it for a group, remember to replace group and `PATH_TO_BATTMON`:
   ```
-  %your_group  ALL = NOPASSWD: /PATH_TO_BATTMON/bin/suspend.sh
-  %your_group  ALL = NOPASSWD: /PATH_TO_BATTMON/bin/hibernate.sh
-  %your_group  ALL = NOPASSWD: /PATH_TO_BATTMON/bin/shutdown.sh
+  %your_group  ALL = NOPASSWD: /usr/local/sbin/suspend.sh
+  %your_group  ALL = NOPASSWD: /usr/local/sbin/hibernate.sh
+  %your_group  ALL = NOPASSWD: /usr/local/sbin/shutdown.sh
   ```
   
 * Sound file is search by default in the same path where battmon was started,
@@ -72,12 +73,9 @@ Battmon is simple battery monitoring program written in python for Linux systems
 
 * You can specify your favor lock screen command using `-lp` argument in command line,
   if none given, then as default will be used first one found in `SCREEN_LOCK_COMMANDS`
-  list variable in `config.py` file.
-  You can also change default screenlock command editing `DEFAULT_SCREEN_LOCK_COMMAND` variable
-  in `internal_config.py` file, but this will be overwritten when screen lock command
-  was given in command line using `-lp` argument.
+  list variable in `battmon.conf` file.
   
-* For more information about configuration see  `README` file in Battmon directory 
+* For more information about configuration see  `README` file. 
 
 #### Bugs:
 * Please tell me ;)
