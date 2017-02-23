@@ -1,7 +1,7 @@
 NOTE:
 -------
 Since version 0.7.0 please use PyPi to install battmon, or do it locally
-'python setup.py install --user' from battmon directory or if you use gentoo
+`python setup.py install --user` from battmon directory or if you use gentoo
 use ebuilds shipped with.
 
 
@@ -65,13 +65,13 @@ Notes:
   The easiest way to to do this, is to make this scripts accessible to normal user
   by running sudo without root password.
   To do so just edit `/etc/sudoers` file and add something like this, replacing username
-  with your own user name and <PATH_TO_BATTMON> with absolute path to your Battmon folder:
+  with your own user name:
 
     your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
     your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh
     your_username  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/shutdown.sh
 
-  or enable it for a group, remember to replace group and <PATH_TO_BATTMON>:
+  or enable it for a group:
 
     %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/suspend.sh
     %your_group  ALL = NOPASSWD: <PATH_TO_BATTMON>/bin/hibernate.sh

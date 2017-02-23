@@ -4,7 +4,7 @@
 - added configurations file for user
 - refactoring
 - improved debugging
-- add option to specify config file
+- added option to specify config file
 - updated documentation
 - added gentoo ebuilds
 - no functionality changes in compare to previous versions

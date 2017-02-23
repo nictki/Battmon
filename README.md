@@ -1,6 +1,6 @@
 ## NOTE
 Since version 0.7.0 please use PyPi to install battmon, or do it locally
-'python setup.py install --user' from battmon directory or if you use gentoo
+`python setup.py install --user` from battmon directory or if you use gentoo
 use ebuilds shipped with.
 
 ## Battmon
