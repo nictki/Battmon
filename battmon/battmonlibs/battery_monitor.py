@@ -72,12 +72,12 @@ class Monitor(object):
         self._check_play()
         self._set_sound_file_and_volume()
 
+        # set Battmon process name
+        self._set_proc_name(battmon.__program_name__)
+
         # check if program already running otherwise set name
         if not self._more_then_one_instance:
             self._check_if_battmon_already_running()
-
-        # set Battmon process name
-        self._set_proc_name(battmon.__program_name__)
 
         # set default arguments for debug
         if self._debug:
@@ -152,8 +152,10 @@ class Monitor(object):
         output = str(subprocess.check_output(['ps', '-A']))
         # check if process is running
         if name in output:
+            print(name + " TRUE")
             return True
         else:
+            print(name + " FALSE")
             return False
 
     # check if in path
