@@ -14,7 +14,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
+import os
+import sys
 from battmon.battmonlibs import run_battmon
 
 if __name__ == '__main__':
-    run_battmon.run_main()
+    try:
+        pid = os.fork()
+    except OSError as e:
+        print("ERROR: %s [%d]" % (e.strerror, e.errno))
+
+    if pid == 0:
+        os.setsid()
+        try:
+            pid = os.fork()
+            if pid == 0:
+                os.chdir("/")
+                os.umask(0)
+                run_battmon.run_main()
+            else:
+                sys.exit(0)
+        except OSError as e:
+            print("ERROR: %s [%d]" % (e.strerror, e.errno))
+    else:
+        os.wait()
+        exit(0)

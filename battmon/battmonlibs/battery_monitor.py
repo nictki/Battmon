@@ -18,7 +18,7 @@ import os
 import subprocess
 import sys
 import time
-from ctypes import cdll, byref, create_string_buffer, c_char_p
+from ctypes import cdll, c_char_p
 
 import battmon
 from battmon.battmonlibs import battery_notifications
@@ -138,10 +138,8 @@ class Monitor(object):
     # check if given program is running
     def _check_if_running(self, name):
         output = str(subprocess.check_output(['ps', '-A']))
-        own_pid = os.getpid()
         # check if process is running
         if name in output:
-            print(name + " pid: " + str(own_pid) + " :TRUE")
             return True
         else:
             return False
@@ -170,11 +168,12 @@ class Monitor(object):
                 notify_send_string = '''notify-send "BATTMON IS ALREADY RUNNING" %s %s''' \
                                      % ('-t ' + str(self._timeout), '-a ' + battmon.__program_name__)
                 os.popen(notify_send_string)
-                sys.exit(1)
+                sys.exit(0)
             else:
                 print("BATTMON IS ALREADY RUNNING")
-                sys.exit(1)
+                sys.exit(0)
         else:
+            sys.argv[0] = battmon.__program_name__
             libc = cdll.LoadLibrary('libc.so.6')
             if sys.version_info[0] == 3:
                 libc.prctl(15, c_char_p(b'battmon'), 0, 0, 0)
@@ -387,7 +386,7 @@ class Monitor(object):
                 if not self._battery_values.is_ac_present() and self._battery_values.is_battery_discharging():
                     # discharging and battery level is greater then battery_low_value
                     if (not self._battery_values.is_ac_present()
-                            and self._battery_values.battery_current_capacity() > self._battery_low_value):
+                        and self._battery_values.battery_current_capacity() > self._battery_low_value):
                         if self._debug:
                             print("DEBUG: Discharging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
@@ -451,7 +450,7 @@ class Monitor(object):
                                                                 (10 * 1000))
                         # check once more if system should be hibernate
                         if (not self._battery_values.is_ac_present()
-                                and self._battery_values.battery_current_capacity() <= self._battery_minimal_value):
+                            and self._battery_values.battery_current_capacity() <= self._battery_minimal_value):
                             # the real thing
                             if not self._test:
                                 if (not self._battery_values.is_ac_present()
@@ -554,7 +553,7 @@ class Monitor(object):
                     # ac plugged and battery is charging
                     if (self._battery_values.is_ac_present()
                         and not self._battery_values.is_battery_fully_charged()
-                            and not self._battery_values.is_battery_discharging()):
+                        and not self._battery_values.is_battery_discharging()):
                         if self._debug:
                             print("DEBUG: Charging check (%s() in MainRun class)"
                                   % self.run_main_loop.__name__)
