@@ -19,10 +19,10 @@ import sys
 from battmon.battmonlibs import run_battmon
 
 if __name__ == '__main__':
-    try:
-        pid = os.fork()
-    except OSError as e:
-        print("ERROR: %s [%d]" % (e.strerror, e.errno))
+    # try:
+    pid = os.fork()
+    # except OSError as e:
+        # print("ERROR: %s [%d]" % (e.strerror, e.errno))
 
     if pid == 0:
         os.setsid()
@@ -38,4 +38,4 @@ if __name__ == '__main__':
             print("ERROR: %s [%d]" % (e.strerror, e.errno))
     else:
         os.wait()
-        exit(0)
+        sys.exit(0)
