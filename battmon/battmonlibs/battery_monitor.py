@@ -27,11 +27,14 @@ from battmon.battmonlibs import read_battery_values
 
 # main class
 class Monitor(object):
-    def __init__(self, debug=None, test=None, foreground=None, more_then_one_instance=None, lock_command=None,
+    def __init__(self, temp_file, debug=None, test=None, foreground=None, more_then_one_instance=None, lock_command=None,
                  disable_notifications=None, critical=None, sound_file=None, play_sound=None, sound_volume=None,
                  timeout=None, battery_update_timeout=None, battery_low_value=None, battery_critical_value=None,
                  battery_minimal_value=None, minimal_battery_level_command=None, set_no_battery_remainder=None,
                  disable_startup_notifications=None, config_file=None):
+
+        # temp file
+        self._temp_file = temp_file
 
         # parameters
         self._debug = debug
@@ -161,7 +164,9 @@ class Monitor(object):
 
     # check if Battmon is already running
     def _check_if_battmon_already_running(self):
-        if self._check_if_running(battmon.__program_name__):
+        print(self._temp_file)
+        time.sleep(60)
+        if os.path.exists(self._temp_file):
             if self._play_sound:
                 os.popen(self._sound_command)
             if self._found_notify_send_command:
@@ -173,7 +178,6 @@ class Monitor(object):
                 print("BATTMON IS ALREADY RUNNING")
                 sys.exit(0)
         else:
-
             sys.argv[0] = battmon.__program_name__
             libc = cdll.LoadLibrary('libc.so.6')
             if sys.version_info[0] == 3:

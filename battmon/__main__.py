@@ -14,21 +14,69 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import os
 import sys
+import os
+import atexit
+import signal
+import getpass
+
 from battmon.battmonlibs import run_battmon
 
-if __name__ == '__main__':
-    try:
-        pid = os.fork()
-    except OSError as e:
-        print("ERROR: %s [%d]" % (e.strerror, e.errno))
 
-    if pid == 0:
-        os.setsid()
-        os.chdir("/")
-        os.umask(0)
-        run_battmon.run_main()
-    else:
-        os.wait()
-        sys.exit(0)
+def daemonize(pidfile,
+              stdin='/dev/null',
+              stdout='/dev/null',
+              stderr='dev/null'):
+    try:
+        if os.fork() > 0:
+            print("first")
+            raise SystemExit(0)
+    except OSError as e:
+        raise RuntimeError('First forking failure')
+
+    os.chdir('/')
+    os.umask(0)
+    os.setsid()
+
+    try:
+        if os.fork() > 0:
+            print("second")
+            raise SystemExit(0)
+    except OSError as e:
+        raise RuntimeError('Second forking failure')
+
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    with open(stdin, 'rb', 0) as f:
+        os.dup2(f.fileno(), sys.stdin.fileno())
+    with open(stdout, 'ab', 0) as f:
+        os.dup2(f.fileno(), sys.stdout.fileno())
+    with open(stderr, 'ab', 0) as f:
+        os.dup2(f.fileno(), sys.stderr.fileno())
+
+    with open(pidfile, 'w') as f:
+        print(os.getpid(), file=f)
+
+    atexit.register(lambda: os.remove(pidfile))
+
+    def sigterm_handler(signo, frame):
+        raise SystemExit(1)
+
+    signal.signal(signal.SIGTERM, sigterm_handler)
+
+
+if __name__ == '__main__':
+    user = getpass.getuser()
+    PIDFILE = os.path.join('/tmp/' + user + 'battmon.pid')
+    logfile = '/tmp/' + getpass.getuser() + '/battmon.log'
+
+    try:
+        daemonize(PIDFILE,
+                  stdout=logfile,
+                  stderr=logfile)
+    except RuntimeError as e:
+        print(e, file=sys.stderr)
+        raise SystemExit(1)
+
+    run_battmon.run_main(PIDFILE)

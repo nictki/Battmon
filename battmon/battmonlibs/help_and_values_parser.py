@@ -17,6 +17,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import argparse
 import os
 import sys
+import getpass
 
 import battmon
 from os.path import expanduser
@@ -146,6 +147,7 @@ defaultOptions = {"debug": False,
                   "disable_notifications": _config['disable_notifications'],
                   "critical": _config['critical_notifications'],
                   "config_file": _config['config_file'],
+                  "log_file": '/tmp' + getpass.getuser() + battmon.__program_name__ + '.log',
                   "sound_file": battmon.__default_sound_file_path__,
                   "play_sound": _config['play_sounds'],
                   "sound_volume": _config['sound_volume'],
