@@ -14,17 +14,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-import getpass
-import os
-import sys
-import atexit
-import signal
-
 from battmon.battmonlibs import battery_monitor
 from battmon.battmonlibs import help_and_values_parser
 
 
 # main
-def run_main(pidfile):
-    bt = battery_monitor.Monitor(pidfile, **vars(help_and_values_parser.args))
+def run_main(PIDFILE):
+    bt = battery_monitor.Monitor(PIDFILE, **vars(help_and_values_parser.args))
     bt.run_main_loop()
