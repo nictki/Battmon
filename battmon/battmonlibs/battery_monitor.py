@@ -173,6 +173,7 @@ class Monitor(object):
                 print("BATTMON IS ALREADY RUNNING")
                 sys.exit(0)
         else:
+
             sys.argv[0] = battmon.__program_name__
             libc = cdll.LoadLibrary('libc.so.6')
             if sys.version_info[0] == 3:
