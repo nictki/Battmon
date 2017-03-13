@@ -29,7 +29,6 @@ def daemonize(pidfile,
               stderr='dev/null'):
     try:
         if os.fork() > 0:
-            print("first")
             raise SystemExit(0)
     except OSError as e:
         raise RuntimeError('First forking failure')
@@ -40,7 +39,6 @@ def daemonize(pidfile,
 
     try:
         if os.fork() > 0:
-            print("second")
             raise SystemExit(0)
     except OSError as e:
         raise RuntimeError('Second forking failure')
@@ -68,13 +66,13 @@ def daemonize(pidfile,
 
 if __name__ == '__main__':
     user = getpass.getuser()
-    PIDFILE = os.path.join('/tmp/' + user + 'battmon.pid')
-    logfile = '/tmp/' + getpass.getuser() + '/battmon.log'
+    PIDFILE = '/tmp/%s/battmon.pid' % user
+    LOGFILE = '/tmp/%s/battmon.log' % user
 
     try:
         daemonize(PIDFILE,
-                  stdout=logfile,
-                  stderr=logfile)
+                  stdout=LOGFILE,
+                  stderr=LOGFILE)
     except RuntimeError as e:
         print(e, file=sys.stderr)
         raise SystemExit(1)

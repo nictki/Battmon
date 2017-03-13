@@ -19,6 +19,7 @@ from battmon.battmonlibs import help_and_values_parser
 
 
 # main
-def run_main(PIDFILE):
-    bt = battery_monitor.Monitor(PIDFILE, **vars(help_and_values_parser.args))
+def run_main(pidfile):
+    print(pidfile)
+    bt = battery_monitor.Monitor(pidfile, **vars(help_and_values_parser.args))
     bt.run_main_loop()
