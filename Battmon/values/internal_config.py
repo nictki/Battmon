@@ -38,7 +38,7 @@ EPILOG = ('If you want change default screenlock command, edit DEFAULT_SCREEN_LO
 PROGRAM_PATH, n = os.path.split(os.path.dirname(os.path.realpath(__file__)))
 
 # path's for external things
-EXTRA_PROGRAMS_PATH = ['/usr/bin/',
+DEFAULT_EXTRA_PROGRAMS_PATH = ":".join(['/usr/bin/',
                        '/usr/local/bin/',
                        '/usr/local/sbin/',
                        '/bin/',
@@ -46,7 +46,8 @@ EXTRA_PROGRAMS_PATH = ['/usr/bin/',
                        '/usr/libexec/',
                        '/sbin/',
                        '/usr/share/sounds/',
-                       PROGRAM_PATH + "/bin/"]
+                       PROGRAM_PATH + "/bin/"])
+EXTRA_PROGRAMS_PATH = os.environ.get("PATH", DEFAULT_EXTRA_PROGRAMS_PATH).split(":")
 
 # default play command
 DEFAULT_PLAYER_COMMAND = ['paplay', 'play']

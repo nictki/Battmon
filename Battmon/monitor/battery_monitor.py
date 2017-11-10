@@ -158,8 +158,9 @@ class Monitor(object):
     def __check_in_path(self, program_name, path=internal_config.EXTRA_PROGRAMS_PATH):
         try:
             for p in path:
-                if os.path.isfile(p + program_name):
-                    self.__current_program_path = (p + program_name)
+                regular_path = os.path.join(p, program_name)
+                if os.path.isfile(regular_path):
+                    self.__current_program_path = (regular_path)
                     return True
             else:
                 return False
