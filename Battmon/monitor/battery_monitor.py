@@ -268,7 +268,8 @@ class Monitor(object):
                             you can specify your favorite screen lock program \
                             running this program with -l PATH, \
                             otherwise your session won't be locked")
-        elif not self.__screenlock_command == '':
+        else:
+            print(self.__screenlock_command)
             lock_command_as_list = self.__screenlock_command.split()
             command = lock_command_as_list[0]
             command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
@@ -373,10 +374,10 @@ class Monitor(object):
                 if self.__debug:
                     print('''DEBUG: Battery value is still '%s', continuing anyway'''
                           % str(self.__battery_values.battery_time()))
-                    print("DEBUG: Back to >>> %s <<<" % name)
+                    print("DEBUG: Back to >>> %s <<<" % self.run_main_loop.__name__)
                 break
             else:
-                print("DEBUG: Back to >>> %s <<<" % name)
+                print("DEBUG: Back to >>> %s <<<" % self.run_main_loop.__name__)
 
     # start main loop
     def run_main_loop(self):
@@ -476,7 +477,7 @@ class Monitor(object):
                                             <= self.__battery_minimal_value):
                                         time.sleep(2)
                                         os.popen(self.__sound_command)
-                                        message_string = ("last chance to plug in AC cable...\n"
+                                        message_string = ("Last chance to plug in AC cable...\n"
                                                           " system will be %s in 10 seconds\n"
                                                           " current capacity: %s%s\n"
                                                           " time left: %s") % \
@@ -527,8 +528,7 @@ class Monitor(object):
                 # check if we have ac connected and we've battery
                 if self.__battery_values.is_ac_present() and not self.__battery_values.is_battery_discharging():
                     # full charged
-                    if (
-                                self.__battery_values.is_battery_fully_charged() and not
+                    if (self.__battery_values.is_battery_fully_charged() and not
                             self.__battery_values.is_battery_discharging()):
                         if self.__debug:
                             print("DEBUG: Full battery check (%s() in MainRun class)"

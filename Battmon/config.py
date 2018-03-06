@@ -22,7 +22,7 @@ from values import internal_config
 ##############################
 
 # will be overwrite when command line parameter was given
-SCREEN_LOCK_COMMAND = 'xlock -lockdelay 0'
+SCREEN_LOCK_COMMAND = ''
 
 # how oft update battery values in seconds
 BATTERY_UPDATE_INTERVAL = 6
