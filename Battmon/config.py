@@ -33,7 +33,7 @@ BATTERY_CRITICAL_LEVEL_VALUE = 7
 BATTERY_MINIMAL_LEVEL_VALUE = 3
 
 # possible values are: hibernate, suspend, hybrid, poweroff
-BATTERY_MINIMAL_LEVEL_COMMAND = 'hibernate'
+BATTERY_MINIMAL_LEVEL_COMMAND = 'poweroff'
 
 # play sounds
 PLAY_SOUNDS = True

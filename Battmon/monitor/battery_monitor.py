@@ -269,7 +269,6 @@ class Monitor(object):
                             running this program with -l PATH, \
                             otherwise your session won't be locked")
         else:
-            print(self.__screenlock_command)
             lock_command_as_list = self.__screenlock_command.split()
             command = lock_command_as_list[0]
             command_args = ' '.join(lock_command_as_list[1:len(lock_command_as_list)])
