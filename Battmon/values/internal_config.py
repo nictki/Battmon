@@ -14,11 +14,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-
 import os
 
 PROGRAM_NAME = "battmon"
-VERSION = "0.6.8"
+VERSION = "0.6.9_25042018"
 
 AUTHOR = 'nictki'
 AUTHOR_EMAIL = 'nictki@gmail.com'
@@ -39,14 +38,14 @@ PROGRAM_PATH, n = os.path.split(os.path.dirname(os.path.realpath(__file__)))
 
 # path's for external things
 DEFAULT_EXTRA_PROGRAMS_PATH = ":".join(['/usr/bin/',
-                       '/usr/local/bin/',
-                       '/usr/local/sbin/',
-                       '/bin/',
-                       '/usr/sbin/',
-                       '/usr/libexec/',
-                       '/sbin/',
-                       '/usr/share/sounds/',
-                       PROGRAM_PATH + "/bin/"])
+                                        '/usr/local/bin/',
+                                        '/usr/local/sbin/',
+                                        '/bin/',
+                                        '/usr/sbin/',
+                                        '/usr/libexec/',
+                                        '/sbin/',
+                                        '/usr/share/sounds/',
+                                        PROGRAM_PATH + "/bin/"])
 EXTRA_PROGRAMS_PATH = os.environ.get("PATH", DEFAULT_EXTRA_PROGRAMS_PATH).split(":")
 
 # default play command

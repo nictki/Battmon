@@ -215,10 +215,10 @@ battery_group.add_argument("-mc", "--minimal-level-command",
                            dest="minimal_battery_level_command",
                            type=str,
                            metavar="<ARG>",
-                           choices=['hibernate', 'suspend', 'poweroff', 'hybrid'],
+                           choices=['hibernate', 'suspend', 'poweroff'],
                            default=defaultOptions['minimal_battery_level_command'],
                            help='''set minimal battery value action, possible actions are: \
-                                    'hibernate', 'suspend', 'hybrid' and 'poweroff' ''')
+                                    'hibernate', 'suspend' and 'poweroff' ''')
 
 
 # set no battery notification

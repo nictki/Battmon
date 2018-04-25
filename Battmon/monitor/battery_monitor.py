@@ -363,20 +363,22 @@ class Monitor(object):
             print("below minimal battery level system will be: %s" % self.__short_minimal_battery_command)
 
     # check for battery update times
-    def __check_battery_update_times(self, name):
+    def __check_battery_update_times(self):
         while self.__battery_values.battery_time() == 'Unknown':
             if self.__debug:
-                print('''DEBUG: Battery value is '%s', next check in %d sec'''
-                      % (str(self.__battery_values.battery_time()), self.__battery_update_timeout))
+                print('''DEBUG: Battery value check in %s() is '%s', next check in %d sec'''
+                      % (self.__check_battery_update_times.__name__,
+                         str(self.__battery_values.battery_time()), self.__battery_update_timeout))
             time.sleep(self.__battery_update_timeout)
             if self.__battery_values.battery_time() == 'Unknown':
                 if self.__debug:
-                    print('''DEBUG: Battery value is still '%s', continuing anyway'''
-                          % str(self.__battery_values.battery_time()))
-                    print("DEBUG: Back to >>> %s <<<" % self.run_main_loop.__name__)
+                    print('''DEBUG: Second battery value check in %s() is '%s', continuing anyway...'''
+                          % (self.__check_battery_update_times.__name__, str(self.__battery_values.battery_time())))
+                    print("DEBUG: Back to %s()" % self.run_main_loop.__name__)
                 break
             else:
-                print("DEBUG: Back to >>> %s <<<" % self.run_main_loop.__name__)
+                print("DEBUG: Got battery value: %s%%" % str(self.__battery_values.battery_current_capacity()))
+                print("DEBUG: Back to %s()" % self.run_main_loop.__name__)
 
     # start main loop
     def run_main_loop(self):
@@ -389,10 +391,9 @@ class Monitor(object):
                     if (not self.__battery_values.is_ac_present()
                             and self.__battery_values.battery_current_capacity() > self.__battery_low_value):
                         if self.__debug:
-                            print("DEBUG: Discharging check (%s() in MainRun class)"
-                                  % self.run_main_loop.__name__)
+                            print("DEBUG: Discharging check in %s()" % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times("Discharging check (%s() in MainRun class)")
+                        self.__check_battery_update_times()
                         self.notification.battery_discharging(self.__battery_values.battery_current_capacity(),
                                                               self.__battery_values.battery_time())
                         # have enough power and check if we should stay in save battery level loop
@@ -405,11 +406,9 @@ class Monitor(object):
                           and self.__battery_low_value >= self.__battery_values.battery_current_capacity()
                             > self.__battery_critical_value):
                         if self.__debug:
-                            print("DEBUG: Low level battery check (%s() in MainRun class)"
-                                  % self.run_main_loop.__name__)
+                            print("DEBUG: Low level battery check in %s()" % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times("Low level battery check (%s() in MainRun class)"
-                                                          % self.run_main_loop.__name__)
+                        self.__check_battery_update_times()
                         self.notification.low_capacity_level(self.__battery_values.battery_current_capacity(),
                                                              self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in low battery level loop
@@ -423,11 +422,9 @@ class Monitor(object):
                           and self.__battery_critical_value >= self.__battery_values.battery_current_capacity()
                             > self.__battery_minimal_value):
                         if self.__debug:
-                            print("DEBUG: Critical battery level check (%s() in MainRun class)"
-                                  % self.run_main_loop.__name__)
+                            print("DEBUG: Critical battery level check in %s()" % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times("Critical battery level check (%s() in MainRun class)"
-                                                          % self.run_main_loop.__name__)
+                        self.__check_battery_update_times()
                         self.notification.critical_battery_level(self.__battery_values.battery_current_capacity(),
                                                                  self.__battery_values.battery_time())
                         # battery have enough power and check if we should stay in critical battery level loop
@@ -440,11 +437,9 @@ class Monitor(object):
                     elif (not self.__battery_values.is_ac_present()
                           and self.__battery_values.battery_current_capacity() <= self.__battery_minimal_value):
                         if self.__debug:
-                            print("DEBUG: Hibernate battery level check (%s() in MainRun class)"
-                                  % self.run_main_loop.__name__)
+                            print("DEBUG: Hibernate battery level check in %s()" % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times("Hibernate battery level check (%s() in MainRun class)"
-                                                          % self.run_main_loop.__name__)
+                        self.__check_battery_update_times()
                         self.notification.minimal_battery_level(self.__battery_values.battery_current_capacity(),
                                                                 self.__battery_values.battery_time(),
                                                                 self.__short_minimal_battery_command,
@@ -530,8 +525,7 @@ class Monitor(object):
                     if (self.__battery_values.is_battery_fully_charged() and not
                             self.__battery_values.is_battery_discharging()):
                         if self.__debug:
-                            print("DEBUG: Full battery check (%s() in MainRun class)"
-                                  % self.run_main_loop.__name__)
+                            print("DEBUG: Full battery check in %s()" % self.run_main_loop.__name__)
                         # notification
                         # simulate self.__check_battery_update_times() behavior
                         time.sleep(self.__battery_update_timeout)
@@ -543,8 +537,7 @@ class Monitor(object):
                             if not self.__battery_values.is_battery_present():
                                 self.notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: Battery removed !!! (%s() in MainRun class)"
-                                          % self.run_main_loop.__name__)
+                                    print("DEBUG: Battery removed check in %s()" % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
                             else:
@@ -555,11 +548,9 @@ class Monitor(object):
                         and not self.__battery_values.is_battery_fully_charged()
                             and not self.__battery_values.is_battery_discharging()):
                         if self.__debug:
-                            print("DEBUG: Charging check (%s() in MainRun class)"
-                                  % self.run_main_loop.__name__)
+                            print("DEBUG: Charging check in %s()" % self.run_main_loop.__name__)
                         # notification
-                        self.__check_battery_update_times("Charging check (%s() in MainRun class)"
-                                                          % self.run_main_loop.__name__)
+                        self.__check_battery_update_times()
                         self.notification.battery_charging(self.__battery_values.battery_current_capacity(),
                                                            self.__battery_values.battery_time())
 
@@ -570,8 +561,7 @@ class Monitor(object):
                             if not self.__battery_values.is_battery_present():
                                 self.notification.battery_removed()
                                 if self.__debug:
-                                    print("DEBUG: Battery removed (%s() in MainRun class)"
-                                          % self.run_main_loop.__name__)
+                                    print("DEBUG: Battery removed check in %s()" % self.run_main_loop.__name__)
                                 time.sleep(self.__timeout / 1000)
                                 break
                             else:
@@ -582,8 +572,7 @@ class Monitor(object):
                 # notification
                 self.notification.no_battery()
                 if self.__debug:
-                    print("DEBUG: No battery check (%s() in MainRun class)"
-                          % self.run_main_loop.__name__)
+                    print("DEBUG: No battery check in %s()" % self.run_main_loop.__name__)
                 # no battery remainder loop counter
                 no_battery_counter = 1
                 # loop to deal with situation when we don't have battery
@@ -596,8 +585,7 @@ class Monitor(object):
                         if self.__battery_values.is_battery_present():
                             self.notification.battery_plugged()
                             if self.__debug:
-                                print("DEBUG: Battery plugged (%s() in MainRun class)"
-                                      % self.run_main_loop.__name__)
+                                print("DEBUG: Battery plugged check in %s()" % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break
                         # send no battery notifications and reset no_battery_counter
@@ -611,7 +599,6 @@ class Monitor(object):
                         if self.__battery_values.is_battery_present():
                             self.notification.battery_plugged()
                             if self.__debug:
-                                print("DEBUG: Battery plugged (%s() in MainRun class)"
-                                      % self.run_main_loop.__name__)
+                                print("DEBUG: Battery plugged check in %s()" % self.run_main_loop.__name__)
                             time.sleep(self.__timeout / 1000)
                             break

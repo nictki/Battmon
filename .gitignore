@@ -177,3 +177,4 @@ Battmon/values/__pycache__/
 Battmon/values/help_and_values_parser.pyc
 Battmon/values/internal_config.pyc
 Battmon/values/read_battery_values.pyc
+/Battmon/.vscode/
