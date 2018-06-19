@@ -3,7 +3,6 @@ Battmon is simple battery monitoring program written in python for Linux systems
 
 #### Features:
 * very light (for really basic functionality you need have only python installed)
-* works in background
 * very configurable
 * no tray icon
 * pop-up notifications (need libnotify)
@@ -15,7 +14,7 @@ Battmon is simple battery monitoring program written in python for Linux systems
   if you have older python version, install [argparse](https://pypi.python.org/pypi/argparse))
 
 **Optional prerequisites:** 
-* **[libnotify](https://developer.gnome.org/libnotify/):** pop up notifications (works fine with [dunst](https://dunst-project.org)
+* **[libnotify](https://developer.gnome.org/libnotify/):** pop up notifications (works fine with [dunst](https://dunst-project.org))
 * **[sox](http://sox.sourceforge.net/) / [pulseaudio](www.pulseaudio.org):** sounds
 * screen lock programs like: [i3lock](http://i3wm.org/i3lock/), [xtrlock](http://ftp.debian.org/debian/pool/main/x/xtrlock/), [xscreensaver](http://ftp.debian.org/debian/pool/main/x/xtrlock/), [physlock](https://github.com/muennich/physlock), [xlockmore](http://www.tux.org/~bagleyd/xlockmore.html) etc, to lock user session before hibernating or suspending  
   (you can specify your favorite screen locker through command line or in config.py file)
